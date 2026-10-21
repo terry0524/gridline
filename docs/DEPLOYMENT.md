@@ -27,6 +27,6 @@ Without HOST, local development still binds127.0.0.1. No wildcard host/origin by
 
 ## Regression data
 
-The original44tests include checks against local raw upstream response archives. The source repository intentionally excludes .cache and captures. CI runs the24source-contained capture/live/season tests plus hosting tests, and syntax validation. For full44+hosting replay provenance tests, use the original verified local archive. `npm run import-replay -- --year 2024 --round 8` can independently collect a race, but later provider corrections can change the pinned historical counts/hashes.
+The original44tests include checks against local raw upstream response archives. The source repository intentionally excludes .cache and captures. CI restores the normalized Replay seed assets, then runs the24capture/live/season tests plus hosting tests, and syntax validation. For full44+hosting replay provenance tests, use the original verified local archive. `npm run import-replay -- --year 2024 --round 8` can independently collect a race, but later provider corrections can change the pinned historical counts/hashes.
 
 GitHub release bootstrap is for running the site and does not claim to recreate the excluded raw-response provenance archive. Current test results and public deployment verification are documented separately in PUBLISHING_STATUS.md.

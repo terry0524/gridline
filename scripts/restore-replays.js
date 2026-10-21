@@ -13,10 +13,17 @@ for(const item of manifest.entries){
  if(previous&&item.file==='replays/manifest-v1.json'){const saved=JSON.parse(previous);if(saved.version!==1||saved.schemaVersion!==4||!Array.isArray(saved.replays))throw Error('Invalid existing replay manifest');continue;}
  // Preserve local source data. A changed snapshot must be reviewed, not overwritten by a bootstrap.
  if(previous)throw Error(`Existing cache differs from release: ${item.file}`);
- const response=await fetch(new URL(item.asset,base),{signal:AbortSignal.timeout(120000)});
- if(!response.ok)throw Error(`Replay asset HTTP ${response.status}`);
- const chunks=[];let size=0;for await(const chunk of response.body){size+=chunk.length;if(size>item.bytes)throw Error('Oversized asset');chunks.push(chunk);}
- const bytes=Buffer.concat(chunks);if(bytes.length!==item.bytes||digest(bytes)!==item.sha256)throw Error('Replay asset integrity failure');
+ let bytes,lastError;
+ for(let attempt=0;attempt<3;attempt++){
+  try{
+   const response=await fetch(new URL(item.asset,base),{signal:AbortSignal.timeout(60000)});
+   if(!response.ok)throw Error(`Replay asset HTTP ${response.status}`);
+   const chunks=[];let size=0;for await(const chunk of response.body){size+=chunk.length;if(size>item.bytes)throw Error('Oversized asset');chunks.push(chunk);}
+   const received=Buffer.concat(chunks);if(received.length!==item.bytes||digest(received)!==item.sha256)throw Error('Replay asset integrity failure');
+   bytes=received;break;
+  }catch(error){lastError=error;if(attempt<2)await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));}
+ }
+ if(!bytes)throw lastError;
  await fs.mkdir(path.dirname(file),{recursive:true});const tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,bytes);await fs.rename(tmp,file);console.log('Restored '+item.file);
 }
 console.log('Verified historical replay assets ready');

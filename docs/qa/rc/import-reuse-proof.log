@@ -2,7 +2,7 @@
 > f1-live-companion@0.6.0-rc.1 import-replay
 > node scripts/import-replay.js --year 2024 --round 1
 
-ready Ready 
+ready Ready
 {
   "session": {
     "key": 9472,
