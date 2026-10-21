@@ -1,0 +1,232 @@
+[
+  {
+    "label": "desktop-home",
+    "content": "FORMULA ONE · 2026 SEASONYour race week.YOUR TIMEZONE · KSTNEXT GRAND PRIX전체 일정 ↗UP NEXT · ROUND 18 · USAUnited States Grand PrixCircuit of the Americas10월 26일 (월) 05:00 · KSTWeeke",
+    "heading": "Your race week.",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/",
+    "view": "home",
+    "width": 1440
+  },
+  {
+    "label": "desktop-schedule",
+    "content": "EVERY RACE WEEKEND시즌 일정모든 세션 시각은 사용자 시간대 기준입니다.다음 주말로 이동 ↓01COMPLETED · AustraliaAustralian Grand PrixAlbert Park Grand Prix CircuitWeekend sessions · KSTFP13월 6일 (금) 10:30Complete",
+    "heading": "시즌 일정",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/schedule",
+    "view": "schedule",
+    "width": 1440
+  },
+  {
+    "label": "desktop-standings",
+    "content": "WORLD CHAMPIONSHIP챔피언십2026 · ROUND 17 종료 · CHANGE는 직전 Round 종료 순위 대비DriversConstructors2026 drivers standingsPOSDRIVER / TEAMPOINTSWINSCHANGE1Andrea Kimi AntonelliMercedes3408—2Geo",
+    "heading": "챔피언십",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/standings",
+    "view": "standings",
+    "width": 1440
+  },
+  {
+    "label": "desktop-results",
+    "content": "CLASSIFICATION & RACE FACTS경기 결과Race · Sprint · QualifyingGRAND PRIX R01 · Australian Grand PrixR02 · Chinese Grand PrixR03 · Japanese Grand PrixR04 · Miami Grand PrixR05 · Canadia",
+    "heading": "경기 결과",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/results",
+    "view": "results",
+    "width": 1440
+  },
+  {
+    "label": "desktop-driver-detail",
+    "content": "2026 SEASON · DRIVER PROFILEMax Verstappen#3 · Red BullSTANDINGS ↗CHAMPIONSHIPP4POINTS221WINS2RACE PODIUMS9SEASON RESULTSRace points · Sprint는 차트와 기여 점수에 포함Season race resultsROUND",
+    "heading": "Max Verstappen",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/drivers/2026/max_verstappen",
+    "view": "entity",
+    "width": 1440
+  },
+  {
+    "label": "desktop-team-detail",
+    "content": "2026 SEASON · CONSTRUCTOR PROFILEMercedesGermanSTANDINGS ↗CHAMPIONSHIPP1POINTS578WINS11RACE PODIUMS22DRIVER CONTRIBUTION Race + Sprint · 이 팀에서 획득Andrea Kimi Antonelli340 PTSGeorge ",
+    "heading": "Mercedes",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/teams/2026/mercedes",
+    "view": "entity",
+    "width": 1440
+  },
+  {
+    "label": "quick-jump-bahrain-2024",
+    "content": "CLASSIFICATION & RACE FACTS경기 결과Race · Sprint · QualifyingGRAND PRIX R01 · Bahrain Grand PrixR02 · Saudi Arabian Grand PrixR03 · Australian Grand PrixR04 · Japanese Grand PrixR05 ·",
+    "heading": "경기 결과",
+    "scroll": 1440,
+    "undefinedVisible": false,
+    "url": "/results/2024/bahrain",
+    "view": "results",
+    "width": 1440
+  },
+  {
+    "label": "tablet-home",
+    "content": "FORMULA ONE · 2026 SEASONYour race week.YOUR TIMEZONE · KSTNEXT GRAND PRIX전체 일정 ↗UP NEXT · ROUND 18 · USAUnited States Grand PrixCircuit of the Americas10월 26일 (월) 05:00 · KSTWeeke",
+    "heading": "Your race week.",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/",
+    "view": "home",
+    "width": 1024
+  },
+  {
+    "label": "tablet-schedule",
+    "content": "EVERY RACE WEEKEND시즌 일정모든 세션 시각은 사용자 시간대 기준입니다.다음 주말로 이동 ↓01COMPLETED · AustraliaAustralian Grand PrixAlbert Park Grand Prix CircuitWeekend sessions · KSTFP13월 6일 (금) 10:30Complete",
+    "heading": "시즌 일정",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/schedule",
+    "view": "schedule",
+    "width": 1024
+  },
+  {
+    "label": "tablet-standings",
+    "content": "WORLD CHAMPIONSHIP챔피언십2026 · ROUND 17 종료 · CHANGE는 직전 Round 종료 순위 대비DriversConstructors2026 drivers standingsPOSDRIVER / TEAMPOINTSWINSCHANGE1Andrea Kimi AntonelliMercedes3408—2Geo",
+    "heading": "챔피언십",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/standings",
+    "view": "standings",
+    "width": 1024
+  },
+  {
+    "label": "tablet-results",
+    "content": "CLASSIFICATION & RACE FACTS경기 결과Race · Sprint · QualifyingGRAND PRIX R01 · Australian Grand PrixR02 · Chinese Grand PrixR03 · Japanese Grand PrixR04 · Miami Grand PrixR05 · Canadia",
+    "heading": "경기 결과",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/results",
+    "view": "results",
+    "width": 1024
+  },
+  {
+    "label": "tablet-race-center-empty",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.WAITING\nSESSION UNCONFIRMED다음 세션 일정 조회 중…Race Center · LIVEREPLAY A RACE데이터 모드REPLAYLIVE · 무료 Timing시즌2026202520242023그",
+    "heading": "레이스 센터",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 1024
+  },
+  {
+    "label": "tablet-replay",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.HISTORICAL REPLAY\nSESSION UNCONFIRMEDNEXT SESSION · United States Grand Prix · Practice 1 · 2026. 10. 24. 오전 2:30 (KST)",
+    "heading": "레이스 센터",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 1024
+  },
+  {
+    "label": "home-after-simulated-live",
+    "content": "FORMULA ONE · 2026 SEASONYour race week.YOUR TIMEZONE · KSTNEXT GRAND PRIX전체 일정 ↗UP NEXT · ROUND 18 · USAUnited States Grand PrixCircuit of the Americas10월 26일 (월) 05:00 · KSTWeeke",
+    "heading": "Your race week.",
+    "scroll": 1024,
+    "undefinedVisible": false,
+    "url": "/",
+    "view": "home",
+    "width": 1024
+  },
+  {
+    "label": "mobile-home",
+    "content": "FORMULA ONE · 2026 SEASONYour race week.YOUR TIMEZONE · KSTNEXT GRAND PRIX전체 일정 ↗UP NEXT · ROUND 18 · USAUnited States Grand PrixCircuit of the Americas10월 26일 (월) 05:00 · KSTWeeke",
+    "heading": "Your race week.",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/",
+    "view": "home",
+    "width": 320
+  },
+  {
+    "label": "mobile-schedule",
+    "content": "EVERY RACE WEEKEND시즌 일정모든 세션 시각은 사용자 시간대 기준입니다.다음 주말로 이동 ↓01COMPLETED · AustraliaAustralian Grand PrixAlbert Park Grand Prix CircuitWeekend sessions · KSTFP13월 6일 (금) 10:30Complete",
+    "heading": "시즌 일정",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/schedule",
+    "view": "schedule",
+    "width": 320
+  },
+  {
+    "label": "mobile-standings",
+    "content": "WORLD CHAMPIONSHIP챔피언십2026 · ROUND 17 종료 · CHANGE는 직전 Round 종료 순위 대비DriversConstructors2026 drivers standingsPOSDRIVER / TEAMPOINTSWINSCHANGE1Andrea Kimi AntonelliMercedes3408—2Geo",
+    "heading": "챔피언십",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/standings",
+    "view": "standings",
+    "width": 320
+  },
+  {
+    "label": "mobile-results",
+    "content": "CLASSIFICATION & RACE FACTS경기 결과Race · Sprint · QualifyingGRAND PRIX R01 · Australian Grand PrixR02 · Chinese Grand PrixR03 · Japanese Grand PrixR04 · Miami Grand PrixR05 · Canadia",
+    "heading": "경기 결과",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/results",
+    "view": "results",
+    "width": 320
+  },
+  {
+    "label": "mobile-race-center",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.SIMULATED LIVE\nSESSION UNCONFIRMEDNEXT SESSION · United States Grand Prix · Practice 1 · 2026. 10. 24. 오전 2:30 (KST) · ",
+    "heading": "레이스 센터",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 320
+  },
+  {
+    "label": "mobile-replay-timing",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.HISTORICAL REPLAY\nSESSION UNCONFIRMEDNEXT SESSION · United States Grand Prix · Practice 1 · 2026. 10. 24. 오전 2:30 (KST)",
+    "heading": "레이스 센터",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 320
+  },
+  {
+    "label": "mobile-replay-track",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.HISTORICAL REPLAY\nSESSION UNCONFIRMEDNEXT SESSION · United States Grand Prix · Practice 1 · 2026. 10. 24. 오전 2:30 (KST)",
+    "heading": "레이스 센터",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 320
+  },
+  {
+    "label": "mobile-replay-driver",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.HISTORICAL REPLAY\nSESSION UNCONFIRMEDNEXT SESSION · United States Grand Prix · Practice 1 · 2026. 10. 24. 오전 2:30 (KST)",
+    "heading": "레이스 센터",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 320
+  },
+  {
+    "label": "mobile-replay-control",
+    "content": "\nYOUR SECOND SCREEN레이스 센터중계와 함께 Live Timing과 실제 과거 세션을 확인하세요.HISTORICAL REPLAY\nSESSION UNCONFIRMEDNEXT SESSION · United States Grand Prix · Practice 1 · 2026. 10. 24. 오전 2:30 (KST)",
+    "heading": "레이스 센터",
+    "scroll": 320,
+    "undefinedVisible": false,
+    "url": "/race-center",
+    "view": "live",
+    "width": 320
+  }
+]

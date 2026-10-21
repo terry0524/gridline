@@ -1,0 +1,287 @@
+[
+  {
+    "year": 2024,
+    "at": "2026-10-12T16:59:50.896Z",
+    "calendar": 24,
+    "races": 24,
+    "sprints": 6,
+    "driverCount": 24,
+    "constructorCount": 10,
+    "round": 24,
+    "driverLeader": {
+      "id": "max_verstappen",
+      "position": 1,
+      "points": 437,
+      "wins": 9,
+      "change": 0,
+      "driver": {
+        "id": "max_verstappen",
+        "name": "Max Verstappen",
+        "abbreviation": "VER",
+        "number": 1,
+        "nationality": "Dutch"
+      },
+      "team": {
+        "id": "red_bull",
+        "name": "Red Bull",
+        "nationality": "Austrian",
+        "color": "#81a8ff"
+      },
+      "teams": [
+        {
+          "id": "red_bull",
+          "name": "Red Bull",
+          "nationality": "Austrian",
+          "color": "#81a8ff"
+        }
+      ]
+    },
+    "constructorLeader": {
+      "id": "mclaren",
+      "position": 1,
+      "points": 666,
+      "wins": 6,
+      "change": 0,
+      "driver": null,
+      "team": {
+        "id": "mclaren",
+        "name": "McLaren",
+        "nationality": "British",
+        "color": "#ffab50"
+      },
+      "teams": []
+    },
+    "recent": "Abu Dhabi Grand Prix",
+    "reconciliation": {
+      "matches": true,
+      "mismatches": [],
+      "checked": 34
+    },
+    "errors": {},
+    "provenance": [
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024.json?limit=100",
+        "fetchedAt": "2026-10-12T16:59:42.698Z",
+        "stale": false,
+        "sha256": "690e1b73e6f639967e94878b0ddf747396eebd2bd840bd2a72f8a8a2740bd4d7"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/driverstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T16:59:42.120Z",
+        "stale": false,
+        "sha256": "9ff335f538bb935603d7a93a8999c0ec4468847ce67ca665620604c3b983f9d0"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/constructorstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T16:59:41.301Z",
+        "stale": false,
+        "sha256": "1766547c99f5aa2a1399108837965be7c9c8eac761a6896277ff7eadf32968b8"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/results.json?limit=100&offset=0",
+        "fetchedAt": "2026-10-12T16:59:43.619Z",
+        "stale": false,
+        "sha256": "f0135d5558a4df808a76368b4b4ac00518898c431bc17736203352ac4ef111e2"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/results.json?limit=100&offset=100",
+        "fetchedAt": "2026-10-12T16:59:46.211Z",
+        "stale": false,
+        "sha256": "aa881ef66c695389799424b0448d7c3e7de4ecfaa8bec51a8b81151fc7fbd008"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/results.json?limit=100&offset=200",
+        "fetchedAt": "2026-10-12T16:59:47.789Z",
+        "stale": false,
+        "sha256": "56b8fd3249093027d90b24c477175a09f7f240ed6fbbf5b17049366e5c7028a0"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/results.json?limit=100&offset=300",
+        "fetchedAt": "2026-10-12T16:59:48.744Z",
+        "stale": false,
+        "sha256": "7aa3720d9621324a9dc4db99bcf2f85da73c7bbd2495a226dfe58ed7487df552"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/results.json?limit=100&offset=400",
+        "fetchedAt": "2026-10-12T16:59:49.560Z",
+        "stale": false,
+        "sha256": "fc8799d8bce062b1136a4b08b2c05ad376ee372218674cf0576d389c5013ad07"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/sprint.json?limit=100&offset=0",
+        "fetchedAt": "2026-10-12T16:59:44.649Z",
+        "stale": false,
+        "sha256": "02e4893c6224be890bc4578a98dc9fc97b07447769b3c8c350c56f94078e5745"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/sprint.json?limit=100&offset=100",
+        "fetchedAt": "2026-10-12T16:59:47.001Z",
+        "stale": false,
+        "sha256": "9f36cfd7c54bf7b4ab818390106021c43e32282a98c24ae5b258a920b3088496"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/23/driverstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T16:59:50.121Z",
+        "stale": false,
+        "sha256": "5ebaddec331990e0d5d61b6e1273d6f277a02bba90bff21fbe8498eb4c2fbdac"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2024/23/constructorstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T16:59:50.896Z",
+        "stale": false,
+        "sha256": "ecfcfcb94e4d2cb2cd58614b0dce4a6f97d481a517e10572f6d66cf96a0c7a82"
+      }
+    ]
+  },
+  {
+    "year": 2026,
+    "at": "2026-10-12T17:01:29.819Z",
+    "calendar": 23,
+    "races": 17,
+    "sprints": 6,
+    "driverCount": 23,
+    "constructorCount": 11,
+    "round": 17,
+    "driverLeader": {
+      "id": "antonelli",
+      "position": 1,
+      "points": 340,
+      "wins": 8,
+      "change": 0,
+      "driver": {
+        "id": "antonelli",
+        "name": "Andrea Kimi Antonelli",
+        "abbreviation": "ANT",
+        "number": 12,
+        "nationality": "Italian"
+      },
+      "team": {
+        "id": "mercedes",
+        "name": "Mercedes",
+        "nationality": "German",
+        "color": "#6bdfcf"
+      },
+      "teams": [
+        {
+          "id": "mercedes",
+          "name": "Mercedes",
+          "nationality": "German",
+          "color": "#6bdfcf"
+        }
+      ]
+    },
+    "constructorLeader": {
+      "id": "mercedes",
+      "position": 1,
+      "points": 578,
+      "wins": 11,
+      "change": 0,
+      "driver": null,
+      "team": {
+        "id": "mercedes",
+        "name": "Mercedes",
+        "nationality": "German",
+        "color": "#6bdfcf"
+      },
+      "teams": []
+    },
+    "recent": "Singapore Grand Prix",
+    "reconciliation": {
+      "matches": true,
+      "mismatches": [],
+      "checked": 34
+    },
+    "errors": {},
+    "provenance": [
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026.json?limit=100",
+        "fetchedAt": "2026-10-12T17:01:11.824Z",
+        "stale": false,
+        "sha256": "07c030c15a97f883f2a27881dd7b146556a7314f50d025c34c7f7c2a962a1d9b"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/driverstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T17:01:14.334Z",
+        "stale": false,
+        "sha256": "1b522fb111ae1f347a90d2fc7aa5122a5ab3949d46272171f4e4263d968da7b5"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/constructorstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T17:01:13.157Z",
+        "stale": false,
+        "sha256": "2575730779b5e28abbfbf9feee5d08ca931577e071ede25015ad26e8d3710ca4"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/results.json?limit=100&offset=0",
+        "fetchedAt": "2026-10-12T17:01:15.673Z",
+        "stale": false,
+        "sha256": "43ac8dd6f00010ca4346c537c5b7afad07c2626d2e989e1fc2cf3bc5f8639bc5"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/results.json?limit=100&offset=100",
+        "fetchedAt": "2026-10-12T17:01:18.137Z",
+        "stale": false,
+        "sha256": "de974e69f560011577d8613aeda7e1c83e8382dd3713f9b076559e7022e14bab"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/results.json?limit=100&offset=200",
+        "fetchedAt": "2026-10-12T17:01:20.866Z",
+        "stale": false,
+        "sha256": "e169e0c1d2b4165a9f3b67131178f113f0e1385ab194bcadd7d121de27a68ddf"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/results.json?limit=100&offset=300",
+        "fetchedAt": "2026-10-12T17:01:23.641Z",
+        "stale": false,
+        "sha256": "b2dbd7db4fb32cbca581d95973ff5210cf5cde558caa657be2a242f8c1778a95"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/sprint.json?limit=100&offset=0",
+        "fetchedAt": "2026-10-12T17:01:16.867Z",
+        "stale": false,
+        "sha256": "427d7b5c45b254cde48ed03bef2ba9968c246c127ac356d780cc3caec97654c2"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/sprint.json?limit=100&offset=100",
+        "fetchedAt": "2026-10-12T17:01:19.471Z",
+        "stale": false,
+        "sha256": "f56ff4d6c598cdbc5381e627ebf135df2cd88efed88b5bbdd5ac4bd38b336c36"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/16/driverstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T17:01:29.819Z",
+        "stale": false,
+        "sha256": "00a82527db921dd4abc5f2d182df4c22996ae3fbc1c407e760b0a1d680c7dd0e"
+      },
+      {
+        "source": "jolpica",
+        "url": "https://api.jolpi.ca/ergast/f1/2026/16/constructorstandings.json?limit=100",
+        "fetchedAt": "2026-10-12T17:01:28.462Z",
+        "stale": false,
+        "sha256": "89a1c5c66cd26e1f4991f662e589c03ae8eb15c574415df2c61df36fc406c94a"
+      }
+    ]
+  }
+]

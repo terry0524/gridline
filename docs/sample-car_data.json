@@ -1,0 +1,43 @@
+{
+  "url": "https://api.openf1.org/v1/car_data?date%3C=2024-03-02T16%3A11%3A00.000Z&date%3E=2024-03-02T16%3A10%3A00.000Z&driver_number=4&session_key=9472",
+  "status": 200,
+  "count": 218,
+  "sample": [
+    {
+      "date": "2024-03-02T16:10:00.241000+00:00",
+      "session_key": 9472,
+      "throttle": 31,
+      "brake": 0,
+      "rpm": 7161,
+      "speed": 75,
+      "driver_number": 4,
+      "n_gear": 2,
+      "meeting_key": 1229,
+      "drs": 0
+    },
+    {
+      "date": "2024-03-02T16:10:00.401000+00:00",
+      "session_key": 9472,
+      "throttle": 31,
+      "brake": 0,
+      "rpm": 7469,
+      "speed": 78,
+      "driver_number": 4,
+      "n_gear": 2,
+      "meeting_key": 1229,
+      "drs": 0
+    },
+    {
+      "date": "2024-03-02T16:10:00.641000+00:00",
+      "session_key": 9472,
+      "throttle": 44,
+      "brake": 0,
+      "rpm": 7935,
+      "speed": 82,
+      "driver_number": 4,
+      "n_gear": 2,
+      "meeting_key": 1229,
+      "drs": 0
+    }
+  ]
+}

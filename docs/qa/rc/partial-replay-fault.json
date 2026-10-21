@@ -1,0 +1,9 @@
+{
+  "method": "Actual Spa timing and GPS slice around lap 39; weather/control deliberately removed in browser-only response",
+  "caps": "Timing: AvailableGap/Interval: AvailableTires: AvailableWeather: UnavailableRace Control: UnavailableRadio metadata: AvailableExact position: AvailableTelemetry: Unavailable",
+  "control": "Data unavailable",
+  "drivers": "20 DRIVERS",
+  "fastest": "NOR1:45.563LAP 31 · McLaren",
+  "markers": "20/20 CARS",
+  "weather": "Data unavailable"
+}

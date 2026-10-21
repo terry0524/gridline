@@ -1,0 +1,279 @@
+
+> f1-live-companion@0.6.0-rc.1 test
+> NODE_ENV=test node --test tests/*.test.js
+
+TAP version 13
+# Subtest: channel diagnostics distinguish no payload, empty optional subscription, errors and actual compressed coordinates
+ok 1 - channel diagnostics distinguish no payload, empty optional subscription, errors and actual compressed coordinates
+  ---
+  duration_ms: 4.160625
+  type: 'test'
+  ...
+# Subtest: runtime capabilities use actual fields, preserve numeric zero, and activate only after valid optional payload
+ok 2 - runtime capabilities use actual fields, preserve numeric zero, and activate only after valid optional payload
+  ---
+  duration_ms: 7.212959
+  type: 'test'
+  ...
+# Subtest: freshness depends on TimingData, uses slower Weather threshold, and never guesses live from an ended snapshot
+ok 3 - freshness depends on TimingData, uses slower Weather threshold, and never guesses live from an ended snapshot
+  ---
+  duration_ms: 1.534458
+  type: 'test'
+  ...
+# Subtest: unknown Hub/schema and malformed JSON are recorded without preventing the next valid actual snapshot
+ok 4 - unknown Hub/schema and malformed JSON are recorded without preventing the next valid actual snapshot
+  ---
+  duration_ms: 3.45725
+  type: 'test'
+  ...
+# Subtest: privacy redacts credentials/PII while keeping safe wire frames byte-for-byte for deterministic replay
+ok 5 - privacy redacts credentials/PII while keeping safe wire frames byte-for-byte for deterministic replay
+  ---
+  duration_ms: 1.60025
+  type: 'test'
+  ...
+# Subtest: Bahrain estimator receives timing only, exact wins, missing geometry/pit data are unavailable, and default stays off
+ok 6 - Bahrain estimator receives timing only, exact wins, missing geometry/pit data are unavailable, and default stays off
+  ---
+  duration_ms: 1.233916
+  type: 'test'
+  ...
+# Subtest: capture files round-trip actual snapshot/patch through current parser; reverse seek removes future state; transport gaps preserved
+ok 7 - capture files round-trip actual snapshot/patch through current parser; reverse seek removes future state; transport gaps preserved
+  ---
+  duration_ms: 35.221625
+  type: 'test'
+  ...
+# Subtest: capture resume bootstrap is explicitly provenance-labeled and not counted as newly received channel messages
+ok 8 - capture resume bootstrap is explicitly provenance-labeled and not counted as newly received channel messages
+  ---
+  duration_ms: 26.596959
+  type: 'test'
+  ...
+# Subtest: truncated final NDJSON is reported, path traversal is blocked, and next-session schedule uses UTC timestamps only
+ok 9 - truncated final NDJSON is reported, path traversal is blocked, and next-session schedule uses UTC timestamps only
+  ---
+  duration_ms: 1.218791
+  type: 'test'
+  ...
+# Subtest: observed anonymous Core snapshot normalizes real timing/weather and never labels a finished race live
+ok 10 - observed anonymous Core snapshot normalizes real timing/weather and never labels a finished race live
+  ---
+  duration_ms: 3.160083
+  type: 'test'
+  ...
+# Subtest: actual public historical compressed channels decode into measured coordinates/telemetry, without claiming live entitlement
+ok 11 - actual public historical compressed channels decode into measured coordinates/telemetry, without claiming live entitlement
+  ---
+  duration_ms: 1.710166
+  type: 'test'
+  ...
+# Subtest: Hub frame fragmentation and deep numeric-index patches preserve prior real snapshot; unsafe patches rejected
+ok 12 - Hub frame fragmentation and deep numeric-index patches preserve prior real snapshot; unsafe patches rejected
+  ---
+  duration_ms: 1.855833
+  type: 'test'
+  ...
+# Subtest: actual Bahrain simulation clock, controls, reverse seek and shared fastest-lap engine
+ok 13 - actual Bahrain simulation clock, controls, reverse seek and shared fastest-lap engine
+  ---
+  duration_ms: 7.451875
+  type: 'test'
+  ...
+# Subtest: 10 real SSE clients share one actual Bahrain source; interrupted/reopened stream resumes full snapshot without clock reset
+ok 14 - 10 real SSE clients share one actual Bahrain source; interrupted/reopened stream resumes full snapshot without clock reset
+  ---
+  duration_ms: 76.6575
+  type: 'test'
+  ...
+# Subtest: collector detaches closing socket before synchronous native error/close events can schedule again
+ok 15 - collector detaches closing socket before synchronous native error/close events can schedule again
+  ---
+  duration_ms: 0.520834
+  type: 'test'
+  ...
+# Subtest: Belgian Grand Prix: observed field, position records, fastest lap and upstream hashes
+ok 16 - Belgian Grand Prix: observed field, position records, fastest lap and upstream hashes
+  ---
+  duration_ms: 901.743917
+  type: 'test'
+  ...
+# Subtest: Belgian Grand Prix: reverse seek, lap index, tire/pit events and common track projection
+ok 17 - Belgian Grand Prix: reverse seek, lap index, tire/pit events and common track projection
+  ---
+  duration_ms: 14.933375
+  type: 'test'
+  ...
+# Subtest: Monaco Grand Prix: observed field, position records, fastest lap and upstream hashes
+ok 18 - Monaco Grand Prix: observed field, position records, fastest lap and upstream hashes
+  ---
+  duration_ms: 650.643542
+  type: 'test'
+  ...
+# Subtest: Monaco Grand Prix: reverse seek, lap index, tire/pit events and common track projection
+ok 19 - Monaco Grand Prix: reverse seek, lap index, tire/pit events and common track projection
+  ---
+  duration_ms: 14.285666
+  type: 'test'
+  ...
+# Subtest: Bahrain Grand Prix: observed field, position records, fastest lap and upstream hashes
+ok 20 - Bahrain Grand Prix: observed field, position records, fastest lap and upstream hashes
+  ---
+  duration_ms: 387.862041
+  type: 'test'
+  ...
+# Subtest: Bahrain Grand Prix: reverse seek, lap index, tire/pit events and common track projection
+ok 21 - Bahrain Grand Prix: reverse seek, lap index, tire/pit events and common track projection
+  ---
+  duration_ms: 19.430583
+  type: 'test'
+  ...
+# Subtest: manifest exposes only verified imported replays, Monaco incomplete source is PARTIAL
+ok 22 - manifest exposes only verified imported replays, Monaco incomplete source is PARTIAL
+  ---
+  duration_ms: 1.258375
+  type: 'test'
+  ...
+# Subtest: cache paths and deep-link lap inputs are validated
+ok 23 - cache paths and deep-link lap inputs are validated
+  ---
+  duration_ms: 0.580583
+  type: 'test'
+  ...
+# Subtest: optional-channel failure preserves Track/Timing and reports partial capability; corrupted coordinates invalid
+ok 24 - optional-channel failure preserves Track/Timing and reports partial capability; corrupted coordinates invalid
+  ---
+  duration_ms: 186.536042
+  type: 'test'
+  ...
+# Subtest: malformed source rows cannot crash parser; timing-only replay survives missing measured lap
+ok 25 - malformed source rows cannot crash parser; timing-only replay survives missing measured lap
+  ---
+  duration_ms: 0.847958
+  type: 'test'
+  ...
+# Subtest: production offline server rejects developer mutations/unsafe requests and serves three cached replay cores
+ok 26 - production offline server rejects developer mutations/unsafe requests and serves three cached replay cores
+  ---
+  duration_ms: 3128.8835
+  type: 'test'
+  ...
+# Alignment: 8660 observed samples, p95=5.970 SVG pixels
+# Subtest: real Bahrain dataset: complete field, 20 drivers, increasing observed timestamps
+ok 27 - real Bahrain dataset: complete field, 20 drivers, increasing observed timestamps
+  ---
+  duration_ms: 16.786542
+  type: 'test'
+  ...
+# Subtest: every provenance hash matches actual persisted upstream response
+ok 28 - every provenance hash matches actual persisted upstream response
+  ---
+  duration_ms: 211.660333
+  type: 'test'
+  ...
+# Subtest: fastest lap appears after completion, matches Jolpica final classification
+ok 29 - fastest lap appears after completion, matches Jolpica final classification
+  ---
+  duration_ms: 18.282166
+  type: 'test'
+  ...
+# Subtest: reverse seek removes future laps, pits, weather and race control
+ok 30 - reverse seek removes future laps, pits, weather and race control
+  ---
+  duration_ms: 17.155958
+  type: 'test'
+  ...
+# Subtest: pit events and stint compound/age change at recorded times
+ok 31 - pit events and stint compound/age change at recorded times
+  ---
+  duration_ms: 1.954458
+  type: 'test'
+  ...
+# Subtest: interpolation uses bracketing actual samples; no future extrapolation or gap bridging
+ok 32 - interpolation uses bracketing actual samples; no future extrapolation or gap bridging
+  ---
+  duration_ms: 0.118375
+  type: 'test'
+  ...
+# Subtest: timing retains drivers when location unavailable; missing weather remains unavailable
+ok 33 - timing retains drivers when location unavailable; missing weather remains unavailable
+  ---
+  duration_ms: 0.830375
+  type: 'test'
+  ...
+# Subtest: all-driver track consistency: measured reference lap, common projection, p95 within 7 SVG px
+ok 34 - all-driver track consistency: measured reference lap, common projection, p95 within 7 SVG px
+  ---
+  duration_ms: 124.251458
+  type: 'test'
+  ...
+# Subtest: live access boundary requires a ended session plus 30 minutes
+ok 35 - live access boundary requires a ended session plus 30 minutes
+  ---
+  duration_ms: 0.348958
+  type: 'test'
+  ...
+# Subtest: actual 2024 Race and Sprint awards reconcile every driver and constructor final total
+ok 36 - actual 2024 Race and Sprint awards reconcile every driver and constructor final total
+  ---
+  duration_ms: 10.191625
+  type: 'test'
+  ...
+# Subtest: actual 2026 Round 17 totals reconcile all 23 drivers and 11 constructors, no added fastest-lap bonus
+ok 37 - actual 2026 Round 17 totals reconcile all 23 drivers and 11 constructors, no added fastest-lap bonus
+  ---
+  duration_ms: 4.824834
+  type: 'test'
+  ...
+# Subtest: published season fixture hashes match archived real responses independently of future API updates
+ok 38 - published season fixture hashes match archived real responses independently of future API updates
+  ---
+  duration_ms: 107.577
+  type: 'test'
+  ...
+# Subtest: pagination rejoins actual races split across 100-record pages without losing drivers
+ok 39 - pagination rejoins actual races split across 100-record pages without losing drivers
+  ---
+  duration_ms: 37.762459
+  type: 'test'
+  ...
+# Subtest: season profiles use race number, exact DNF/DNS/DSQ classification and nullable unavailable values
+ok 40 - season profiles use race number, exact DNF/DNS/DSQ classification and nullable unavailable values
+  ---
+  duration_ms: 5.476333
+  type: 'test'
+  ...
+# Subtest: actual rank change uses previous-round source standings and calendar timestamps stay UTC/KST
+ok 41 - actual rank change uses previous-round source standings and calendar timestamps stay UTC/KST
+  ---
+  duration_ms: 52.768417
+  type: 'test'
+  ...
+# Subtest: canonical deep links, legacy hash routes and season changes resolve independently
+ok 42 - canonical deep links, legacy hash routes and season changes resolve independently
+  ---
+  duration_ms: 0.539417
+  type: 'test'
+  ...
+# Subtest: incomplete awards and published point adjustments are flagged, never spread backward over rounds
+ok 43 - incomplete awards and published point adjustments are flagged, never spread backward over rounds
+  ---
+  duration_ms: 10.8065
+  type: 'test'
+  ...
+# Subtest: Sprint awards appear before Sunday Race without redistributing future Race points
+ok 44 - Sprint awards appear before Sunday Race without redistributing future Race points
+  ---
+  duration_ms: 6.900583
+  type: 'test'
+  ...
+1..44
+# tests 44
+# suites 0
+# pass 44
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5776.635125

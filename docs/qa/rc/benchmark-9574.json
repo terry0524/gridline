@@ -1,0 +1,58 @@
+{
+  "measuredAt": "2026-10-13T00:49:05.767Z",
+  "runtime": "v22.22.2",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "method": "Warm filesystem, cold Node dataset cache. Actual persisted upstream responses rebuilt; 200 deterministic seek queries. RSS includes original dataset and raw rebuild. Node vehicle projection is not browser FPS.",
+  "results": [
+    {
+      "name": "Belgian Grand Prix",
+      "sessionKey": 9574,
+      "locations": 393460,
+      "cacheLoadMs": 159.20570899999998,
+      "normalizationMs": 212.62908399999998,
+      "indexGenerationMs": 0.31870900000001257,
+      "memory": {
+        "before": {
+          "rss": 57966592,
+          "heapTotal": 9240576,
+          "heapUsed": 4125336,
+          "external": 14165950,
+          "arrayBuffers": 18635
+        },
+        "afterLoad": {
+          "rss": 155926528,
+          "heapTotal": 74121216,
+          "heapUsed": 47942160,
+          "external": 17873278,
+          "arrayBuffers": 15939953
+        },
+        "afterRawRebuild": {
+          "rss": 304087040,
+          "heapTotal": 192036864,
+          "heapUsed": 151252880,
+          "external": 2259581,
+          "arrayBuffers": 326256
+        },
+        "processPeakRssBytes": 331628544
+      },
+      "seekMs": {
+        "median": 0.33274999999991905,
+        "p95": 0.9757919999999558,
+        "samples": 200
+      },
+      "twentyVehicleProjectionMs": {
+        "median": 0.004332999999974163,
+        "p95": 0.013041000000043823,
+        "samples": 200,
+        "excludesDOM": true
+      },
+      "alignment": {
+        "samples": 7880,
+        "p95SvgPx": 5.940466368666944,
+        "clippedSamples": 0
+      },
+      "rawRebuildLocations": 393460
+    }
+  ]
+}

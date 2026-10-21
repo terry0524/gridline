@@ -1,0 +1,218 @@
+[
+  {
+    "name": "home",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "schedule",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "standings",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "results",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "race-detail",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "driver-detail",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "team-detail",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "race-center",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "replay",
+    "width": 1440,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "home",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "schedule",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "standings",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "results",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "race-detail",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "driver-detail",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "team-detail",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "race-center",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "replay",
+    "width": 1024,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "home",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "schedule",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "standings",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "results",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "race-detail",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "driver-detail",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "team-detail",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "race-center",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  },
+  {
+    "name": "replay",
+    "width": 320,
+    "error": true,
+    "height": 44,
+    "overflow": 0,
+    "retryRecovered": true
+  }
+]

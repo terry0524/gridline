@@ -1,0 +1,19 @@
+name: Validate GRIDLINE
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: node --test tests/capture.test.js tests/live.test.js tests/season.test.js tests/deployment.test.js
+      # Full replay provenance tests require the local raw-response archive, which is not published.

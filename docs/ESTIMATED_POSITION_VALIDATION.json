@@ -1,0 +1,213 @@
+{
+  "generatedAt": "2026-10-12T03:09:36.255Z",
+  "grandPrix": "2024 Bahrain GP Race",
+  "sessionKey": 9472,
+  "estimator": "mini-sector-endpoint-v1",
+  "blindInput": "Only received TimingData; 2024 location/GPS excluded from prediction",
+  "geometryProvenance": {
+    "url": "https://api.multiviewer.app/api/v1/circuits/63/2024",
+    "bytes": 14684,
+    "sha256": "b05387fc4f010a2f0b5aae8266a1264563239e026af620c5a2f114bcba3cd0e7",
+    "candidateLap": {
+      "driverNumber": "1",
+      "lapNumber": 3,
+      "lapStartDate": "2022-03-18T12:05:19.921000",
+      "lapStartSessionTime": 1219.908,
+      "lapTime": 97.766,
+      "session": "FP1",
+      "sessionStartTime": 900.206
+    }
+  },
+  "timingProvenance": {
+    "url": "https://livetiming.formula1.com/static/2024/2024-03-02_Bahrain_Grand_Prix/2024-03-02_Race/TimingData.jsonStream",
+    "bytes": 7194450,
+    "sha256": "7fec80f522283b4152cfa5220f4239c893ca84ebe2d56fbb6a693fa134e6dfb5"
+  },
+  "heartbeatProvenance": {
+    "url": "https://livetiming.formula1.com/static/2024/2024-03-02_Bahrain_Grand_Prix/2024-03-02_Race/Heartbeat.jsonStream",
+    "bytes": 38590,
+    "sha256": "69320ea655fc27e043311cf0a4d87ba7aff1df14a305c312ccb157f826c81cd7"
+  },
+  "alignment": {
+    "method": "Median UTC-relative Heartbeat offset; no GPS-based timestamp tuning",
+    "origin": "2024-03-02T14:03:44.488Z",
+    "offsetP05": "2024-03-02T14:03:42.867Z",
+    "offsetP95": "2024-03-02T14:03:44.769Z",
+    "anchorCount": 400
+  },
+  "metrics": {
+    "sampleEverySeconds": 5,
+    "eligibleCoordinates": 22380,
+    "estimatedSamples": 21079,
+    "coverage": 0.9418677390527257,
+    "lapProgressError": {
+      "median": 0.038533062628620884,
+      "p95": 0.06251565654458713
+    },
+    "positionErrorMeters": {
+      "median": 180.6706181210714,
+      "p95": 326.8492928705828
+    },
+    "driverOrderingAccuracy": 0.9767013485755113,
+    "pairComparisons": 179152,
+    "trackLengthMeters": 5327.390891516771
+  },
+  "thresholds": {
+    "minCoverage": 0.7,
+    "maxMedianMeters": 150,
+    "maxP95Meters": 500,
+    "maxP95LapProgress": 0.1,
+    "minOrderingAccuracy": 0.9
+  },
+  "gatePassed": false,
+  "defaultEnabled": false,
+  "decision": "Failed observation-quality gate; never enabled by default",
+  "limitations": [
+    "Mini-sector endpoint estimates hold until another timing update; carry-over status2064 is ambiguous",
+    "Timing archives and OpenF1 location have independent acquisition timing; UTC alignment uncertainty remains",
+    "Distances use FastF1 documented coordinate units of1/10m; approximate source locations, not surveyed GPS",
+    "Ordering compares completed-lap+estimated-progress to OpenF1 classification, not exact on-track lateral order"
+  ],
+  "perDriver": [
+    {
+      "number": 2,
+      "driver": "SAR",
+      "samples": 1041,
+      "medianMeters": 177.67097525027634,
+      "p95Meters": 330.90846565847244
+    },
+    {
+      "number": 10,
+      "driver": "GAS",
+      "samples": 1044,
+      "medianMeters": 181.4618927153887,
+      "p95Meters": 328.214139009787
+    },
+    {
+      "number": 11,
+      "driver": "PER",
+      "samples": 1071,
+      "medianMeters": 179.4481497125284,
+      "p95Meters": 322.4167520132566
+    },
+    {
+      "number": 16,
+      "driver": "LEC",
+      "samples": 1071,
+      "medianMeters": 176.11002163755631,
+      "p95Meters": 332.2936567432571
+    },
+    {
+      "number": 23,
+      "driver": "ALB",
+      "samples": 1070,
+      "medianMeters": 178.13426141618368,
+      "p95Meters": 331.72652724033264
+    },
+    {
+      "number": 27,
+      "driver": "HUL",
+      "samples": 1043,
+      "medianMeters": 181.40269832775448,
+      "p95Meters": 318.0960464734222
+    },
+    {
+      "number": 44,
+      "driver": "HAM",
+      "samples": 1071,
+      "medianMeters": 189.04099084539757,
+      "p95Meters": 323.2630831629248
+    },
+    {
+      "number": 63,
+      "driver": "RUS",
+      "samples": 1070,
+      "medianMeters": 186.08534745430686,
+      "p95Meters": 331.55255327575674
+    },
+    {
+      "number": 77,
+      "driver": "BOT",
+      "samples": 1059,
+      "medianMeters": 181.4725094580444,
+      "p95Meters": 336.4041413705397
+    },
+    {
+      "number": 1,
+      "driver": "VER",
+      "samples": 1050,
+      "medianMeters": 178.44535415216163,
+      "p95Meters": 332.27870977298977
+    },
+    {
+      "number": 4,
+      "driver": "NOR",
+      "samples": 1049,
+      "medianMeters": 182.26083072155663,
+      "p95Meters": 327.42057849794014
+    },
+    {
+      "number": 14,
+      "driver": "ALO",
+      "samples": 1049,
+      "medianMeters": 176.66829290743473,
+      "p95Meters": 319.1920280350233
+    },
+    {
+      "number": 20,
+      "driver": "MAG",
+      "samples": 1050,
+      "medianMeters": 182.13771421818439,
+      "p95Meters": 327.0810012337243
+    },
+    {
+      "number": 22,
+      "driver": "TSU",
+      "samples": 1049,
+      "medianMeters": 178.29098827478634,
+      "p95Meters": 329.9563315863272
+    },
+    {
+      "number": 24,
+      "driver": "ZHO",
+      "samples": 1049,
+      "medianMeters": 183.22515782278282,
+      "p95Meters": 322.1507334933103
+    },
+    {
+      "number": 55,
+      "driver": "SAI",
+      "samples": 1050,
+      "medianMeters": 178.89450101774446,
+      "p95Meters": 330.3834523678045
+    },
+    {
+      "number": 81,
+      "driver": "PIA",
+      "samples": 1049,
+      "medianMeters": 177.98525559348357,
+      "p95Meters": 324.37063515462887
+    },
+    {
+      "number": 3,
+      "driver": "RIC",
+      "samples": 1047,
+      "medianMeters": 181.21122311606408,
+      "p95Meters": 323.75190017299514
+    },
+    {
+      "number": 31,
+      "driver": "OCO",
+      "samples": 1049,
+      "medianMeters": 179.08398400785313,
+      "p95Meters": 325.4089802999628
+    },
+    {
+      "number": 18,
+      "driver": "STR",
+      "samples": 1048,
+      "medianMeters": 182.33661267617708,
+      "p95Meters": 321.3784165925438
+    }
+  ]
+}

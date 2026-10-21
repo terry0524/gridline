@@ -1,0 +1,31 @@
+[
+  {
+    "carCount": "20/20 CARS",
+    "control": "122 EVENTS",
+    "fastest": "HAM1:14.165LAP 63 · Mercedes",
+    "health": "OFFLINE · CACHED REPLAY",
+    "lap": "LAP 78 / 78",
+    "speed": "8",
+    "weather": "AIR21.8°CTRACK40.2°CHUMIDITY62%PRESSURE1018.4hPaWIND0.8m/sDIRECTION0°RAINFALL없음"
+  },
+  {
+    "slug": "bahrain",
+    "carCount": "20/20 CARS",
+    "control": "70 EVENTS",
+    "fastest": "VER1:32.608LAP 39 · Red Bull Racing",
+    "health": "OFFLINE · CACHED REPLAY",
+    "lap": "LAP 57 / 57",
+    "speed": "4",
+    "weather": "AIR17.6°CTRACK21.9°CHUMIDITY51%PRESSURE1017.5hPaWIND0m/sDIRECTION271°RAINFALL없음"
+  },
+  {
+    "slug": "belgian",
+    "carCount": "20/20 CARS",
+    "control": "23 EVENTS",
+    "fastest": "PER1:44.701LAP 44 · Red Bull Racing",
+    "health": "OFFLINE · CACHED REPLAY",
+    "lap": "LAP 44 / 44",
+    "speed": "4",
+    "weather": "AIR21.4°CTRACK42.9°CHUMIDITY46%PRESSURE978.1hPaWIND1.5m/sDIRECTION322°RAINFALL없음"
+  }
+]

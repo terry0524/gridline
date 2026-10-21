@@ -1,0 +1,31 @@
+{
+  "url": "https://api.openf1.org/v1/intervals?session_key=9472",
+  "status": 200,
+  "count": 29844,
+  "sample": [
+    {
+      "date": "2024-03-02T14:03:46.275000+00:00",
+      "session_key": 9472,
+      "gap_to_leader": 0,
+      "meeting_key": 1229,
+      "driver_number": 1,
+      "interval": 0
+    },
+    {
+      "date": "2024-03-02T15:03:44.432000+00:00",
+      "session_key": 9472,
+      "gap_to_leader": null,
+      "meeting_key": 1229,
+      "driver_number": 81,
+      "interval": 0.853
+    },
+    {
+      "date": "2024-03-02T15:03:44.887000+00:00",
+      "session_key": 9472,
+      "gap_to_leader": null,
+      "meeting_key": 1229,
+      "driver_number": 44,
+      "interval": 0.445
+    }
+  ]
+}

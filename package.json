@@ -1,0 +1,26 @@
+{
+  "name": "f1-live-companion",
+  "version": "0.6.0-rc.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "NODE_ENV=production node server.js",
+    "test": "NODE_ENV=test node --test tests/*.test.js",
+    "check": "node --check app.js && node --check replay.js && node --check server.js && node --check src/race-model.js && node --check src/replay-loader.js && node --check src/provider.js && node --check src/live/protocol.js && node --check src/live/f1-adapter.js && node --check src/live/collector.js && node --check src/live/simulation.js && node --check src/live/service.js && node scripts/check-syntax.js",
+    "import:replay": "node scripts/import-replay.js",
+    "probe:live": "node scripts/probe-live.js",
+    "capture-live": "node scripts/capture-live.js",
+    "analyze-capture": "node scripts/analyze-capture.js",
+    "replay-capture": "node scripts/replay-capture.js",
+    "validate:estimated": "node scripts/validate-estimated.js",
+    "verify:season": "node scripts/verify-season.js",
+    "import-replay": "node scripts/import-replay.js",
+    "benchmark:replay": "node --expose-gc scripts/benchmark-replay.js",
+    "start:hosted": "node scripts/restore-replays.js && node server.js",
+    "prepare:deployment": "node scripts/prepare-deployment-assets.js"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  }
+}

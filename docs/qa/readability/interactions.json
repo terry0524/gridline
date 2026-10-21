@@ -1,0 +1,21 @@
+{
+  "weekendLink": "/schedule",
+  "weekendSessions": 5,
+  "constructorsTab": true,
+  "chartKeyboard": true,
+  "quickJump": true,
+  "monacoMobileViews": [
+    "TIMING",
+    "TRACK",
+    "LIVE",
+    "CONTROL",
+    "DRIVER"
+  ],
+  "battle": "LEC vs PIA",
+  "bahrainDrivers": 20,
+  "bahrainFastest": "VER 1:32.608 / Lap 39",
+  "speed4": true,
+  "seekEndLap57": true,
+  "keyboardDisclosure": true,
+  "console": []
+}

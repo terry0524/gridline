@@ -1,0 +1,5 @@
+import fs from 'node:fs/promises';
+import {seasonData} from '../src/season-service.js';
+const years=process.argv.slice(2).map(Number);if(!years.length)years.push(2024,new Date().getFullYear());const report=[];
+for(const year of years){const s=await seasonData(year,{waitForFresh:true});const result={year,at:s.fetchedAt,calendar:s.schedule.length,races:s.races.length,sprints:s.sprints.length,driverCount:s.standings.drivers.length,constructorCount:s.standings.constructors.length,round:s.standings.round,driverLeader:s.standings.drivers[0],constructorLeader:s.standings.constructors[0],recent:s.races.at(-1)?.name,reconciliation:s.progression.reconciliation,errors:s.errors,provenance:s.provenance};report.push(result);console.log(JSON.stringify(result,null,2));await fs.mkdir('.cache/seasons',{recursive:true});await fs.writeFile(`.cache/seasons/${year}.json`,JSON.stringify(s));if(Object.keys(s.errors).length||!s.progression.reconciliation.matches)process.exitCode=1;}
+await fs.mkdir('docs/qa',{recursive:true});await fs.writeFile('docs/qa/season-verification.json',JSON.stringify(report,null,2));

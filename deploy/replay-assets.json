@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "baseURL": "https://github.com/terry0524/gridline/releases/download/replay-data-v4/",
+  "license": "CC-BY-NC-SA-4.0",
+  "sources": [
+    "https://openf1.org/",
+    "https://github.com/jolpica/jolpica-f1/blob/main/TERMS.md"
+  ],
+  "entries": [
+    {
+      "file": "replays/2024/9574-v4.json.gz",
+      "asset": "9574-v4.json.gz",
+      "sha256": "b6938669e50584ae9ec75722e8ed1b4bbedba7ff6e7381ee400bf880cd6c33c2",
+      "bytes": 3559788
+    },
+    {
+      "file": "replays/2024/9523-v4.json.gz",
+      "asset": "9523-v4.json.gz",
+      "sha256": "55a149065953f33b68fe737669bc12f464c60caee1d6e0e66e25de8509b7c21e",
+      "bytes": 4613090
+    },
+    {
+      "file": "replays/2024/9472-v4.json.gz",
+      "asset": "9472-v4.json.gz",
+      "sha256": "997cf1fe7dd8a11018e052936af01b186eddd78f76119c96acbf8ec6f4a7ba9c",
+      "bytes": 3976432
+    },
+    {
+      "file": "seasons/2024-v1.json",
+      "asset": "season-2024-v1.json",
+      "sha256": "24f4f9a17307712e6fdea802aab45d6a2b71bbcfef76fc15ecae1afe0b173d3e",
+      "bytes": 309510
+    },
+    {
+      "file": "seasons/2026-v1.json",
+      "asset": "season-2026-v1.json",
+      "sha256": "8b478d1366c01fa51f41a73a09dd97fc826352f620d61530371724f8ba051bc3",
+      "bytes": 263218
+    },
+    {
+      "file": "replays/manifest-v1.json",
+      "asset": "manifest-v1.json",
+      "sha256": "b85a43431211017dbe300e2cd486b620ef31b749194081fac44c61f7bc33d149",
+      "bytes": 7386
+    }
+  ]
+}

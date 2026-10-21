@@ -1,0 +1,502 @@
+[
+  {
+    "name": "home",
+    "width": 1440,
+    "url": "/",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": "63.36px",
+    "tableOverflow": []
+  },
+  {
+    "name": "schedule",
+    "width": 1440,
+    "url": "/schedule",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "standings",
+    "width": 1440,
+    "url": "/standings",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "results",
+    "width": 1440,
+    "url": "/results",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-detail",
+    "width": 1440,
+    "url": "/results/2024/monaco",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "driver-detail",
+    "width": 1440,
+    "url": "/drivers/2024/max_verstappen",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "team-detail",
+    "width": 1440,
+    "url": "/teams/2024/mclaren",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-center",
+    "width": 1440,
+    "url": "/race-center",
+    "render": true,
+    "lap": "LAP —",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "replay",
+    "width": 1440,
+    "url": "/replay/2024/monaco?lap=65",
+    "render": true,
+    "lap": "LAP 65 / 78",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "home",
+    "width": 1024,
+    "url": "/",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": "45.056px",
+    "tableOverflow": []
+  },
+  {
+    "name": "schedule",
+    "width": 1024,
+    "url": "/schedule",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "standings",
+    "width": 1024,
+    "url": "/standings",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "results",
+    "width": 1024,
+    "url": "/results",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-detail",
+    "width": 1024,
+    "url": "/results/2024/monaco",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "driver-detail",
+    "width": 1024,
+    "url": "/drivers/2024/max_verstappen",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "team-detail",
+    "width": 1024,
+    "url": "/teams/2024/mclaren",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-center",
+    "width": 1024,
+    "url": "/race-center",
+    "render": true,
+    "lap": "LAP —",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "replay",
+    "width": 1024,
+    "url": "/replay/2024/monaco?lap=65",
+    "render": true,
+    "lap": "LAP 65 / 78",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "home",
+    "width": 768,
+    "url": "/",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": "36px",
+    "tableOverflow": []
+  },
+  {
+    "name": "schedule",
+    "width": 768,
+    "url": "/schedule",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "standings",
+    "width": 768,
+    "url": "/standings",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "results",
+    "width": 768,
+    "url": "/results",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-detail",
+    "width": 768,
+    "url": "/results/2024/monaco",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "driver-detail",
+    "width": 768,
+    "url": "/drivers/2024/max_verstappen",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "team-detail",
+    "width": 768,
+    "url": "/teams/2024/mclaren",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-center",
+    "width": 768,
+    "url": "/race-center",
+    "render": true,
+    "lap": "LAP —",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "replay",
+    "width": 768,
+    "url": "/replay/2024/monaco?lap=65",
+    "render": true,
+    "lap": "LAP 65 / 78",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "home",
+    "width": 390,
+    "url": "/",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": "40px",
+    "tableOverflow": []
+  },
+  {
+    "name": "schedule",
+    "width": 390,
+    "url": "/schedule",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "standings",
+    "width": 390,
+    "url": "/standings",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "results",
+    "width": 390,
+    "url": "/results",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-detail",
+    "width": 390,
+    "url": "/results/2024/monaco",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "driver-detail",
+    "width": 390,
+    "url": "/drivers/2024/max_verstappen",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "team-detail",
+    "width": 390,
+    "url": "/teams/2024/mclaren",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-center",
+    "width": 390,
+    "url": "/race-center",
+    "render": true,
+    "lap": "LAP —",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "replay",
+    "width": 390,
+    "url": "/replay/2024/monaco?lap=65",
+    "render": true,
+    "lap": "LAP 65 / 78",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "home",
+    "width": 320,
+    "url": "/",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": "36px",
+    "tableOverflow": []
+  },
+  {
+    "name": "schedule",
+    "width": 320,
+    "url": "/schedule",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "standings",
+    "width": 320,
+    "url": "/standings",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "results",
+    "width": 320,
+    "url": "/results",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-detail",
+    "width": 320,
+    "url": "/results/2024/monaco",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "driver-detail",
+    "width": 320,
+    "url": "/drivers/2024/max_verstappen",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "team-detail",
+    "width": 320,
+    "url": "/teams/2024/mclaren",
+    "render": true,
+    "lap": null,
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": [
+      0
+    ]
+  },
+  {
+    "name": "race-center",
+    "width": 320,
+    "url": "/race-center",
+    "render": true,
+    "lap": "LAP —",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  },
+  {
+    "name": "replay",
+    "width": 320,
+    "url": "/replay/2024/monaco?lap=65",
+    "render": true,
+    "lap": "LAP 65 / 78",
+    "overflow": 0,
+    "primaryFont": null,
+    "tableOverflow": []
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "measuredAt": "2026-10-13T00:49:04.932Z",
+  "runtime": "v22.22.2",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "method": "Warm filesystem, cold Node dataset cache. Actual persisted upstream responses rebuilt; 200 deterministic seek queries. RSS includes original dataset and raw rebuild. Node vehicle projection is not browser FPS.",
+  "results": [
+    {
+      "name": "Monaco Grand Prix",
+      "sessionKey": 9523,
+      "locations": 684920,
+      "cacheLoadMs": 228.96324999999996,
+      "normalizationMs": 459.7526660000001,
+      "indexGenerationMs": 0.3192500000000109,
+      "memory": {
+        "before": {
+          "rss": 57671680,
+          "heapTotal": 9240576,
+          "heapUsed": 4125216,
+          "external": 14165950,
+          "arrayBuffers": 18635
+        },
+        "afterLoad": {
+          "rss": 198885376,
+          "heapTotal": 99745792,
+          "heapUsed": 78758616,
+          "external": 27557642,
+          "arrayBuffers": 25624317
+        },
+        "afterRawRebuild": {
+          "rss": 364871680,
+          "heapTotal": 300072960,
+          "heapUsed": 264185536,
+          "external": 2313762,
+          "arrayBuffers": 380437
+        },
+        "processPeakRssBytes": 387497984
+      },
+      "seekMs": {
+        "median": 0.5118750000001455,
+        "p95": 4.358625000000075,
+        "samples": 200
+      },
+      "twentyVehicleProjectionMs": {
+        "median": 0.004500000000007276,
+        "p95": 0.019416999999975815,
+        "samples": 200,
+        "excludesDOM": true
+      },
+      "alignment": {
+        "samples": 13700,
+        "p95SvgPx": 17.31315727682381,
+        "clippedSamples": 0
+      },
+      "rawRebuildLocations": 684920
+    }
+  ]
+}

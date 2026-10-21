@@ -1,0 +1,163 @@
+
+> f1-live-companion@0.6.0-rc.1 import-replay
+> node scripts/import-replay.js --year 2024 --round 1
+
+ready Ready 
+{
+  "session": {
+    "key": 9472,
+    "meetingKey": 1229,
+    "year": 2024,
+    "name": "Bahrain Grand Prix",
+    "type": "Race",
+    "circuit": "Sakhir",
+    "start": 1709391822341,
+    "end": 1709397420763,
+    "scheduledStart": 1709391600000,
+    "round": 1,
+    "slug": "bahrain",
+    "totalLaps": 57
+  },
+  "validation": {
+    "status": "VALID",
+    "reasons": [],
+    "warnings": [],
+    "missingDrivers": [],
+    "invalid": {
+      "coordinates": 0,
+      "timestamps": 0,
+      "order": 0
+    },
+    "counts": {
+      "drivers": 20,
+      "locations": 432280,
+      "laps": 1129,
+      "weather": 157,
+      "raceControl": 71,
+      "stints": 63,
+      "pit": 43,
+      "telemetry": 2878
+    },
+    "bounds": {
+      "minX": -577,
+      "maxX": 7498,
+      "minY": -3500,
+      "maxY": 8518
+    },
+    "capabilities": {
+      "intervals": true,
+      "radioMetadata": true,
+      "position": true,
+      "timing": true,
+      "tires": true,
+      "pit": true,
+      "weather": true,
+      "raceControl": true,
+      "telemetry": true
+    },
+    "comparison": {
+      "source": "https://api.jolpi.ca/ergast/f1/2024/1/results.json?limit=100",
+      "sha256": "5d51a1458a0da85e60016b937f6751f8671b42ef84044d1e41680a2c6522db02",
+      "driverCount": {
+        "expected": 20,
+        "actual": 20
+      },
+      "laps": {
+        "expected": 57,
+        "actual": 57
+      },
+      "fastest": {
+        "expected": {
+          "driver": "VER",
+          "seconds": 92.608,
+          "lap": 39
+        },
+        "actual": {
+          "driver": "VER",
+          "seconds": 92.608,
+          "lap": 39
+        },
+        "matches": true
+      }
+    },
+    "timestampRange": {
+      "start": 1709391822341,
+      "end": 1709397420763
+    },
+    "checkedAt": "2026-10-13T00:37:05.263Z"
+  },
+  "capabilities": {
+    "intervals": true,
+    "radioMetadata": true,
+    "position": true,
+    "timing": true,
+    "tires": true,
+    "pit": true,
+    "weather": true,
+    "raceControl": true,
+    "telemetry": true
+  },
+  "import": {
+    "availability": {
+      "sessions": {
+        "status": "RECEIVED",
+        "count": 1
+      },
+      "drivers": {
+        "status": "RECEIVED",
+        "count": 20
+      },
+      "laps": {
+        "status": "RECEIVED",
+        "count": 1129
+      },
+      "position": {
+        "status": "RECEIVED",
+        "count": 698
+      },
+      "intervals": {
+        "status": "RECEIVED",
+        "count": 29844
+      },
+      "stints": {
+        "status": "RECEIVED",
+        "count": 63
+      },
+      "pit": {
+        "status": "RECEIVED",
+        "count": 43
+      },
+      "weather": {
+        "status": "RECEIVED",
+        "count": 157
+      },
+      "race_control": {
+        "status": "RECEIVED",
+        "count": 71
+      },
+      "team_radio": {
+        "status": "RECEIVED",
+        "count": 137
+      },
+      "meetings": {
+        "status": "RECEIVED",
+        "count": 1
+      },
+      "63/2024": {
+        "status": "RECEIVED",
+        "count": null
+      },
+      "location": {
+        "status": "RECEIVED",
+        "count": 432280
+      },
+      "car_data": {
+        "status": "PARTIAL",
+        "count": 2878
+      }
+    },
+    "metrics": {},
+    "legacyMigration": true,
+    "importedAt": "2026-10-13T00:37:05.231Z"
+  }
+}

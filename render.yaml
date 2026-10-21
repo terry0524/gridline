@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: gridline
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --omit=dev && npm run check
+    startCommand: npm run start:hosted
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=384
+      - key: GRIDLINE_DEBUG
+        value: "0"
+      - key: GRIDLINE_AUTO_LIVE
+        value: "0"
+      - key: GRIDLINE_LIVE_ENABLED
+        value: "0"

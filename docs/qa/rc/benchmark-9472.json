@@ -1,0 +1,58 @@
+{
+  "measuredAt": "2026-10-13T00:49:03.462Z",
+  "runtime": "v22.22.2",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "method": "Warm filesystem, cold Node dataset cache. Actual persisted upstream responses rebuilt; 200 deterministic seek queries. RSS includes original dataset and raw rebuild. Node vehicle projection is not browser FPS.",
+  "results": [
+    {
+      "name": "Bahrain Grand Prix",
+      "sessionKey": 9472,
+      "locations": 432280,
+      "cacheLoadMs": 186.25916700000002,
+      "normalizationMs": 255.4515,
+      "indexGenerationMs": 0.34987499999999727,
+      "memory": {
+        "before": {
+          "rss": 58245120,
+          "heapTotal": 9240576,
+          "heapUsed": 4125776,
+          "external": 14165950,
+          "arrayBuffers": 18635
+        },
+        "afterLoad": {
+          "rss": 164380672,
+          "heapTotal": 79429632,
+          "heapUsed": 58208056,
+          "external": 19741164,
+          "arrayBuffers": 17807839
+        },
+        "afterRawRebuild": {
+          "rss": 307183616,
+          "heapTotal": 213483520,
+          "heapUsed": 163836056,
+          "external": 1954939,
+          "arrayBuffers": 21614
+        },
+        "processPeakRssBytes": 323584000
+      },
+      "seekMs": {
+        "median": 0.8015830000000506,
+        "p95": 3.132082999999966,
+        "samples": 200
+      },
+      "twentyVehicleProjectionMs": {
+        "median": 0.004541000000017448,
+        "p95": 0.01737500000001546,
+        "samples": 200,
+        "excludesDOM": true
+      },
+      "alignment": {
+        "samples": 8660,
+        "p95SvgPx": 5.969949949748773,
+        "clippedSamples": 0
+      },
+      "rawRebuildLocations": 432280
+    }
+  ]
+}

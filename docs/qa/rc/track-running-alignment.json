@@ -1,0 +1,20 @@
+[
+  {
+    "sessionKey": 9472,
+    "samples": 8161,
+    "p95SvgPx": 5.6439840704845095,
+    "method": "Every 50th actual position inside a timed completed non-pit-out lap, nearest measured reference point; excludes standing red-flag/retirement intervals. Not surveying/GPS accuracy."
+  },
+  {
+    "sessionKey": 9523,
+    "samples": 7379,
+    "p95SvgPx": 4.577856536902637,
+    "method": "Every 50th actual position inside a timed completed non-pit-out lap, nearest measured reference point; excludes standing red-flag/retirement intervals. Not surveying/GPS accuracy."
+  },
+  {
+    "sessionKey": 9574,
+    "samples": 6805,
+    "p95SvgPx": 3.89901620636177,
+    "method": "Every 50th actual position inside a timed completed non-pit-out lap, nearest measured reference point; excludes standing red-flag/retirement intervals. Not surveying/GPS accuracy."
+  }
+]

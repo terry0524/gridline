@@ -1,0 +1,83 @@
+{
+  "collector": {
+    "checkedAt": "2026-10-12T02:01:41.172Z",
+    "endpoint": "https://livetiming.formula1.com/signalrcore",
+    "credentials": "none",
+    "websocket": "opened",
+    "handshake": "accepted",
+    "returnedTopics": [
+      "Heartbeat",
+      "DriverList",
+      "ExtrapolatedClock",
+      "RaceControlMessages",
+      "SessionInfo",
+      "SessionStatus",
+      "TeamRadio",
+      "TimingAppData",
+      "TimingStats",
+      "TrackStatus",
+      "WeatherData",
+      "SessionData",
+      "TimingData",
+      "LapCount"
+    ],
+    "session": {
+      "key": 11388,
+      "meetingKey": 1296,
+      "year": 2026,
+      "name": "Singapore Grand Prix",
+      "type": "Race",
+      "circuit": "Singapore",
+      "circuitKey": 61,
+      "start": 1791720000000,
+      "end": 1791727200000,
+      "scheduledStart": 1791720000000,
+      "status": "Ends",
+      "currentLap": 62,
+      "totalLaps": 62
+    },
+    "activeSession": false,
+    "driverCount": 22,
+    "positionAvailable": false,
+    "telemetryAvailable": false,
+    "sourceTimestamp": 1791727664238,
+    "weather": {
+      "at": null,
+      "air": 30.2,
+      "track": 41.5,
+      "humidity": 77.4,
+      "pressure": 1011.1,
+      "rainfall": 0,
+      "windSpeed": 1.4,
+      "windDirection": 204
+    },
+    "fastestLap": {
+      "number": 16,
+      "driver": "LEC",
+      "name": "Charles LECLERC",
+      "team": "Ferrari",
+      "color": "#ED1131",
+      "seconds": 95.202,
+      "lap": 41,
+      "at": null,
+      "completedAt": null,
+      "pitOut": false
+    },
+    "controlCount": 153,
+    "radioCount": 32,
+    "restrictedTopicsRequested": false
+  },
+  "additionalAnonymousAvailability": {
+    "checkedAt": "2026-10-12T02:02:13.551Z",
+    "requested": [
+      "Position.z",
+      "CarData.z",
+      "ChampionshipPrediction"
+    ],
+    "anonymous": true,
+    "error": null,
+    "returned": [],
+    "meaning": "Availability outside an active session is not proof of live entitlement"
+  },
+  "credentialNote": "No cookies, anonymous transport tokens, or account credentials are persisted here"
+}

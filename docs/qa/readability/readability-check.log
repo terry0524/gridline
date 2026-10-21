@@ -1,0 +1,4 @@
+
+> f1-live-companion@0.6.0-rc.1 check
+> node --check app.js && node --check replay.js && node --check server.js && node --check src/race-model.js && node --check src/replay-loader.js && node --check src/provider.js && node --check src/live/protocol.js && node --check src/live/f1-adapter.js && node --check src/live/collector.js && node --check src/live/simulation.js && node --check src/live/service.js && node scripts/check-syntax.js
+
