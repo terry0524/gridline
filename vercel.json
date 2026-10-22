@@ -2,5 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "node scripts/build-vercel.js",
-  "outputDirectory": ".vercel/output"
+  "outputDirectory": ".vercel/output",
+  "daemons": {
+    "timing-collector": {
+      "root": ".",
+      "entrypoint": "Dockerfile.live",
+      "instances": {
+        "iad1": 1
+      },
+      "resources": {
+        "requests": {
+          "memory": "1Gi"
+        }
+      }
+    }
+  }
 }
