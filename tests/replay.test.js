@@ -9,7 +9,9 @@ import {raceStateAt,locationAt,trackProjector,normalizeReplay} from '../src/race
 import {cacheDir,isHistorical} from '../src/provider.js';
 const dataset=await getReplay(9472);assert.ok(dataset,'Run npm run import:replay first; these tests require real OpenF1 data.');
 const at=p=>dataset.session.start+(dataset.session.end-dataset.session.start)*p/100;
-const envelopes=[];for(const f of await fs.readdir(path.join(cacheDir,'upstream')))if(f.endsWith('.json.gz'))envelopes.push(JSON.parse(gunzipSync(await fs.readFile(path.join(cacheDir,'upstream',f)))));
+// Read this fixture's exact archives, not every unrelated race imported later.
+const provenanceURLs=new Set([...dataset.provenance.map(p=>p.url),'https://api.jolpi.ca/ergast/f1/2024/1/results.json?limit=100']);
+const envelopes=await Promise.all([...provenanceURLs].map(async url=>{const key=createHash('sha256').update(url).digest('hex');return JSON.parse(gunzipSync(await fs.readFile(path.join(cacheDir,'upstream',key+'.json.gz'))));}));
 test('real Bahrain dataset: complete field, 20 drivers, increasing observed timestamps',()=>{
  assert.equal(dataset.session.key,9472);assert.equal(dataset.drivers.length,20);assert.ok(dataset.quality.locationCount>400000);
  for(const d of dataset.drivers){assert.ok(d.locations.length>10000);for(let i=1;i<d.locations.length;i++)assert.ok(d.locations[i][0]>d.locations[i-1][0]);}

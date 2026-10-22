@@ -5,11 +5,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
+import {Readable} from 'node:stream';
 import {getData,ProviderError,historicalTTL,isHistorical} from './src/provider.js';
 import {listCaptures} from './src/capture/journal.js';
 import {nextSession} from './src/live/session-discovery.js';
 import {seasonData,weekendResults,replayAvailability,raceFacts} from './src/season-service.js';
 import {RaceStreamService} from './src/live/service.js';
+import {SharedLiveService,relayAuthorized,ingestRelay} from './src/live/shared-service.js';
 import {sessionCatalog,startReplay,replayStatus,getReplay,replayManifest} from './src/replay-loader.js';
 const root=path.dirname(fileURLToPath(import.meta.url));const port=Number(process.env.PORT||3000);
 const hosting=deploymentSettings(process.env,port);
@@ -17,9 +19,9 @@ const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','app
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8'};
 const openEndpoints=new Set(['meetings','sessions','drivers','position','location','intervals','laps','stints','pit','weather','race_control','team_radio','car_data','session_result']);
 const limits=new Map();
-const streams=new RaceStreamService();
+const streams=process.env.GRIDLINE_SHARED_LIVE==='1'?new SharedLiveService():new RaceStreamService();
 async function readBody(req){let text='';for await(const chunk of req){text+=chunk;if(Buffer.byteLength(text)>4096)throw new ProviderError('Request body too large',413);}try{const body=JSON.parse(text||'{}');if(!body||typeof body!=='object'||Array.isArray(body))throw Error('Invalid request body');return body}catch{throw new ProviderError('Invalid JSON body',400)}}
-function send(req,res,status,data,headers={}){const body=Buffer.from(JSON.stringify(data));const gz=body.length>2048&&req.headers['accept-encoding']?.includes('gzip');res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','vary':'Accept-Encoding',...(gz?{'content-encoding':'gzip'}:{}),...headers});res.end(gz?gzipSync(body):body);}
+function send(req,res,status,data,headers={}){const body=Buffer.from(JSON.stringify(data));const gz=body.length>2048&&req.headers['accept-encoding']?.includes('gzip');res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','vary':'Accept-Encoding',...(gz?{'content-encoding':'gzip'}:{}),...headers});const encoded=gz?gzipSync(body):body;if(encoded.length>1024*1024){const chunks=[];for(let i=0;i<encoded.length;i+=65536)chunks.push(encoded.subarray(i,i+65536));Readable.from(chunks).pipe(res);}else res.end(encoded);}
 export async function handleRequest(req,res){
  try{
   if(!hosting.allowedHosts.has(req.headers.host))throw new ProviderError('Host not allowed',403);
@@ -27,6 +29,7 @@ export async function handleRequest(req,res){
   if(u.pathname==='/favicon.ico'){res.writeHead(204);return res.end();}
   if(u.pathname==='/healthz')return send(req,res,200,{status:'ok',version});
   if(u.pathname.startsWith('/api/')){
+   if(u.pathname==='/api/internal/live-ingest'){if(req.method!=='POST')throw new ProviderError('POST required',405);if(!relayAuthorized(req.headers.authorization,process.env.GRIDLINE_LIVE_BRIDGE_SECRET))throw new ProviderError('Unauthorized relay',401);try{return send(req,res,200,await ingestRelay(req));}catch(e){throw new ProviderError(e.message,400);}}
    const ip=req.socket.remoteAddress;const now=Date.now();let bucket=limits.get(ip);if(!bucket||now-bucket.at>60000){bucket={at:now,count:0};limits.set(ip,bucket);}if(++bucket.count>180)return send(req,res,429,{error:'Local request limit exceeded'},{'retry-after':'60'});
    if(!['GET','POST'].includes(req.method))return send(req,res,405,{error:'Method not allowed'});
    if(req.method==='POST'&&req.headers.origin&&!hosting.allowedOrigins.has(req.headers.origin))return send(req,res,403,{error:'Origin not allowed'});
@@ -40,7 +43,7 @@ export async function handleRequest(req,res){
    if(u.pathname==='/api/system')return send(req,res,200,{app:'f1-live-companion',version});
    if(!debug&&(u.pathname.startsWith('/api/capture')||u.pathname==='/api/live/settings'||u.pathname==='/api/live/control'))throw new ProviderError('Developer tools are disabled',403);
    if(u.pathname==='/api/captures')return send(req,res,200,{captures:await listCaptures()});
-   if(u.pathname==='/api/live/session'){if(hosting.liveEnabled&&!streams.mode&&u.searchParams.get('auto')!=='0'&&process.env.GRIDLINE_AUTO_LIVE!=='0')await streams.start('live');return send(req,res,200,{availability:streams.mode==='live'?streams.state?.health?.sessionAvailability||'SESSION UNCONFIRMED':'SESSION UNCONFIRMED',health:streams.state?.health??null,mode:streams.mode,session:streams.state?.session??null});}
+   if(u.pathname==='/api/live/session'){await streams.refresh?.();if(hosting.liveEnabled&&!streams.mode&&u.searchParams.get('auto')!=='0'&&process.env.GRIDLINE_AUTO_LIVE!=='0')await streams.start('live');return send(req,res,200,{availability:streams.mode==='live'?streams.state?.health?.sessionAvailability||'SESSION UNCONFIRMED':'SESSION UNCONFIRMED',health:streams.state?.health??null,mode:streams.mode,session:streams.state?.session??null});}
    if(u.pathname==='/api/live/next-session')return send(req,res,200,await nextSession());
    if(u.pathname==='/api/capture/start'||u.pathname==='/api/capture/stop'){if(req.method!=='POST')throw new ProviderError('POST required',405);return send(req,res,200,u.pathname.endsWith('/start')?await streams.startCapture():await streams.stopCapture());}
    if(u.pathname==='/api/live/settings'){if(req.method!=='POST')throw new ProviderError('POST required',405);const body=await readBody(req);return send(req,res,200,streams.setEstimated(body.estimatedPosition===true));}

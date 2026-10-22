@@ -38,9 +38,9 @@ try{
  for(const f of ['index.html','styles.css','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js']){
   const dest=path.join(staticDir,f);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.copyFile(path.join(root,f),dest);
  }
- await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'handler.js',launcherType:'Nodejs',maxDuration:300,supportsResponseStreaming:true},null,2));
+ await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'handler.js',launcherType:'Nodejs',maxDuration:300,regions:['iad1'],supportsResponseStreaming:true},null,2));
  const csp="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; media-src https://livetiming.formula1.com; object-src 'none'; frame-src 'none'; base-uri 'self'; frame-ancestors 'none'";
  const config={version:3,routes:[{src:'/(.*)',headers:{'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':csp},continue:true},...routes,{src:'/(api/.*|healthz)',dest:'/site'},{handle:'filesystem'},{src:'/(schedule|standings|results|race-center)(/\\d{4}/[a-z0-9-]+)?/?',dest:'/index.html'},{src:'/(replay|drivers|teams)/\\d{4}/[a-z0-9_-]+/?',dest:'/index.html'},{src:'/',dest:'/index.html'},{src:'/favicon.ico',status:204},{src:'/(.*)',status:404}]};
  await fs.writeFile(path.join(output,'config.json'),JSON.stringify(config,null,2));
- console.log('Vercel output ready: existing UI + API, 3 verified historical replays. Live disabled.');
+ console.log('Vercel output ready: existing UI + API, verified bootstrap replays + expanding historical library; shared Live relay.');
 }finally{await fs.rm(staging,{recursive:true,force:true});}

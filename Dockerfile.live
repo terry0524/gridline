@@ -1,0 +1,9 @@
+FROM node:22.22.2-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY package.json ./
+COPY src ./src
+COPY deploy/live-worker.js ./deploy/live-worker.js
+ENV NODE_ENV=production GRIDLINE_CACHE_DIR=/tmp/gridline-worker-cache GRIDLINE_AUTO_LIVE=0 GRIDLINE_DEBUG=0
+USER node
+CMD ["node", "deploy/live-worker.js"]

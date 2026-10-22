@@ -4,8 +4,10 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 const root=process.cwd(),cache=path.join(root,'.cache'),out=path.join(cache,'deployment-assets');
 const manifest=JSON.parse(await fs.readFile(path.join(cache,'replays/manifest-v1.json')));
-const records=manifest.replays.filter(r=>r.validation!=='INVALID');
-if(records.length!==3)throw Error('Expected the three verified release replays');
+// The pinned bootstrap remains small; additional validated races live in the remote library.
+const bootstrapKeys=new Set([9472,9523,9574]);
+const records=manifest.replays.filter(r=>r.validation!=='INVALID'&&bootstrapKeys.has(r.sessionKey));
+if(records.length!==bootstrapKeys.size)throw Error('Missing verified bootstrap replay');
 await fs.mkdir(out,{recursive:true});const entries=[];
 for(const r of records){
  const file=`replays/${r.season}/${r.sessionKey}-v${r.cacheVersion}.json.gz`,bytes=await fs.readFile(path.join(cache,file));

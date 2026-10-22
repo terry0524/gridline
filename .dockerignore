@@ -1,0 +1,8 @@
+.git
+.cache
+.vercel
+.env*
+captures
+node_modules
+docs
+tests

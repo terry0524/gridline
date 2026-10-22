@@ -8,8 +8,10 @@ const cache=path.join(os.tmpdir(),'gridline-cache-v4');
 process.env.GRIDLINE_CACHE_DIR=cache;
 process.env.NODE_ENV='production';
 process.env.GRIDLINE_DEBUG='0';
+process.env.GRIDLINE_REPLAY_LIBRARY='1';
 process.env.GRIDLINE_AUTO_LIVE='0';
-process.env.GRIDLINE_LIVE_ENABLED='0';
+process.env.GRIDLINE_LIVE_ENABLED='1';
+process.env.GRIDLINE_SHARED_LIVE='1';
 let ready;
 export default async function handler(req,res){
  ready??=(async()=>{

@@ -4,7 +4,7 @@
 
 [사이트 열기](https://gridline-indol.vercel.app) · [GitHub](https://github.com/terry0524/gridline) · [배포 방법과 한계](docs/DEPLOYMENT.md) · [데이터 출처/라이선스](NOTICE.md)
 
-FormCheck와 동일한 기존 Vercel 계정의 Hobby 플랜으로 공개 배포했습니다. 일반 화면과 3개 Historical Replay를 제공합니다. 실제 Live 수집은 공개 배포에서 비활성화하며, 기존 Node collector와 개발 도구는 보존합니다.
+FormCheck와 동일한 기존 Vercel 계정의 Hobby 플랜으로 공개 배포했습니다. 일반 화면과 2023년 이후 검증된 Historical Replay 목록을 제공합니다. Replay는 클라우드 수집 작업이 끝난 경기부터 자동으로 늘어납니다. 공개 Live Timing은 Vercel 수집기 1개와 공유 상태/SSE로 연결하며, 진행 중 세션이 없으면 NO ACTIVE SESSION으로 표시합니다. 실제 active-session 연속 수신 검증은 남아 있습니다.
 
 ## 실행
 
@@ -23,7 +23,7 @@ npm start
 - `/replay/2024/monaco?lap=65`
 - `/replay/2024/belgian?lap=39`
 
-`lap`은 관측된 해당 랩 시작으로 이동합니다. Fastest Lap은 랩이 완료된 뒤 갱신됩니다. LIVE는 실제 active-session이 확인되었을 때만 활성화합니다. 이번 RC 작업에서는 실제 Live 연결을 실행하지 않았습니다.
+`lap`은 관측된 해당 랩 시작으로 이동합니다. Fastest Lap은 랩이 완료된 뒤 갱신됩니다. LIVE는 실제 active-session이 확인되었을 때만 활성화합니다. 공개 배포의 anonymous SignalR 연결과 종료 세션 snapshot은 확인했습니다. 실제 진행 중 세션의 continuous feed는 미검증입니다.
 
 ## Historical Replay import
 
@@ -55,6 +55,18 @@ GRIDLINE_AUTO_LIVE=0 GRIDLINE_OFFLINE=1 npm start
 
 테스트에는 실제 import cache가 필요하며 mock으로 대체하지 않습니다. 2024 Bahrain / Monaco / Belgian GP의 실제 20명씩을 검증했고 기존 33개를 포함한 **44/44**가 통과했습니다. 상세 측정·27개 화면 QA·부분 장애와 offline 범위는 [RC QA](docs/RC_QA.md), 준비 상태는 [Release readiness](docs/RELEASE_READINESS.md)에 기록했습니다. 캐시는 현재 작업 공간의 개발 데이터이며 별도 배포 번들에 자동 포함되지 않습니다.
 
+## Replay library
+
+OpenF1 과거 데이터가 제공되는 2023년부터 현재까지, 공식 결과가 있는 종료 GP와 Sprint를 수집·검증합니다. 검증된 cache와 SHA-256만 library manifest에 게시하고 INVALID 데이터는 목록에 넣지 않습니다. 일부 데이터가 없는 경기는 PARTIAL DATA로 구분합니다. 기존 Bahrain/Monaco/Spa snapshot은 그대로 보존합니다.
+
+```sh
+npm run import:library -- --include-sprints --publish
+# 특정 시즌만, 이미 게시한 세션은 건너뜀
+npm run import:library -- --years 2026 --include-sprints --publish
+```
+
+배포 운영자는 GitHub의 **Import historical replay library** workflow를 실행할 수 있습니다. 주간 갱신은 월요일 07:00 UTC / 16:00 KST이며, 수집 요청을 순차 처리하고 기존 게시분부터 이어서 진행합니다. 사용자는 실행할 필요 없이 Race Center에서 준비된 경기를 선택하면 됩니다. 아직 수집되지 않았거나 원본 데이터가 없는 세션은 AVAILABLE로 표시하지 않습니다.
+
 ## Live 개발 도구
 
 Historical OpenF1 → RaceState와 anonymous F1 SignalR → single Node collector/parser → RaceState → SSE 경로를 보존했습니다. Debug Simulated Live는 선택한 실제 import cache를 사용합니다. 기본 production 실행은 raw capture를 하지 않습니다.
@@ -79,7 +91,7 @@ Weather/Race Control/telemetry가 없어도 핵심 timing/track을 유지하고 
 
 ## 출처와 라이선스
 
-Unofficial fan project. Not affiliated with Formula 1. 공식 로고를 복제하지 않았습니다. 비상업적 팬 프로젝트입니다. 데이터 출처·CC BY-NC-SA 조건을 유지하며, 상업 배포 허가는 포함하지 않습니다. 초기 공개 호스팅 preset은 아직 검증되지 않은 실제 Live 수집을 비활성화합니다.
+Unofficial fan project. Not affiliated with Formula 1. 공식 로고를 복제하지 않았습니다. 비상업적 팬 프로젝트입니다. 데이터 출처·CC BY-NC-SA 조건을 유지하며, 상업 배포 허가는 포함하지 않습니다. 공개 Live는 인증 없는 F1 timing 연결만 사용합니다. 무료 위치/telemetry payload 및 실제 active-session 검증은 남아 있습니다.
 
 - [OpenF1 공식 문서](https://openf1.org/docs/): 과거 데이터와 유료 Live 접근을 구분합니다.
 - [Jolpica Terms](https://github.com/jolpica/jolpica-f1/blob/main/TERMS.md): 데이터와 구현 소프트웨어의 라이선스를 구분합니다.

@@ -1,6 +1,6 @@
 # Server deployment
 
-Public site: https://gridline-indol.vercel.app (Vercel Hobby, using the existing FormCheck hosting account). The existing frontend/domain/replay models are preserved. The complete collector still uses the original long-running Node deployment; the public Vercel release disables actual Live acquisition.
+Public site: https://gridline-indol.vercel.app (Vercel Hobby, using the existing FormCheck hosting account). The existing frontend/domain/replay models are preserved. A single Vercel Daemon now runs the original collector; the HTTP Function reads shared snapshots and fans them out over SSE. The original standalone Node deployment remains supported.
 
 ## Vercel — current public deployment
 
@@ -8,7 +8,7 @@ No new Render account is required. `vercel.json` runs `node scripts/build-vercel
 
 The remaining APIs reuse `server.js`'s exported request handler. Standalone `npm start` still starts the original Node server. Each Vercel Function gets a writable `/tmp` cache seeded with the verified release assets. Official `@vercel/functions` `waitUntil` keeps existing season refresh work alive after a response. `fetchedAt` and stale flags are preserved; unavailable providers keep the existing partial/error states. The temporary cache is per instance and is not durable shared storage.
 
-Only platform-provided exact hostnames are allowed. Debug, capture endpoints, simulation controls and actual Live acquisition are disabled in the public adapter. A Vercel deployment does not provide the original singleton collector guarantee across Function instances. Actual Live hosting/continuous-feed verification remains separate; no fake Live data is substituted. Free-plan execution/usage limits still apply; no paid plan or extra storage is activated.
+Only platform-provided exact hostnames are allowed. Debug, capture endpoints and simulation controls stay disabled in the public adapter. Production Live uses one configured timing-collector Daemon in iad1. It publishes normalized snapshots through an authenticated internal ingress into a namespaced regional runtime cache; HTTP Function instances only read/fan out this state and never create a new F1 connection per viewer. In steady state, ten viewers share one upstream collector. A rollout may briefly overlap old/new workers; SIGTERM closes the old connection. Actual active-session continuous-feed verification remains separate; no fake Live data is substituted.
 
 ```sh
 npm ci
@@ -20,7 +20,21 @@ npx vercel deploy --prod --yes
 
 The GitHub repository is connected to the Vercel project, so main-branch pushes trigger production deployment. `.vercel/` and `.env*` are ignored. Do not commit CLI credentials or Vercel OIDC values. Preview deployment URLs can require Vercel login; use the public production alias above.
 
-Official references: [Build Output API](https://vercel.com/docs/build-output-api), [waitUntil](https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package), [Function limits](https://vercel.com/docs/functions/limitations).
+### Hosted Live
+
+`Dockerfile.live` runs the existing Node22 collector without raw capture. Daemons are available on Hobby within its quota, so no extra hosting account was created. The source remains the undocumented anonymous F1 SignalR Core endpoint, not paid OpenF1 Live. An internal `GRIDLINE_LIVE_BRIDGE_SECRET` is stored only in Vercel production and the operator's ignored private local cache; it is an application relay credential, not an F1 subscription/key. Never commit it or pass it to a browser.
+
+Snapshots are compressed before shared-cache storage. Active sessions publish about once per second; inactive sessions publish a heartbeat once per minute. Cache TTL is240seconds. Missing heartbeats mark retained data RECONNECTING/OFFLINE, and old session timestamps are never rewritten as fresh TimingData. SSE closes cleanly at270seconds before the300second Function limit; EventSource reconnects while retaining the last displayed state. Clients are removed on response close. Preview deployments do not run a Daemon or share production cache.
+
+Hobby quotas apply (including Daemon Active CPU and Function/cache/network usage). No Pro upgrade, payment plan or paid API was activated. Exceeding a quota can pause the feature; this is not an unlimited/always-on guarantee. Runtime cache is ephemeral: eviction/missing data must show waiting/unavailable. Store namespaces keep GRIDLINE state separate from other projects in the Hobby team.
+
+### Expanding historical library
+
+The original three snapshots stay as pinned bootstrap assets. Additional GP/Sprint sessions are collected sequentially by `.github/workflows/replay-library.yml`, validated, then uploaded as normalized gzip assets to the `replay-library-v1` release. Its index is updated only after an asset upload succeeds. The website merges this library into the existing manifest at runtime; a race addition does not require another full website build. A missing library index must not overwrite an existing published index with an empty one.
+
+Additional Replay downloads are size/hash checked, cached in the Function's writable temporary directory and validated against their session identity before use. Large JSON responses stream through the existing API URL; the three bootstrap datasets remain on the CDN. No browser calls OpenF1 directly or re-fetches raw hundreds-of-thousands-row archives per replay. Old local raw archives remain untouched. Failed imports are logged in the workflow progress artifact and are not advertised as available.
+
+Official references: [Build Output API](https://vercel.com/docs/build-output-api), [waitUntil](https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package), [Function limits](https://vercel.com/docs/functions/limitations), [Daemons limits/Hobby quota](https://vercel.com/docs/daemons/limits), [Runtime cache](https://vercel.com/docs/caching/runtime-cache).
 
 ## Render — optional original Node hosting
 

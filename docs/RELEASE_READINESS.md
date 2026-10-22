@@ -1,33 +1,28 @@
-# Release readiness — 0.6.0-rc.1
+# Release readiness — public historical library and hosted Timing
 
-검증일: 2026-10-13. 이번 단계의 신규 기능 개발을 마치고 로컬 Release Candidate로 취급합니다. 공개/상업 배포 완료나 실제 active-session Live 검증 완료를 의미하지 않습니다.
+검증일:2026-10-22. 공개 사이트는 https://gridline-indol.vercel.app 입니다. 과거RC 검증 자료는 RC_QA.md / PRODUCT_QA.md / UI_READABILITY_QA.md에 보존합니다.
 
 ## READY
 
-- HOME / SCHEDULE / STANDINGS / RESULTS / Race·Driver·Team Detail / Quick Jump / Championship progression: 기존 구현 유지. 기존 2024 final 및 현재 시즌 검증은 [제품 QA](PRODUCT_QA.md)와 [season evidence](qa/season-verification.json)에 별도 기록되어 있습니다.
-- Imported Historical Replay: 2024 Bahrain (VALID), Monaco (PARTIAL: invalid stint 4개 제외), Belgian/Spa (VALID). 공통 renderer/clock/adapter, seek·속도·Battle·타이어·pit·Fastest Lap·Weather·Race Control.
-- Session lookup / validation / normalization / indexes / versioned cache / manifest / imported-only selector / Replay deep links와 Race Detail CTA.
-- 서버 cache-only 실행 및 로드 완료 후 browser network-off 재생. fresh page에는 로컬 서버가 필요합니다.
-- Development-only Simulated Live / capture-live / analyze-capture / replay-capture를 보존. production UI/API에서 debug 도구 분리.
-- 기존 33개 + RC 11개 = 44/44. 9화면 × 3viewport의 render/keyboard/overflow/console 및 503 retry/부분 장애 QA. [측정·한계](RC_QA.md).
+- HOME / SCHEDULE / STANDINGS / RESULTS / Race·Driver·Team Detail / Quick Jump / Championship progression: 기존 구현과 읽기 쉬운 UI 유지.
+- 2023이후 종료 GP와 Sprint의 수집·검증·게시 pipeline, hash 검증 remote library, 기존3개 pinned Replay, 공통 renderer/clock/model, seek·속도·Battle·타이어·pit·Fastest Lap·Weather·Race Control.
+- 완료된 Replay는 재배포 없이 manifest/selector/Results CTA에 반영. INVALID는 숨기고 누락·불일치는 PARTIAL DATA로 표시. 아직 수집되지 않은 GP는 AVAILABLE로 표시하지 않음.
+- Public Timing 연결의 deployment-disabled 오류 수정. Vercel 단일 Daemon → authenticated ingress → compressed regional runtime cache → SSE. 종료 session snapshot과 NO ACTIVE SESSION 표시 확인.
+- 기존 local collector / Simulated Live / capture-live / analyze-capture / replay-capture 보존. production debug와 raw capture 비활성화.
+- Local regression52/52. Bahrain20drivers/432,280locations/VER1:32.608L39, Monaco/Spa 원본 fixture 보존. 대량 cache에 맞춰 Bahrain 테스트의 원본 파일 읽기 범위만 제한하고 모든 데이터 assertion 유지.
 
 ## READY — NEEDS LIVE VALIDATION
 
-- 기존 anonymous SignalR single collector, parser/patch merge, runtime capabilities, reconnect, RaceState adapter, SSE fanout, capture와 capture replay.
-- Live Race Center의 Timing / intervals / lap / tires / Fastest Lap / Weather / Race Control / flag 상태 전달 구조.
-- 다음 실제 세션에서 10–15분 이상 continuous feed, channel payload/freshness, source timestamp, 실제 중계와 비교, reconnect·SSE client cleanup·longer memory stability를 확인해야 합니다. [실행 체크리스트](LIVE_SESSION_CHECKLIST.md).
-- 이번 작업은 `GRIDLINE_AUTO_LIVE=0`으로 QA했고 실제 source handshake조차 다시 실행하지 않았습니다. 이전 handshake 증거와 continuous feed 검증은 구분합니다.
+- 실제 진행 중 세션의10–15분 이상 continuous feed, channel payload/freshness, 중계 비교, Session rollover, 장시간 reconnect/memory stability.
+- 공개 배포는 anonymous SignalR 연결과 종료 snapshot을 확인한 단계. 실제 active-session 검증 완료를 주장하지 않음. LIVE_SESSION_CHECKLIST.md 참고.
 
-## NOT AVAILABLE
+## NOT AVAILABLE / SOURCE DEPENDENT
 
-- 무료 actual Live Position: payload 미검증. 없으면 Position unavailable; estimated prototype은 기본 OFF, Not GPS.
-- 무료 actual Live Car telemetry: payload 미검증. historical telemetry는 Bahrain 일부 실제 cached 구간만 포함; Monaco/Spa는 이번 import에 포함하지 않았습니다.
-- Team Radio audio 재생 및 onboard 영상: 미구현. metadata/reference만 유지, 인증/DRM/영상 우회 없음.
-- DRS zone 정확한 지도, 공식 GIS/차선 위치 정확도, Championship Live Projection, 완전한 offline PWA.
+- 무료 실제 Live Position / CarData: 현재 snapshot payload 없음. 다음 active-session에서 확인 필요. 실제 payload가 들어올 때만 capability가 켜짐.
+- Team Radio audio/onboard 영상: 제공하지 않음. metadata/reference만 처리. 인증·DRM·유료 영상 우회 없음.
+- 원본이 없는 과거 session /2023이전 OpenF1 Replay / 아직 수집·검증되지 않은 session.
+- 공식 GIS/차선 위치 정확도, DRS zone, Championship Live Projection, 완전한 browser-only offline PWA는 미구현.
 
 ## 운영 경계
 
-- 유료 OpenF1 Live subscription·API key·필수 .env 없음. Historical OpenF1/Jolpica를 사용하고 Live source는 undocumented endpoint이므로 안정성·이용 조건을 보장하지 않습니다.
-- npm dependency audit 0 vulnerabilities, 추가 외부 dependency 0. Node 런타임 취약점 검증·penetration test·장시간 leak 검증·완전 WCAG 인증은 수행하지 않았습니다.
-- 기존 ZIP과 Bahrain v3 원본을 보존했습니다. 실제 replay caches는 현재 작업 공간에 있으므로 다른 환경에서는 import가 필요합니다.
-- 수정된 replay schema의 cache key에 season/sessionKey/schemaVersion을 포함하고 manifest/file hash를 검증합니다. `--force` 재import 후에는 실제 source 변경에 맞춰 fixture를 재검증해야 합니다.
+기존 Vercel Hobby의 Daemon/Function/cache/network quota 안에서 운영하며 자동 유료 전환을 활성화하지 않았습니다. Runtime cache는 ephemeral이며 누락·지연 시 마지막 정상 상태와 waiting/reconnecting/offline을 구분합니다. 무료 API/undocumented F1 source의 안정성이나 이용 허가는 보장하지 않습니다. 비상업 팬 프로젝트의 데이터 attribution/라이선스는 NOTICE.md에 유지합니다.
