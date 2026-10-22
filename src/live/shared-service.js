@@ -1,5 +1,5 @@
 import {getCache} from '@vercel/functions';
-import {timingSafeEqual} from 'node:crypto';
+import {timingSafeEqual,createHash} from 'node:crypto';
 import {gzipSync,gunzipSync} from 'node:zlib';
 export const LIVE_CACHE_KEY='latest';
 export function relayAuthorized(value,secret){const a=Buffer.from(value??''),b=Buffer.from(secret?'Bearer '+secret:'');return b.length>7&&a.length===b.length&&timingSafeEqual(a,b);}
@@ -23,6 +23,7 @@ export class SharedLiveService{
    if(!this.packet)return;
    const p=this.packet,age=Date.now()-p.publishedAt,expired=age>(p.state.health.sessionAvailability==='NO ACTIVE SESSION'?180000:35000);
    this.mode='live';this.generation=p.workerId+':'+(p.metadata.generation??0);this.metadata={...p.metadata,generation:this.generation};
+   this.metadataRevision=createHash('sha256').update(JSON.stringify(this.metadata)).digest('hex');
    this.state={...p.state,health:{...p.state.health},connection:expired?'RECONNECTING':p.state.connection};
    if(typeof this.state.health.dataAgeMs==='number')this.state.health.dataAgeMs+=Math.max(0,age);
    if(expired){this.state.health={...this.state.health,status:'RECONNECTING',sessionAvailability:'SESSION UNCONFIRMED'};this.state.active=false;this.state.reason='Collector heartbeat delayed; last data retained';}
@@ -32,7 +33,7 @@ export class SharedLiveService{
  }
  async start(mode){if(mode!=='live')throw Error('Developer modes are disabled');this.mode='live';await this.refresh();return this.info();}
  info(){return{mode:this.mode,connection:this.state?.health?.status??'RECONNECTING',health:this.state?.health??null,session:this.state?.session??null,capabilities:this.state?.capabilities??{},clients:this.clients.size,sourceInstances:this.packet?1:0,upstreamConnections:this.packet?.collector?.upstreamConnections??0,transport:'Single Vercel daemon → shared runtime cache → SSE',requiresPaidService:false};}
- broadcast(){if(!this.state||!this.metadata)return;const id=++this.sequence;for(const client of this.clients){if(client.res.destroyed||client.res.writableEnded||client.res.writableLength>1024*1024){client.res.end();continue;}if(client.generation!==this.generation){client.res.write(`event: metadata\ndata: ${JSON.stringify(this.metadata)}\n\n`);client.generation=this.generation;}client.res.write(`id: ${id}\nevent: race-state\ndata: ${JSON.stringify({state:this.state,generation:this.generation,receivedAt:Date.now(),sequence:id})}\n\n`);}}
+ broadcast(){if(!this.state||!this.metadata)return;const id=++this.sequence;for(const client of this.clients){if(client.res.destroyed||client.res.writableEnded||client.res.writableLength>1024*1024){client.res.end();continue;}if(client.metadataRevision!==this.metadataRevision){client.res.write(`event: metadata\ndata: ${JSON.stringify(this.metadata)}\n\n`);client.metadataRevision=this.metadataRevision;}client.res.write(`id: ${id}\nevent: race-state\ndata: ${JSON.stringify({state:this.state,generation:this.generation,receivedAt:Date.now(),sequence:id})}\n\n`);}}
  async tick(){await this.refresh();this.broadcast();}
  subscribe(req,res){
   if(this.clients.size>=30){res.writeHead(503);res.end('Client limit reached');return;}

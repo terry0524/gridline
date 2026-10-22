@@ -7,7 +7,8 @@ const workerId=randomUUID(),service=new RaceStreamService();let stopped=false,la
 process.on('SIGTERM',()=>{stopped=true;service.close();});process.on('SIGINT',()=>{stopped=true;service.close();});
 await service.start('live');console.log('GRIDLINE single live collector started; anonymous timing, no capture');
 while(!stopped){
- if(service.state&&service.metadata&&Date.now()-lastPublished>=(service.state.active?1000:60000)){
+ // Keep the previous shared snapshot while a restarted collector is handshaking.
+ if(service.state?.drivers.length&&service.metadata?.drivers.length&&Date.now()-lastPublished>=(service.state.active?1000:60000)){
   try{
    const packet={version:1,workerId,publishedAt:Date.now(),state:service.state,metadata:service.metadata,collector:{upstreamConnections:service.collector?.activeConnections??0}};
    const response=await fetch(new URL('/api/internal/live-ingest',base),{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+secret},body:JSON.stringify(packet),signal:AbortSignal.timeout(10000)});

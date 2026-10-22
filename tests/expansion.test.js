@@ -28,6 +28,17 @@ test('shared live reader retains data and marks a missed collector heartbeat as 
  const p=packet();p.publishedAt-=40000;p.state.drivers=[{number:1,abbreviation:'VER'}];const service=new SharedLiveService({cache:{get:async()=>p}});
  await service.start('live');assert.equal(service.state.health.status,'RECONNECTING');assert.equal(service.state.drivers[0].number,1);assert.equal(service.state.active,false);service.close();
 });
+test('shared stream forwards late driver/track metadata and session changes without a collector restart',async()=>{
+ const p=packet(),frames=[],service=new SharedLiveService({cache:{get:async()=>p}});
+ service.clients.add({res:{write:wire=>frames.push(wire),end(){},writableLength:0}});
+ try{
+  await service.tick();const generation=service.generation;
+  p.metadata={...p.metadata,session:{key:9472},drivers:[{number:1,abbreviation:'VER'}],track:{points:[[0,0],[1,1]]}};
+  await service.tick();await service.tick();assert.equal(service.generation,generation);
+  let metadata=frames.filter(f=>f.startsWith('event: metadata'));assert.equal(metadata.length,2);assert.ok(metadata[1].includes('9472'));assert.ok(metadata[1].includes('VER'));
+  p.metadata={...p.metadata,session:{key:9523}};await service.tick();metadata=frames.filter(f=>f.startsWith('event: metadata'));assert.equal(metadata.length,3);assert.ok(metadata[2].includes('9523'));
+ }finally{service.close();}
+});
 test('ten SSE clients share the reader and clean up on response close',async()=>{
  const p=packet(),cache={get:async()=>p};const service=new SharedLiveService({cache,intervalMs:30,leaseMs:2000});
  const server=http.createServer((req,res)=>service.subscribe(req,res)).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
