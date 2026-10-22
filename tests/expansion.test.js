@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';import http from 'node:http';import {Readable} from 'node:stream';
-import {validateLibrary} from '../src/replay-library.js';
+import {validateLibrary,remoteLibrary} from '../src/replay-library.js';
 import {batchCandidates} from '../src/replay-batch.js';
 import {SharedLiveService,relayAuthorized,validateRelayPacket,ingestRelay,decodeRelayCache,LIVE_CACHE_KEY} from '../src/live/shared-service.js';
 test('library rejects unsafe identities and hash/size metadata',async()=>{
@@ -8,6 +8,13 @@ test('library rejects unsafe identities and hash/size metadata',async()=>{
  const library={version:1,schemaVersion:4,replays:[record]};assert.equal(validateLibrary(library).replays[0].asset,'2024-9472-v4.json.gz');
  for(const change of [{season:'../../'},{sessionKey:-1},{sha256:'bad'},{bytes:100*1024*1024},{slug:'../../secret'}])assert.throws(()=>validateLibrary({...library,replays:[{...record,...change}]}));
  assert.throws(()=>validateLibrary({...library,replays:[record,record]}));
+});
+test('library refresh retries index replacement without reusing stale asset redirects',async()=>{
+ const m=JSON.parse(await fs.readFile(new URL('../.cache/replays/manifest-v1.json',import.meta.url))),record=m.replays.find(r=>r.sessionKey===9472);
+ const original=globalThis.fetch,enabled=process.env.GRIDLINE_REPLAY_LIBRARY,urls=[];process.env.GRIDLINE_REPLAY_LIBRARY='1';
+ globalThis.fetch=async url=>{urls.push(url);return urls.length===1?new Response('',{status:404}):Response.json({version:1,schemaVersion:4,replays:[record]});};
+ try{const result=await remoteLibrary();assert.equal(result.replays[0].sessionKey,9472);assert.equal(urls.length,2);assert.notEqual(urls[0],urls[1]);assert.match(urls[0],/library-v1\.json\?revision=/);await remoteLibrary();assert.equal(urls.length,2);}
+ finally{globalThis.fetch=original;if(enabled===undefined)delete process.env.GRIDLINE_REPLAY_LIBRARY;else process.env.GRIDLINE_REPLAY_LIBRARY=enabled;}
 });
 test('bulk import matches only unambiguous ended races with published results',()=>{
  const race={season:'2024',round:'1',raceName:'Bahrain Grand Prix',date:'2024-03-02',time:'15:00:00Z',Results:[{position:'1',laps:'57',Driver:{driverId:'max_verstappen',code:'VER'},Constructor:{constructorId:'red_bull'},FastestLap:{rank:'1',lap:'39',Time:{time:'1:32.608'}}}]};

@@ -15,7 +15,15 @@ export async function remoteLibrary(){
  if(process.env.GRIDLINE_REPLAY_LIBRARY!=='1')return null;
  if(Date.now()-lastAttempt<60000)return pending??lastGood;
  lastAttempt=Date.now();
- pending=(async()=>{try{const r=await fetch(libraryBase+'library-v1.json',{signal:AbortSignal.timeout(10000),headers:{accept:'application/json'}});if(!r.ok)throw Error('Library HTTP '+r.status);const b=Buffer.from(await r.arrayBuffer());if(b.length>2*1024*1024)throw Error('Library too large');lastGood=validateLibrary(JSON.parse(b));}catch{/* Preserve the last verified manifest; built-in replays remain usable. */}return lastGood;})().finally(()=>{pending=null;});return pending;
+ pending=(async()=>{
+  // Release index replacement is not atomic. Avoid a cached redirect to a deleted
+  // asset and retry the short replacement window before keeping the last index.
+  for(let attempt=0;attempt<3;attempt++){
+   try{const r=await fetch(libraryBase+'library-v1.json?revision='+Date.now()+'-'+attempt,{signal:AbortSignal.timeout(10000),headers:{accept:'application/json'}});if(!r.ok)throw Error('Library HTTP '+r.status);const b=Buffer.from(await r.arrayBuffer());if(b.length>2*1024*1024)throw Error('Library too large');lastGood=validateLibrary(JSON.parse(b));break;}
+   catch{if(attempt<2)await new Promise(r=>setTimeout(r,300*(attempt+1)));}
+  }
+  return lastGood;
+ })().finally(()=>{pending=null;});return pending;
 }
 const downloads=new Map();
 export async function cacheLibraryReplay(record,file){
