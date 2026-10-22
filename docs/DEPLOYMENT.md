@@ -1,8 +1,28 @@
 # Server deployment
 
-GRIDLINE needs one long-running Node.js process for the collector, SSE fanout and caches. A static GitHub Pages deployment does not provide these functions. The existing frontend/domain/replay models are preserved.
+Public site: https://gridline-indol.vercel.app (Vercel Hobby, using the existing FormCheck hosting account). The existing frontend/domain/replay models are preserved. The complete collector still uses the original long-running Node deployment; the public Vercel release disables actual Live acquisition.
 
-## Render
+## Vercel — current public deployment
+
+No new Render account is required. `vercel.json` runs `node scripts/build-vercel.js`, which produces the official Build Output API layout. The build restores six SHA-256-pinned historical assets into a temporary directory. It publishes the existing allowlisted frontend files and three unchanged replay datasets through the CDN. Large Replay responses bypass Function body-size limits by using static CDN files at the existing `/api/replay/<sessionKey>/data` URLs. No raw archives/captures or local credentials are copied.
+
+The remaining APIs reuse `server.js`'s exported request handler. Standalone `npm start` still starts the original Node server. Each Vercel Function gets a writable `/tmp` cache seeded with the verified release assets. Official `@vercel/functions` `waitUntil` keeps existing season refresh work alive after a response. `fetchedAt` and stale flags are preserved; unavailable providers keep the existing partial/error states. The temporary cache is per instance and is not durable shared storage.
+
+Only platform-provided exact hostnames are allowed. Debug, capture endpoints, simulation controls and actual Live acquisition are disabled in the public adapter. A Vercel deployment does not provide the original singleton collector guarantee across Function instances. Actual Live hosting/continuous-feed verification remains separate; no fake Live data is substituted. Free-plan execution/usage limits still apply; no paid plan or extra storage is activated.
+
+```sh
+npm ci
+npm run check
+npm test
+npx vercel login # existing account, only when the CLI session expired
+npx vercel deploy --prod --yes
+```
+
+The GitHub repository is connected to the Vercel project, so main-branch pushes trigger production deployment. `.vercel/` and `.env*` are ignored. Do not commit CLI credentials or Vercel OIDC values. Preview deployment URLs can require Vercel login; use the public production alias above.
+
+Official references: [Build Output API](https://vercel.com/docs/build-output-api), [waitUntil](https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package), [Function limits](https://vercel.com/docs/functions/limitations).
+
+## Render — optional original Node hosting
 
 [Deploy GRIDLINE](https://render.com/deploy?repo=https://github.com/terry0524/gridline) imports render.yaml. Sign in to your own Render account, confirm the Free plan, then deploy. No API key or paid OpenF1 subscription is required. A hosting login/terms decision must be completed by the owner; creating the GitHub repository is not proof of a live site.
 

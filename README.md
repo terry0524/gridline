@@ -1,14 +1,15 @@
 # GRIDLINE · F1 Live Companion
 
-중계를 함께 보면서 사용하는 비공식 Second Screen. 기존 vanilla ESM/SVG 제품과 무료 Historical Replay를 유지합니다. Node.js 22.22 이상, 추가 npm 의존성·API key·유료 OpenF1 Live 구독은 필요하지 않습니다. 현재 버전은 **0.6.0-rc.1**입니다.
+중계를 함께 보면서 사용하는 비공식 Second Screen. 기존 vanilla ESM/SVG 제품과 무료 Historical Replay를 유지합니다. Node.js 22.22 이상을 사용합니다. API key·유료 OpenF1 Live 구독은 필요하지 않으며, Vercel 배포 어댑터는 공식 `@vercel/functions` SDK를 사용합니다. 현재 버전은 **0.6.0-rc.1**입니다.
 
-[GitHub](https://github.com/terry0524/gridline) · [Render 배포](https://render.com/deploy?repo=https://github.com/terry0524/gridline) · [배포 방법과 한계](docs/DEPLOYMENT.md) · [데이터 출처/라이선스](NOTICE.md)
+[사이트 열기](https://gridline-indol.vercel.app) · [GitHub](https://github.com/terry0524/gridline) · [배포 방법과 한계](docs/DEPLOYMENT.md) · [데이터 출처/라이선스](NOTICE.md)
 
-호스팅 설정은 준비되어 있지만 Render 계정 연결 및 실제 URL 확인 전에는 사이트 배포 완료로 표시하지 않습니다.
+FormCheck와 동일한 기존 Vercel 계정의 Hobby 플랜으로 공개 배포했습니다. 일반 화면과 3개 Historical Replay를 제공합니다. 실제 Live 수집은 공개 배포에서 비활성화하며, 기존 Node collector와 개발 도구는 보존합니다.
 
 ## 실행
 
 ```sh
+npm ci
 npm run dev
 # 일반 사용자용 production UI
 npm start

@@ -4,7 +4,7 @@ import {offline,version} from './config.js';
 import {createHash,randomUUID} from 'node:crypto';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
-export const cacheDir=path.join(path.dirname(fileURLToPath(import.meta.url)),'../.cache');
+export const cacheDir=process.env.GRIDLINE_CACHE_DIR?path.resolve(process.env.GRIDLINE_CACHE_DIR):path.join(path.dirname(fileURLToPath(import.meta.url)),'../.cache');
 const bases={openf1:'https://api.openf1.org/v1/',jolpica:'https://api.jolpi.ca/ergast/f1/',circuit:'https://api.multiviewer.app/api/v1/circuits/'};
 const pending=new Map(); const queues=new Map(); const lastRequest=new Map();
 const delay=ms=>new Promise(r=>setTimeout(r,ms));

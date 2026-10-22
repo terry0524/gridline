@@ -20,7 +20,7 @@ const limits=new Map();
 const streams=new RaceStreamService();
 async function readBody(req){let text='';for await(const chunk of req){text+=chunk;if(Buffer.byteLength(text)>4096)throw new ProviderError('Request body too large',413);}try{const body=JSON.parse(text||'{}');if(!body||typeof body!=='object'||Array.isArray(body))throw Error('Invalid request body');return body}catch{throw new ProviderError('Invalid JSON body',400)}}
 function send(req,res,status,data,headers={}){const body=Buffer.from(JSON.stringify(data));const gz=body.length>2048&&req.headers['accept-encoding']?.includes('gzip');res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','vary':'Accept-Encoding',...(gz?{'content-encoding':'gzip'}:{}),...headers});res.end(gz?gzipSync(body):body);}
-const server=http.createServer(async(req,res)=>{
+export async function handleRequest(req,res){
  try{
   if(!hosting.allowedHosts.has(req.headers.host))throw new ProviderError('Host not allowed',403);
   const u=new URL(req.url,'http://localhost');if(req.url.length>4096)throw new ProviderError('URL too long',414);
@@ -61,8 +61,10 @@ const server=http.createServer(async(req,res)=>{
   const file=staticFiles.get(u.pathname)||(route?'index.html':null);if(!file){res.writeHead(404);return res.end('Not found');}
   const data=await fs.readFile(path.join(root,file));res.writeHead(200,{'content-type':mime[path.extname(file)],'cache-control':'no-cache','x-content-type-options':'nosniff','content-security-policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; media-src https://livetiming.formula1.com; object-src 'none'; frame-src 'none'; base-uri 'self'; frame-ancestors 'none'",'referrer-policy':'no-referrer'});res.end(data);
  }catch(err){send(req,res,err.status||502,{error:err instanceof ProviderError?err.message:'데이터를 불러오지 못했습니다. 다시 시도하세요.'});if(debug&&!(err instanceof ProviderError))console.error(err.message);}
-});
-server.listen(port,hosting.bindHost,()=>console.log(`GRIDLINE: http://localhost:${port}`));
+}
+const standalone=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
+const server=standalone?http.createServer(handleRequest):null;
+if(standalone)server.listen(port,hosting.bindHost,()=>console.log(`GRIDLINE: http://localhost:${port}`));
 
 async function shutdown(){await streams.stopCapture().catch(()=>{});streams.close();server.close(()=>process.exit(0));setTimeout(()=>process.exit(0),1500).unref();}
-process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);
+if(standalone){process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);}

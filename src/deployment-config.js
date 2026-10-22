@@ -6,6 +6,9 @@ export function deploymentSettings(env=process.env,port=3000){
  const allowedOrigins=new Set([`http://localhost:${port}`,`http://127.0.0.1:${port}`]);
  const urls=[env.GRIDLINE_PUBLIC_URL,env.RENDER_EXTERNAL_URL].filter(Boolean);
  if(env.RENDER_EXTERNAL_HOSTNAME&&!env.RENDER_EXTERNAL_URL)urls.push('https://'+env.RENDER_EXTERNAL_HOSTNAME);
+ if(env.VERCEL==='1')for(const key of ['VERCEL_URL','VERCEL_PROJECT_PRODUCTION_URL','VERCEL_BRANCH_URL']){
+  if(env[key]){if(!/^[a-zA-Z0-9.-]+$/.test(env[key]))throw Error('Invalid Vercel hostname');urls.push('https://'+env[key]);}
+ }
  for(const value of urls){
   const url=new URL(value);
   if(url.protocol!=='https:'||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw Error('Public URL must be a plain HTTPS origin');

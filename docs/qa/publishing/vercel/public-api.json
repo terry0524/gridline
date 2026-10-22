@@ -1,0 +1,116 @@
+{
+  "url": "https://gridline-indol.vercel.app",
+  "checkedAt": "2026-10-22T07:22:19.351Z",
+  "replays": [
+    {
+      "key": 9472,
+      "drivers": 20,
+      "locations": 432280,
+      "fastest": {
+        "number": 1,
+        "at": 1709395621152,
+        "lap": 39,
+        "seconds": 92.608,
+        "completedAt": 1709395621152,
+        "pitOut": false,
+        "sector1": 29.741,
+        "sector2": 39.916,
+        "sector3": 22.951,
+        "driver": "VER",
+        "name": "Max VERSTAPPEN",
+        "team": "Red Bull Racing",
+        "color": "#3671c6"
+      },
+      "weather": 157,
+      "raceControl": 70
+    },
+    {
+      "key": 9523,
+      "drivers": 20,
+      "locations": 684920,
+      "fastest": {
+        "number": 44,
+        "at": 1716736067896,
+        "lap": 63,
+        "seconds": 74.165,
+        "completedAt": 1716736067896,
+        "pitOut": false,
+        "sector1": 19.548,
+        "sector2": 34.854,
+        "sector3": 19.763,
+        "driver": "HAM",
+        "name": "Lewis HAMILTON",
+        "team": "Mercedes",
+        "color": "#27F4D2"
+      },
+      "weather": 200,
+      "raceControl": 122
+    },
+    {
+      "key": 9574,
+      "drivers": 20,
+      "locations": 393460,
+      "fastest": {
+        "number": 11,
+        "at": 1722176673356,
+        "lap": 44,
+        "seconds": 104.701,
+        "completedAt": 1722176673356,
+        "pitOut": false,
+        "sector1": 30.808,
+        "sector2": 45.309,
+        "sector3": 28.584,
+        "driver": "PER",
+        "name": "Sergio PEREZ",
+        "team": "Red Bull Racing",
+        "color": "#3671C6"
+      },
+      "weather": 137,
+      "raceControl": 23
+    }
+  ],
+  "seasons": [
+    {
+      "year": 2024,
+      "round": 24,
+      "schedule": 24,
+      "fetchedAt": "2026-10-22T07:20:17.166Z",
+      "stale": false,
+      "errors": {}
+    },
+    {
+      "year": 2026,
+      "round": 17,
+      "schedule": 23,
+      "fetchedAt": "2026-10-22T07:18:21.022Z",
+      "stale": false,
+      "errors": {}
+    }
+  ],
+  "guards": [
+    {
+      "route": "/api/config",
+      "status": 200
+    },
+    {
+      "route": "/api/captures",
+      "status": 403
+    },
+    {
+      "route": "/api/live/start",
+      "status": 403
+    },
+    {
+      "route": "/api/live/start",
+      "status": 403
+    },
+    {
+      "route": "/.env.local",
+      "status": 404
+    },
+    {
+      "route": "/server.js",
+      "status": 404
+    }
+  ]
+}

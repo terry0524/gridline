@@ -1,0 +1,201 @@
+{
+  "checkedAt": "2026-10-22T07:22:46.215Z",
+  "url": "https://gridline-indol.vercel.app",
+  "checks": [
+    {
+      "route": "/",
+      "heading": [
+        "Your race week.",
+        "NEXT GRAND PRIX",
+        "United States Grand Prix"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/schedule",
+      "heading": [
+        "시즌 일정"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/standings",
+      "heading": [
+        "챔피언십",
+        "POINTS PROGRESSION"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/results",
+      "heading": [
+        "경기 결과"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/results/2024/bahrain",
+      "heading": [
+        "경기 결과"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/drivers/2024/max_verstappen",
+      "heading": [
+        "Max Verstappen",
+        "SEASON RESULTS",
+        "POINTS PROGRESSION"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/teams/2024/mclaren",
+      "heading": [
+        "McLaren",
+        "SEASON RESULTS",
+        "POINTS PROGRESSION"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/race-center?season=2024",
+      "heading": [
+        "레이스 센터"
+      ],
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/",
+      "heading": [
+        "Your race week.",
+        "NEXT GRAND PRIX",
+        "United States Grand Prix"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/schedule",
+      "heading": [
+        "시즌 일정"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/standings",
+      "heading": [
+        "챔피언십",
+        "POINTS PROGRESSION"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/results",
+      "heading": [
+        "경기 결과"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/results/2024/bahrain",
+      "heading": [
+        "경기 결과"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/drivers/2024/max_verstappen",
+      "heading": [
+        "Max Verstappen",
+        "SEASON RESULTS",
+        "POINTS PROGRESSION"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/teams/2024/mclaren",
+      "heading": [
+        "McLaren",
+        "SEASON RESULTS",
+        "POINTS PROGRESSION"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/race-center?season=2024",
+      "heading": [
+        "레이스 센터"
+      ],
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/replay/2024/bahrain?lap=40",
+      "cars": "20/20 CARS",
+      "fastest": "VER\n1:32.608\nLAP 39 · Red Bull Racing",
+      "message": "2024 Bahrain Grand Prix · Race · 20명 · 실제 위치 432,280개",
+      "overflow": 0,
+      "position": "EXACT POSITION",
+      "weather": "AIR17.9°CTRACK22.4°CHUMIDITY50%PRESSURE1017.5hPaWIND0.6m/sDIRECTION142°RAINFALL없음",
+      "width": 1440
+    },
+    {
+      "route": "/replay/2024/monaco?lap=65",
+      "cars": "20/20 CARS",
+      "fastest": "HAM\n1:14.165\nLAP 63 · Mercedes",
+      "message": "2024 Monaco Grand Prix · Race · 20명 · 실제 위치 684,920개 · PARTIAL DATA: Tires: 4 invalid source records excluded",
+      "overflow": 0,
+      "position": "EXACT POSITION",
+      "weather": "AIR21.9°CTRACK41.2°CHUMIDITY60%PRESSURE1018.3hPaWIND0.8m/sDIRECTION47°RAINFALL없음",
+      "width": 1440
+    },
+    {
+      "route": "/replay/2024/belgian?lap=44",
+      "cars": "20/20 CARS",
+      "fastest": "NOR\n1:45.563\nLAP 31 · McLaren",
+      "message": "2024 Belgian Grand Prix · Race · 20명 · 실제 위치 393,460개",
+      "overflow": 0,
+      "width": 1440
+    },
+    {
+      "route": "/replay/2024/bahrain?lap=40",
+      "cars": "20/20 CARS",
+      "fastest": "VER1:32.608LAP 39 · Red Bull Racing",
+      "message": "2024 Bahrain Grand Prix · Race · 20명 · 실제 위치 432,280개",
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/replay/2024/monaco?lap=65",
+      "cars": "20/20 CARS",
+      "fastest": "HAM1:14.165LAP 63 · Mercedes",
+      "message": "2024 Monaco Grand Prix · Race · 20명 · 실제 위치 684,920개 · PARTIAL DATA: Tires: 4 invalid source records excluded",
+      "overflow": 0,
+      "width": 320
+    },
+    {
+      "route": "/replay/2024/belgian?lap=44",
+      "cars": "20/20 CARS",
+      "fastest": "NOR1:45.563LAP 31 · McLaren",
+      "message": "2024 Belgian Grand Prix · Race · 20명 · 실제 위치 393,460개",
+      "overflow": 0,
+      "width": 320
+    }
+  ],
+  "console": []
+}
