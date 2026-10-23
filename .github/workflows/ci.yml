@@ -16,5 +16,5 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: node scripts/restore-replays.js
-      - run: node --test tests/capture.test.js tests/live.test.js tests/season.test.js tests/deployment.test.js tests/expansion.test.js
+      - run: node --test tests/capture.test.js tests/live.test.js tests/season.test.js tests/deployment.test.js tests/expansion.test.js tests/live-verification.test.js
       # Full replay provenance tests require the local raw-response archive, which is not published.

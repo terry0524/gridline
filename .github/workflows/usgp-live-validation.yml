@@ -1,0 +1,39 @@
+name: Verify US GP 2026 Live reception
+on:
+  schedule:
+    # UTC. KST: Oct24/25 02:25 and 05:55; Oct26 04:55.
+    - cron: "25 17 23,24 10 *"
+    - cron: "55 20 23,24 10 *"
+    - cron: "55 19 25 10 *"
+  workflow_dispatch:
+    inputs:
+      session:
+        type: choice
+        default: auto
+        options: [auto, smoke, fp1, fp2, fp3, qualifying, race]
+        description: "2026 US GP session; smoke only checks transport"
+permissions:
+  contents: read
+concurrency:
+  group: usgp-live-${{ github.event.inputs.session || github.event.schedule }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Observe production timing for 15 minutes
+        run: node scripts/verify-live-session.js
+        env:
+          OBSERVE_SESSION: ${{ inputs.session || 'auto' }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: usgp-live-${{ github.run_id }}
+          path: .cache/usgp-live/
+          if-no-files-found: ignore
+          retention-days: 30
