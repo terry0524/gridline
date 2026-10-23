@@ -14,6 +14,7 @@ export function selectSession(id='auto',now=Date.now()){
  if(id!=='auto')return USGP_SESSIONS.find(s=>s.id===id)??null;
  return USGP_SESSIONS.find(s=>now>=Date.parse(s.start)-10*60000&&now<Date.parse(s.end)-15*60000)??null;
 }
+export function observationAllowed(expected,now=Date.now(),explicit=false){return now>=Date.parse(expected.start)-(explicit?3*3600000:10*60000)&&now<Date.parse(expected.end)-10*60000;}
 const finite=v=>typeof v==='number'&&Number.isFinite(v);
 const text=v=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,'').slice(0,120):null;
 const capabilities=['timing','intervals','tires','pit','weather','raceControl','radioMetadata','position','telemetry'];
@@ -63,8 +64,8 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 export async function runVerification({id=process.env.OBSERVE_SESSION??'auto',output='.cache/usgp-live'}={}){
  const expected=selectSession(id);if(!expected){console.log('Outside the 2026 US GP verification windows; no source requested.');return null;}
  const now=Date.now(),start=Date.parse(expected.start),end=Date.parse(expected.end),smoke=id==='smoke';
- if(!smoke&&(now<start-10*60000||now>=end-10*60000))throw Error('Requested session is outside its observation window');
- if(!smoke){const begin=start+120000;while(Date.now()<begin)await sleep(Math.min(30000,begin-Date.now()));}
+ if(!smoke&&!observationAllowed(expected,now,id!=='auto'))throw Error('Requested session is outside its observation window');
+ if(!smoke){const begin=start+120000;if(Date.now()<begin)console.log(`Awaiting ${expected.type} until ${new Date(begin).toISOString()}; no production requests before then.`);while(Date.now()<begin)await sleep(Math.min(30000,begin-Date.now()));}
  await fs.mkdir(output,{recursive:true});const prefix=path.join(output,expected.id+'-'+new Date().toISOString().replace(/[:.]/g,'-'));
  const samples=await fs.open(prefix+'.ndjson','wx'),o=newObservation(expected),began=Date.now(),deadline=smoke?began+20000:Math.min(began+900000,end);
  const transport={attempts:0,connections:0,cleanEnds:0,errors:0,invalidFrames:0,startHttp:null};const base='https://gridline-indol.vercel.app';

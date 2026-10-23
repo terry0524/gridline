@@ -18,4 +18,10 @@
 
 수동 transport-only 점검은 workflow dispatch의 `session=smoke`로 20초간 수행합니다. 이는 실제 active Live 검증을 뜻하지 않습니다. 로컬에서는 `OBSERVE_SESSION=smoke node scripts/verify-live-session.js`로 동일하게 실행합니다. `auto`는 현재 시간에 맞는 세션만 선택합니다. 유료 서비스·새 계정·새 secret은 필요하지 않습니다.
 
+## FP1 예약 미실행에 대한 보완
+
+10월 24일 03:31 KST 확인 시 FP1 예약 run이 생성되지 않았고, 실제 관측 artifact도 없었습니다. Workflow는 main branch에서 active였으나 예약이 실행되지 않은 원인은 확인되지 않았습니다. 이를 Live source 실패나 검증 성공으로 해석하지 않습니다. 종료된 FP1 관측을 뒤늦게 수행했다고 주장하지 않습니다.
+
+다음 세션은 heartbeat가 시작 3시간 이내에 명시적 session ID로 기존 workflow를 미리 dispatch할 수 있습니다. Runner가 시작 2분 뒤까지 기다리며, 대기 중에는 production/F1에 요청하지 않습니다. 그 후 같은 15분 관측을 수행합니다. 자동 cron의 관측 창은 그대로이며, 모든 점검 run은 하나의 concurrency group으로 직렬 처리합니다. 최대 timeout은 200분이고 3시간보다 이른 dispatch/종료된 세션은 거부합니다. 이 보완은 점검 도구에만 적용되며 production 코드에는 변경이 없습니다.
+
 Codex의 이 채팅 heartbeat가 결과를 검토하고 첫 의미 있는 성공·새 capability·장애만 알립니다. GitHub 관측은 맥 전원과 무관하지만 Codex 알림은 앱이 실행될 때 처리됩니다. 10월 26일 오전 9시 이후 최종 보고 후 heartbeat를 정지하고 `gh workflow disable usgp-live-validation.yml --repo terry0524/gridline`로 이 한시적 점검을 종료합니다. 공식 일정 변경/연기는 검증 창을 갱신해야 합니다. 제품 UI·collector·Replay 코드에는 변경이 없습니다.
