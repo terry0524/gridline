@@ -1,11 +1,13 @@
 import {RaceStreamService} from '../src/live/service.js';
 import {randomUUID} from 'node:crypto';
+import {startScheduledVerification} from './scheduled-verification.js';
 const base=new URL(process.env.GRIDLINE_PUBLIC_URL||'https://gridline-indol.vercel.app');
 if(base.protocol!=='https:'||base.username||base.password||base.pathname!=='/')throw Error('Invalid relay origin');
 const secret=process.env.GRIDLINE_LIVE_BRIDGE_SECRET;if(!secret)throw Error('Live relay credential is not configured');
 const workerId=randomUUID(),service=new RaceStreamService();let stopped=false,lastPublished=0,lastFailure=0;
 process.on('SIGTERM',()=>{stopped=true;service.close();});process.on('SIGINT',()=>{stopped=true;service.close();});
 await service.start('live');console.log('GRIDLINE single live collector started; anonymous timing, no capture');
+const verification=await startScheduledVerification({base,secret,workerId});
 while(!stopped){
  // Keep the previous shared snapshot while a restarted collector is handshaking.
  if(service.state?.drivers.length&&service.metadata?.drivers.length&&Date.now()-lastPublished>=(service.state.active?1000:60000)){
@@ -18,3 +20,4 @@ while(!stopped){
  await new Promise(r=>setTimeout(r,250));
 }
 service.close();
+await verification.close();

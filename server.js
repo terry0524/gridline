@@ -12,6 +12,7 @@ import {nextSession} from './src/live/session-discovery.js';
 import {seasonData,weekendResults,replayAvailability,raceFacts} from './src/season-service.js';
 import {RaceStreamService} from './src/live/service.js';
 import {SharedLiveService,relayAuthorized,ingestRelay} from './src/live/shared-service.js';
+import {ingestVerification,verificationStatus} from './src/live/verification-store.js';
 import {sessionCatalog,startReplay,replayStatus,getReplay,replayManifest} from './src/replay-loader.js';
 const root=path.dirname(fileURLToPath(import.meta.url));const port=Number(process.env.PORT||3000);
 const hosting=deploymentSettings(process.env,port);
@@ -29,11 +30,13 @@ export async function handleRequest(req,res){
   if(u.pathname==='/favicon.ico'){res.writeHead(204);return res.end();}
   if(u.pathname==='/healthz')return send(req,res,200,{status:'ok',version});
   if(u.pathname.startsWith('/api/')){
+   if(u.pathname==='/api/internal/verification-ingest'){if(req.method!=='POST')throw new ProviderError('POST required',405);if(!relayAuthorized(req.headers.authorization,process.env.GRIDLINE_LIVE_BRIDGE_SECRET))throw new ProviderError('Unauthorized verification relay',401);try{return send(req,res,200,await ingestVerification(req));}catch(e){throw new ProviderError(e.message,400);}}
    if(u.pathname==='/api/internal/live-ingest'){if(req.method!=='POST')throw new ProviderError('POST required',405);if(!relayAuthorized(req.headers.authorization,process.env.GRIDLINE_LIVE_BRIDGE_SECRET))throw new ProviderError('Unauthorized relay',401);try{return send(req,res,200,await ingestRelay(req));}catch(e){throw new ProviderError(e.message,400);}}
    const ip=req.socket.remoteAddress;const now=Date.now();let bucket=limits.get(ip);if(!bucket||now-bucket.at>60000){bucket={at:now,count:0};limits.set(ip,bucket);}if(++bucket.count>180)return send(req,res,429,{error:'Local request limit exceeded'},{'retry-after':'60'});
    if(!['GET','POST'].includes(req.method))return send(req,res,405,{error:'Method not allowed'});
    if(req.method==='POST'&&req.headers.origin&&!hosting.allowedOrigins.has(req.headers.origin))return send(req,res,403,{error:'Origin not allowed'});
    if(u.pathname==='/api/config')return send(req,res,200,{environment,debug,version});
+   if(u.pathname==='/api/live/verification'){if(req.method!=='GET')throw new ProviderError('GET required',405);return send(req,res,200,await verificationStatus());}
    if(u.pathname==='/api/replay/manifest')return send(req,res,200,await replayManifest());
    if(u.pathname==='/api/replay/sessions'){const year=Number(u.searchParams.get('year')||new Date().getFullYear());if(!Number.isInteger(year)||year<2023||year>new Date().getFullYear())throw new ProviderError('Invalid year',400);return send(req,res,200,await sessionCatalog(year));}
    const match=u.pathname.match(/^\/api\/replay\/(\d+)\/(load|status|data)$/);

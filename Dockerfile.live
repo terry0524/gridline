@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package.json ./
 COPY src ./src
 COPY deploy/live-worker.js ./deploy/live-worker.js
+COPY deploy/scheduled-verification.js ./deploy/scheduled-verification.js
+COPY scripts/verify-live-session.js ./scripts/verify-live-session.js
 ENV NODE_ENV=production GRIDLINE_CACHE_DIR=/tmp/gridline-worker-cache GRIDLINE_AUTO_LIVE=0 GRIDLINE_DEBUG=0
 USER node
 CMD ["node", "deploy/live-worker.js"]

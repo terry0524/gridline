@@ -1,0 +1,29 @@
+name: Export Mexico GP verification evidence
+on:
+  schedule:
+    # Backups can run late: collection is started by the resident UTC clock.
+    - cron: "45 19 30 10 *"
+    - cron: "15 23 30 10 *"
+    - cron: "45 18 31 10 *"
+    - cron: "15 22 31 10 *"
+    - cron: "15 22 1 11 *"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/export-verification.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mexico-verification-${{ github.run_id }}
+          path: .cache/verification-export/
+          retention-days: 30
+          if-no-files-found: ignore

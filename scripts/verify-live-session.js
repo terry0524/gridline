@@ -23,7 +23,8 @@ export function observeState(o,s,at=Date.now()){
  if(!s||!Array.isArray(s.drivers)||s.drivers.length>30)return null;
  o.frames++;const session=s.session??{};const identity=[session.year,session.name,session.type,session.key].join('|');
  o.observedSessions.set(identity,{year:session.year,name:text(session.name),type:text(session.type),key:session.key??null});
- const matches=s.mode==='live'&&session.year===2026&&/United States/i.test(session.name??'')&&session.type===o.expected.type&&finite(session.start)&&Math.abs(session.start-Date.parse(o.expected.start))<3*3600000;
+ const meetingMatches=o.expected.meetingNames?o.expected.meetingNames.includes(session.name):/United States/i.test(session.name??'');
+ const matches=s.mode==='live'&&session.year===(o.expected.year??2026)&&meetingMatches&&session.type===o.expected.type&&finite(session.start)&&Math.abs(session.start-Date.parse(o.expected.start))<3*3600000;
  const sourceAt=s.health?.channels?.TimingData?.sourceTimestamp??s.health?.sourceTimestamp;
  const fresh=matches&&s.active===true&&s.health?.sessionAvailability==='LIVE SESSION AVAILABLE'&&finite(sourceAt)&&at-sourceAt>=-5000&&at-sourceAt<=15000&&['CONNECTED','DELAYED'].includes(s.health?.status);
  if(!fresh){o.runStart=null;return null;}
@@ -61,37 +62,39 @@ export class SSEFrames{
  push(bytes){this.buffer=(this.buffer+this.decoder.decode(bytes,{stream:true})).replace(/\r\n/g,'\n');if(this.buffer.length>1024*1024)throw Error('Oversized SSE frame');const out=[];let i;while((i=this.buffer.indexOf('\n\n'))>=0){const frame=this.buffer.slice(0,i);this.buffer=this.buffer.slice(i+2);if(!frame.split('\n').some(l=>l==='event: race-state'))continue;const payload=frame.split('\n').filter(l=>l.startsWith('data:')).map(l=>l.slice(5).trimStart()).join('\n');out.push(JSON.parse(payload));}return out;}
 }
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-export async function runVerification({id=process.env.OBSERVE_SESSION??'auto',output='.cache/usgp-live'}={}){
- const expected=selectSession(id);if(!expected){console.log('Outside the 2026 US GP verification windows; no source requested.');return null;}
- const now=Date.now(),start=Date.parse(expected.start),end=Date.parse(expected.end),smoke=id==='smoke';
+export async function runVerification({id=process.env.OBSERVE_SESSION??'auto',output='.cache/usgp-live',expected:provided=null,smoke:smokeOverride=false,durationMs=900000,onProgress=null,signal=null,setExitCode=true}={}){
+ const expected=provided??selectSession(id);if(!expected){console.log('Outside the 2026 US GP verification windows; no source requested.');return null;}
+ const now=Date.now(),start=Date.parse(expected.start),end=Date.parse(expected.end),smoke=id==='smoke'||smokeOverride;
  if(!smoke&&!observationAllowed(expected,now,id!=='auto'))throw Error('Requested session is outside its observation window');
  if(!smoke){const begin=start+120000;if(Date.now()<begin)console.log(`Awaiting ${expected.type} until ${new Date(begin).toISOString()}; no production requests before then.`);while(Date.now()<begin)await sleep(Math.min(30000,begin-Date.now()));}
  await fs.mkdir(output,{recursive:true});const prefix=path.join(output,expected.id+'-'+new Date().toISOString().replace(/[:.]/g,'-'));
- const samples=await fs.open(prefix+'.ndjson','wx'),o=newObservation(expected),began=Date.now(),deadline=smoke?began+20000:Math.min(began+900000,end);
- const transport={attempts:0,connections:0,cleanEnds:0,errors:0,invalidFrames:0,startHttp:null};const base='https://gridline-indol.vercel.app';
+ const samples=await fs.open(prefix+'.ndjson','wx'),o=newObservation(expected),began=Date.now(),deadline=smoke?began+20000:Math.min(began+durationMs,end),evidence=[];let lastEvidence=0,lastProgress=0;
+ const transport={attempts:0,connections:0,cleanEnds:0,errors:0,invalidFrames:0,startHttp:null,firstFrameAt:null,lastFrameAt:null};const base='https://gridline-indol.vercel.app';
  try{
   try{const r=await fetch(base+'/api/live/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mode:'live'}),signal:AbortSignal.timeout(20000)});transport.startHttp=r.status;await r.arrayBuffer();}catch{transport.errors++;}
   let retryDelay=1000;
-  while(Date.now()<deadline){
+  while(Date.now()<deadline&&!signal?.aborted){
    const controller=new AbortController(),finish=setTimeout(()=>controller.abort(),deadline-Date.now());let lastBytes=Date.now();
+   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
    const stall=setInterval(()=>{if(Date.now()-lastBytes>30000)controller.abort();},5000);
    try{
     transport.attempts++;const r=await fetch(base+'/api/live/events',{signal:controller.signal});if(!r.ok||!r.headers.get('content-type')?.startsWith('text/event-stream')){await r.body?.cancel();throw Error('SSE unavailable');}transport.connections++;retryDelay=1000;
     const frames=new SSEFrames();for await(const chunk of r.body){lastBytes=Date.now();let packets;try{packets=frames.push(chunk);}catch{transport.invalidFrames++;throw Error('Malformed SSE');}
-     for(const packet of packets){const sample=observeState(o,packet.state);if(sample)await samples.write(JSON.stringify(sample)+'\n');}
+     for(const packet of packets){transport.firstFrameAt??=Date.now();transport.lastFrameAt=Date.now();const sample=observeState(o,packet.state);if(sample){await samples.write(JSON.stringify(sample)+'\n');if(sample.receivedAt-lastEvidence>=60000){evidence.push(sample);lastEvidence=sample.receivedAt;}}if(Date.now()-lastProgress>=15000){onProgress?.(assessment(o,{smoke}));lastProgress=Date.now();}}
     }transport.cleanEnds++;
    }catch{if(Date.now()<deadline-1000){transport.errors++;retryDelay=Math.min(15000,retryDelay*2);}}
-   finally{clearTimeout(finish);clearInterval(stall);controller.abort();}
-   if(Date.now()<deadline)await sleep(Math.min(retryDelay,deadline-Date.now()));
+   finally{clearTimeout(finish);clearInterval(stall);signal?.removeEventListener('abort',abort);controller.abort();}
+   if(Date.now()<deadline&&!signal?.aborted)await sleep(Math.min(retryDelay,deadline-Date.now()));
   }
  }finally{await samples.close();}
- const result={checkedAt:new Date().toISOString(),startedAt:new Date(began).toISOString(),durationMs:Date.now()-began,...assessment(o,{smoke}),transport};
+ const result={checkedAt:new Date().toISOString(),startedAt:new Date(began).toISOString(),durationMs:Date.now()-began,...assessment(o,{smoke}),transport,evidence};
+ if(signal?.aborted)result.result='INTERRUPTED';
  if(smoke&&(transport.connections===0||transport.startHttp!==200))result.result='TRANSPORT_FAILED';
  if(!smoke&&transport.startHttp!==200)result.result='NOT_VERIFIED';
  await fs.writeFile(prefix+'.json',JSON.stringify(result,null,2)+'\n');
- const markdown=`# 2026 US GP · ${expected.type}\n\nResult: **${result.result}**\n\n- Duration: ${(result.durationMs/60000).toFixed(1)} min\n- Fresh continuous run: ${(result.longestFreshRunMs/60000).toFixed(1)} min\n- Original source timestamp advances: ${result.sourceAdvances}\n- Timing value changes: ${result.timingChanges}\n- Normalized SSE frames: ${result.normalizedFrames} (not raw channel messages)\n- Drivers: ${result.maxDrivers}\n- SSE connections / clean ends / errors: ${transport.connections} / ${transport.cleanEnds} / ${transport.errors}\n\n| Capability | Actual payload observed during fresh matching session |\n| --- | --- |\n${Object.entries(result.capabilities).map(([k,v])=>`| ${k} | ${v?'YES':'NOT OBSERVED'} |`).join('\n')}\n\n${result.scope}\n\nNo raw frames, credentials or radio audio are saved. A smoke test never verifies active Live.\n`;
+ const markdown=`# ${expected.meetingLabel??'2026 US GP'} · ${expected.type}\n\nResult: **${result.result}**\n\n- Duration: ${(result.durationMs/60000).toFixed(1)} min\n- Fresh continuous run: ${(result.longestFreshRunMs/60000).toFixed(1)} min\n- Original source timestamp advances: ${result.sourceAdvances}\n- Timing value changes: ${result.timingChanges}\n- Normalized SSE frames: ${result.normalizedFrames} (not raw channel messages)\n- Drivers: ${result.maxDrivers}\n- SSE connections / clean ends / errors: ${transport.connections} / ${transport.cleanEnds} / ${transport.errors}\n\n| Capability | Actual payload observed during fresh matching session |\n| --- | --- |\n${Object.entries(result.capabilities).map(([k,v])=>`| ${k} | ${v?'YES':'NOT OBSERVED'} |`).join('\n')}\n\n${result.scope}\n\nNo raw frames, credentials or radio audio are saved. A smoke test never verifies active Live.\n`;
  await fs.writeFile(prefix+'.md',markdown);if(process.env.GITHUB_STEP_SUMMARY)await fs.appendFile(process.env.GITHUB_STEP_SUMMARY,markdown);
  console.log(JSON.stringify({result:result.result,frames:result.normalizedFrames,freshMinutes:result.longestFreshRunMs/60000,report:prefix+'.json'}));
- if(smoke?result.result==='TRANSPORT_FAILED':result.result!=='LIVE_TIMING_VERIFIED')process.exitCode=2;return result;
+ if(setExitCode&&(smoke?result.result==='TRANSPORT_FAILED':result.result!=='LIVE_TIMING_VERIFIED'))process.exitCode=2;return result;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))await runVerification();
