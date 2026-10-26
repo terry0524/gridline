@@ -18,6 +18,8 @@ Each task records `scheduledAt`, `actualStartedAt`, `delayMs`, progress, source 
 
 On each daemon boot a separate 20-second transport drill is scheduled 60 seconds ahead through the same clock. It records actual start delay, HTTP status and real SSE receipt times. Its verdict is always transport-only or failure; it cannot prove active Live. Unit-test clocks/fixtures are not actual-session evidence.
 
+The first actual production drill was scheduled for 2026-10-26 15:50:32.747 UTC and started at 15:50:32.764 UTC: 17ms clock delay. Its first real public SSE frame arrived 239ms after the scheduled instant; 20 frames arrived over 20,001ms, HTTP 200, zero transport/parse errors. This is TRANSPORT_SMOKE_ONLY, not an active Mexico-session result. A sanitized proof is retained in `docs/qa/mexico-resident-drill.json`. Local regression: 65/65. The three pinned Replay hashes and all 112 currently published Replays were unchanged after deployment.
+
 ## Evidence and delivery
 
 Public status: https://gridline-indol.vercel.app/api/live/verification

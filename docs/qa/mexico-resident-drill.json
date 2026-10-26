@@ -1,0 +1,24 @@
+{
+  "kind": "production transport timing drill",
+  "planId": "mexico-2026",
+  "planDigest": "33dbf0f96f0c26c1e282649792da229ef7c7ce5f0dcd8176da07ceef62c67879",
+  "result": "TRANSPORT_SMOKE_ONLY",
+  "scheduledAt": "2026-10-26T15:50:32.747Z",
+  "actualStartedAt": "2026-10-26T15:50:32.764Z",
+  "delayMs": 17,
+  "firstSSEFrameAt": "2026-10-26T15:50:32.986Z",
+  "firstSSEFrameDelayMs": 239,
+  "normalizedFrames": 20,
+  "durationMs": 20001,
+  "transport": {
+    "attempts": 1,
+    "connections": 1,
+    "cleanEnds": 0,
+    "errors": 0,
+    "invalidFrames": 0,
+    "startHttp": 200,
+    "firstFrameAt": 1793029832986,
+    "lastFrameAt": 1793029851987
+  },
+  "activeSessionVerified": false
+}

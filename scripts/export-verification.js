@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import {verificationPlan,planDigest,koreanTime} from '../src/live/verification-plan.js';
 const now=Date.now(),first=Date.parse(verificationPlan.sessions[0].start),last=Date.parse(verificationPlan.sessions.at(-1).end);
-if(now<first-3*86400000||now>last+7*86400000){console.log('Outside this one-off evidence export period; no request made.');process.exit(0);}
+if(now<first-7*86400000||now>last+7*86400000){console.log('Outside this one-off evidence export period; no request made.');process.exit(0);}
 const response=await fetch('https://gridline-indol.vercel.app/api/live/verification',{signal:AbortSignal.timeout(20000)});if(!response.ok)throw Error('Verification evidence API HTTP '+response.status);
 const data=await response.json();if(data.planDigest!==planDigest||!data.snapshot)throw Error('No matching resident checkpoint; this is not a successful capture');
 const dir='.cache/verification-export';await fs.mkdir(dir,{recursive:true});await fs.writeFile(dir+'/'+verificationPlan.id+'.json',JSON.stringify(data,null,2));
