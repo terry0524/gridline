@@ -17,8 +17,8 @@ import {ingestVerification,verificationStatus} from './src/live/verification-sto
 import {sessionCatalog,startReplay,replayStatus,getReplay,replayManifest} from './src/replay-loader.js';
 const root=path.dirname(fileURLToPath(import.meta.url));const port=Number(process.env.PORT||3000);
 const hosting=deploymentSettings(process.env,port);
-const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','theme.js','app.js','replay.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','chart.js'].map(f=>['/'+f,f])]);
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8'};
+const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','theme.js','app.js','replay.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','src/circuit-art.js','chart.js'].map(f=>['/'+f,f])]);
+const mime={'.svg':'image/svg+xml','.ttf':'font/ttf','.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8'};
 const openEndpoints=new Set(['meetings','sessions','drivers','position','location','intervals','laps','stints','pit','weather','race_control','team_radio','car_data','session_result']);
 const limits=new Map();
 const streams=process.env.GRIDLINE_SHARED_LIVE==='1'?new SharedLiveService():new RaceStreamService();
@@ -68,7 +68,8 @@ export async function handleRequest(req,res){
    const env=await getData(source,endpoint,params,ttl);return send(req,res,200,env.data,{'x-data-source':source,'x-data-updated':env.fetchedAt,'x-data-stale':String(env.stale),'x-cache':env.cache});
   }
   const route=/^\/(schedule|standings|results|race-center)(?:\/\d{4}\/[a-z0-9-]+)?\/?$/.test(u.pathname)||/^\/(replay|drivers|teams)\/\d{4}\/[a-z0-9_-]+\/?$/.test(u.pathname);
-  const file=staticFiles.get(u.pathname)||(route?'index.html':null);if(!file){res.writeHead(404);return res.end('Not found');}
+  const asset=/^\/assets\/(?:fonts|circuits|icons)\/[a-z0-9_-]+\.(?:svg|ttf)$/.test(u.pathname)?u.pathname.slice(1):null;
+  const file=staticFiles.get(u.pathname)||asset||(route?'index.html':null);if(!file){res.writeHead(404);return res.end('Not found');}
   const data=await fs.readFile(path.join(root,file));res.writeHead(200,{'content-type':mime[path.extname(file)],'cache-control':'no-cache','x-content-type-options':'nosniff','content-security-policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; media-src https://livetiming.formula1.com; object-src 'none'; frame-src 'none'; base-uri 'self'; frame-ancestors 'none'",'referrer-policy':'no-referrer'});res.end(data);
  }catch(err){send(req,res,err.status||502,{error:err instanceof ProviderError?err.message:'데이터를 불러오지 못했습니다. 다시 시도하세요.'});if(debug&&!(err instanceof ProviderError))console.error(err.message);}
 }

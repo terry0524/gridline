@@ -5,9 +5,9 @@
  try{if(localStorage.getItem('gridline-theme')==='light')theme='light';}catch{}
  function apply(){
   root.dataset.theme=theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='light'?'#f7f8fa':'#0c0f14');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',theme==='light'?'#f3f3eb':'#10110f');
   const button=document.getElementById('themeToggle');
-  if(button){button.setAttribute('aria-pressed',String(theme==='light'));button.title=theme==='light'?'어두운 모드로 전환':'밝은 모드로 전환';button.querySelector('span').textContent=theme==='light'?'☾':'☀';}
+  if(button){button.setAttribute('aria-pressed',String(theme==='light'));button.title=theme==='light'?'어두운 모드로 전환':'밝은 모드로 전환';button.querySelector('span').textContent='';}
  }
  apply();
  document.addEventListener('DOMContentLoaded',()=>{

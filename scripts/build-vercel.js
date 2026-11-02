@@ -15,6 +15,8 @@ try{
  execFileSync(process.execPath,[path.join(root,'scripts/restore-replays.js')],{cwd:staging,stdio:'inherit'});
  await fs.mkdir(fn,{recursive:true});await fs.mkdir(staticDir,{recursive:true});
  await fs.cp(path.join(root,'src'),path.join(fn,'src'),{recursive:true});
+ await fs.cp(path.join(root,'assets'),path.join(fn,'assets'),{recursive:true});
+ await fs.cp(path.join(root,'assets'),path.join(staticDir,'assets'),{recursive:true});
  const lock=JSON.parse(await fs.readFile(path.join(root,'package-lock.json')));
  for(const [name,pkg] of Object.entries(lock.packages))if(name.startsWith('node_modules/')&&!pkg.dev){
   if(name.split('/').includes('..'))throw Error('Invalid dependency path');
@@ -35,7 +37,7 @@ try{
    routes.push({src:`/api/replay/${match[1]}/data`,dest:'/'+file,headers:{'Cache-Control':'public, max-age=3600','Content-Type':'application/json; charset=utf-8'}});
   }
  }
- for(const f of ['index.html','styles.css','theme.js','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js']){
+ for(const f of ['index.html','styles.css','theme.js','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','src/circuit-art.js']){
   const dest=path.join(staticDir,f);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.copyFile(path.join(root,f),dest);
  }
  await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'handler.js',launcherType:'Nodejs',maxDuration:300,regions:['iad1'],supportsResponseStreaming:true},null,2));

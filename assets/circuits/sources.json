@@ -1,0 +1,218 @@
+{
+  "albert_park": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11234,
+    "sha256": "68a3962c83108c05d4fd1d90457694206d81eab1d3350584c269e06adbaa6833",
+    "referenceDriver": 3,
+    "referenceLap": 42,
+    "points": 307
+  },
+  "shanghai": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11245,
+    "sha256": "1873e0bc9bb5e21f516cba02fd6bcc1b96e16d9e86bd15bca221fd36038ea2da",
+    "referenceDriver": 12,
+    "referenceLap": 52,
+    "points": 359
+  },
+  "suzuka": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11253,
+    "sha256": "36e57b92c185eb0290a65667649fca8d89168fe83e3bfedfdd35e8c4361bf408",
+    "referenceDriver": 12,
+    "referenceLap": 49,
+    "points": 356
+  },
+  "bahrain": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 10014,
+    "sha256": "d9a5dce04e2f24743ae64450ff66e46a7f4c2b71e5b8cf23e968d7b235b1a0cb",
+    "referenceDriver": 81,
+    "referenceLap": 36,
+    "points": 360
+  },
+  "jeddah": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 10022,
+    "sha256": "6622464ef2812cf629d4910c1aaed16aa0302ec973f7496ad23ed549009cc9f4",
+    "referenceDriver": 4,
+    "referenceLap": 41,
+    "points": 357
+  },
+  "miami": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11280,
+    "sha256": "39f2f6d746406a9a721a1ca0665ceaf98662c0798b6ab1cf0578d111d6526af6",
+    "referenceDriver": 1,
+    "referenceLap": 35,
+    "points": 352
+  },
+  "imola": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 9987,
+    "sha256": "5f8f8304924a9ce42605ee3c43776881f93faa68b28cc0eeee0b995fe91aa8d5",
+    "referenceDriver": 1,
+    "referenceLap": 58,
+    "points": 291
+  },
+  "monaco": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11299,
+    "sha256": "42eec2e8df965cad5738ac2a226c6159cf43d74d28412571825b9e9d5eda9c7a",
+    "referenceDriver": 12,
+    "referenceLap": 5,
+    "points": 288
+  },
+  "catalunya": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11369,
+    "sha256": "d6b2d01dd84c1d51050e4df8741fe1412355c12b616a0d27b2e403cf2e6c0741",
+    "referenceDriver": 63,
+    "referenceLap": 49,
+    "points": 362
+  },
+  "villeneuve": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11291,
+    "sha256": "907980fc651fc54b98d8bc0b9d6194f60af98c0192d3a549be9caad8bcc531e2",
+    "referenceDriver": 12,
+    "referenceLap": 68,
+    "points": 293
+  },
+  "red_bull_ring": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11315,
+    "sha256": "c5dfbd803bc24af689ec1d7915f2e97643545239b678e8fe9489cadeea791e3d",
+    "referenceDriver": 12,
+    "referenceLap": 59,
+    "points": 262
+  },
+  "silverstone": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11326,
+    "sha256": "297d97e785eea0ed7a2c7073d8223c7b68026bf679f277b95545410dbf4fd70f",
+    "referenceDriver": 12,
+    "referenceLap": 37,
+    "points": 350
+  },
+  "spa": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11334,
+    "sha256": "c0fba2f1d749cbc8db4fe7ab86273dad71c4371589d07e5f9f1f87e58a3da4f3",
+    "referenceDriver": 1,
+    "referenceLap": 44,
+    "points": 434
+  },
+  "hungaroring": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11342,
+    "sha256": "042afdcd61d88260aebe3f445ad213529335a489b2d6e4120ba0aa892a8b57a1",
+    "referenceDriver": 16,
+    "referenceLap": 58,
+    "points": 315
+  },
+  "zandvoort": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11353,
+    "sha256": "1131d07eb30144e874e06768ec48d7f753d785e70a07b7061f0393188d4df959",
+    "referenceDriver": 16,
+    "referenceLap": 60,
+    "points": 274
+  },
+  "monza": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11361,
+    "sha256": "25216964b77872131c2b823930d6323fb707eff91e88439177bb1e8eeb267742",
+    "referenceDriver": 12,
+    "referenceLap": 53,
+    "points": 320
+  },
+  "baku": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11377,
+    "sha256": "7eca22b63d58f4db662ad2fbf9ab19f3c7379802f206f3ae9b04d1b501b2e8a0",
+    "referenceDriver": 63,
+    "referenceLap": 49,
+    "points": 393
+  },
+  "marina_bay": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11388,
+    "sha256": "ac44adb5e9d024fceb5a94250b45915a83b7b1a45d489c67a110ba1aceb83b8b",
+    "referenceDriver": 16,
+    "referenceLap": 41,
+    "points": 356
+  },
+  "americas": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11396,
+    "sha256": "7f9aba671651863c269a47a6a001d5f307d3b2656f77b14b0a5166318d8f4470",
+    "referenceDriver": 16,
+    "referenceLap": 42,
+    "points": 371
+  },
+  "rodriguez": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 9877,
+    "sha256": "4d2f833d479ebccfb71a228380ebc981c396f45f665c8480f337efadabc373ff",
+    "referenceDriver": 63,
+    "referenceLap": 50,
+    "points": 296
+  },
+  "interlagos": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 9869,
+    "sha256": "9a41278afac9a9dc8ec78cdeddfa7b584ca5765319638d1d572bbe0067ed4d33",
+    "referenceDriver": 23,
+    "referenceLap": 59,
+    "points": 276
+  },
+  "vegas": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 9858,
+    "sha256": "301eda22f52b179888be8686fab7eaf8f7c11a1e3cb5fcc2140f36776738c581",
+    "referenceDriver": 1,
+    "referenceLap": 50,
+    "points": 351
+  },
+  "losail": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 9850,
+    "sha256": "b30d6f862e82985dbaa2abfc87a0a026fe610a9ed071e5c3522b9522bb2ef5f1",
+    "referenceDriver": 81,
+    "referenceLap": 44,
+    "points": 304
+  },
+  "yas_marina": {
+    "referenceYear": 2025,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 9839,
+    "sha256": "8d38ff18ae8ddd63922da45d86e7da37fbd444c7f4fbecfe8db41c6e76c075e7",
+    "referenceDriver": 16,
+    "referenceLap": 45,
+    "points": 337
+  }
+}
