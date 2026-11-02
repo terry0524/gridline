@@ -9,3 +9,5 @@
 They validate raw-deflate/base64 schema only. Historical availability is not free Live GPS entitlement. Full research responses stay in the ignored `.cache/research` folder. No connection tokens/cookies/account credentials are stored in fixtures. Local development/QA; source data rights are separate from implementation licenses.
 
 `season-2024.json.gz` / `season-2026.json.gz`: real normalized Jolpica season snapshots fetched 2026-10-13 KST. Include race/sprint awards, previous-round changes and provider URLs/SHA-256 provenance. 2024 has 479 race-result records across 24 rounds (Brazil lists 19), not an assumed 20×24. 2026 snapshot is Round 17; it is a fixed regression fixture, not a current-data source. UI uses the backend provider, never these fixtures. Raw cache hashes are checked in tests.
+
+`mexico-result-sources.json`: observed 2026 Mexico Race/Qualifying (OpenF1/Jolpica) and United States Race (Jolpica), with source URLs and observation time. Used to verify actual response parsing and awards. End-transition/cadence/failure tests use explicit controlled clocks and are not proof of a future actual Live finish.

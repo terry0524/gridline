@@ -2,6 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {getData,ProviderError,cacheDir,historicalTTL} from './provider.js';
 import {normalizeMeeting,normalizeResults,normalizeStandings,buildProgression} from './season-model.js';
+import {readResults} from './result-store.js';
+import {overlaySeasonResults,resultKey} from './result-model.js';
 import {sessionCatalog,getReplay,resolveHistorical} from './replay-loader.js';
 const memory=new Map(),pending=new Map();
 const seasonTTL=year=>year<new Date().getFullYear()?86400000:300000;
@@ -9,20 +11,37 @@ const provenance=e=>({source:e.source,url:e.url,fetchedAt:e.fetchedAt,stale:e.st
 export async function pagedResults(year,endpoint,fetcher=getData){const merged=new Map(),sources=[];let offset=0,total=Infinity;for(let page=0;offset<total&&page<30;page++){const e=await fetcher('jolpica',`${year}/${endpoint}`,{limit:100,offset},seasonTTL(year));const mr=e.data.MRData;total=Number(mr.total);if(!Number.isFinite(total))throw new ProviderError('Invalid pagination total');sources.push(provenance(e));const key={results:'Results',sprint:'SprintResults',qualifying:'QualifyingResults'}[endpoint];let count=0;for(const r of mr.RaceTable?.Races??[]){const items=r[key]??[];count+=items.length;const prior=merged.get(r.round)??{...r,[key]:[]};const byDriver=new Map(prior[key].map(x=>[x.Driver?.driverId,x]));for(const x of items)byDriver.set(x.Driver?.driverId,x);prior[key]=[...byDriver.values()].sort((a,b)=>Number(a.position)-Number(b.position));merged.set(r.round,prior);}if(!count&&offset<total)throw new ProviderError('Incomplete result pagination');offset+=count;}
  if(offset<total)throw new ProviderError('Result pagination limit exceeded');return{races:[...merged.values()].sort((a,b)=>Number(a.round)-Number(b.round)),provenance:sources,count:offset,total};}
 function standingList(env,kind){return env.data.MRData.StandingsTable?.StandingsLists?.[0]?.[kind==='drivers'?'DriverStandings':'ConstructorStandings']??[];}
+const withResults=async data=>overlaySeasonResults(data,await readResults(data.season));
 const seasonFile=year=>path.join(cacheDir,'seasons',`${year}-v1.json`);
 export async function seasonData(year,{waitForFresh=false}={}){
  if(!Number.isInteger(year)||year<2023||year>new Date().getFullYear())throw new ProviderError('Supported seasons: 2023 to current year',400);
  let cached=memory.get(year);if(!cached){try{const d=JSON.parse(await fs.readFile(seasonFile(year)));if(d.normalizationVersion===1&&Array.isArray(d.schedule)&&d.progression){cached={at:Date.parse(d.fetchedAt),data:d};memory.set(year,cached);}}catch{}}
- if(cached&&Date.now()-cached.at<seasonTTL(year))return cached.data;
+ if(cached&&Date.now()-cached.at<seasonTTL(year))return withResults(cached.data);
  let promise=pending.get(year);if(!promise){promise=loadSeason(year).then(async data=>{if(!Object.keys(data.errors).length){memory.set(year,{at:Date.now(),data});const file=seasonFile(year);await fs.mkdir(path.dirname(file),{recursive:true});await fs.writeFile(file+'.'+process.pid+'.tmp',JSON.stringify(data));await fs.rename(file+'.'+process.pid+'.tmp',file);}return data;}).finally(()=>pending.delete(year));pending.set(year,promise);}
- if(cached&&!waitForFresh){promise.catch(()=>{});return{...cached.data,stale:true,refreshing:true};}
- return promise;
+ if(cached&&!waitForFresh){promise.catch(()=>{});return withResults({...cached.data,stale:true,refreshing:true});}
+ return withResults(await promise);
 }
 async function loadSeason(year){const errors={},sources=[];const names=['schedule','drivers','constructors','race','sprint'];const jobs=[getData('jolpica',String(year),{limit:100},seasonTTL(year)),getData('jolpica',`${year}/driverstandings`,{limit:100},seasonTTL(year)),getData('jolpica',`${year}/constructorstandings`,{limit:100},seasonTTL(year)),pagedResults(year,'results'),pagedResults(year,'sprint')];const fetched=await Promise.allSettled(jobs);const data={};fetched.forEach((r,i)=>{if(r.status==='fulfilled'){data[names[i]]=r.value;sources.push(...(r.value.provenance??[provenance(r.value)]));}else errors[names[i]]=r.reason.message;});
  const round=Number(data.drivers?.data.MRData.StandingsTable?.StandingsLists?.[0]?.round??data.constructors?.data.MRData.StandingsTable?.StandingsLists?.[0]?.round??0);let prevD=[],prevT=[];if(round>1){const previous=await Promise.allSettled(['driverstandings','constructorstandings'].map(k=>getData('jolpica',`${year}/${round-1}/${k}`,{limit:100},seasonTTL(year))));previous.forEach((r,i)=>{if(r.status==='fulfilled'){sources.push(provenance(r.value));if(i===0)prevD=standingList(r.value,'drivers');else prevT=standingList(r.value,'constructors');}else errors.change=r.reason.message;});}
  const standings={round,drivers:data.drivers?normalizeStandings(standingList(data.drivers,'drivers'),'drivers',prevD):[],constructors:data.constructors?normalizeStandings(standingList(data.constructors,'constructors'),'constructors',prevT):[]};const races=normalizeResults(data.race?.races??[],'race'),sprints=normalizeResults(data.sprint?.races??[],'sprint');for(const standing of standings.drivers){const latest=[...races,...sprints].sort((a,b)=>b.round-a.round||(a.kind==='race'?-1:1)).flatMap(m=>m.results).find(x=>x.driver.id===standing.id);if(latest){standing.driver.number=latest.number??standing.driver.number;standing.team=latest.team;}}const progression=buildProgression(races,sprints,standings);if(errors.race||errors.sprint){progression.complete=false;progression.reconciliation.matches=false;}
  return{normalizationVersion:1,season:year,schedule:(data.schedule?.data.MRData.RaceTable?.Races??[]).map(normalizeMeeting),standings,races,sprints,progression,errors,source:'Jolpica',fetchedAt:sources.map(p=>p.fetchedAt).filter(Boolean).sort().at(-1)??null,normalizedAt:new Date().toISOString(),stale:sources.some(s=>s.stale),provenance:sources};}
-export async function weekendResults(year,round,kind){if(!['qualifying','sprint','race'].includes(kind)||!Number.isInteger(round)||round<1||round>30)throw new ProviderError('Invalid weekend',400);if(kind!=='qualifying'){const s=await seasonData(year);if(s.errors[kind])throw new ProviderError(s.errors[kind]);return{meeting:(kind==='race'?s.races:s.sprints).find(r=>r.round===round)??null,source:s.source,provenance:s.provenance};}const e=await getData('jolpica',`${year}/${round}/qualifying`,{limit:100},seasonTTL(year));return{meeting:normalizeResults(e.data.MRData.RaceTable?.Races??[],'qualifying')[0]??null,source:'Jolpica',provenance:[provenance(e)]};}
+export async function weekendResults(year,round,kind){
+ if(!['qualifying','sprint','race'].includes(kind)||!Number.isInteger(round)||round<1||round>30)throw new ProviderError('Invalid weekend',400);
+ const snapshot=await readResults(year),record=snapshot?.items.find(r=>resultKey(r.meeting.round,r.meeting.kind)===resultKey(round,kind));
+ const stored=()=>({meeting:{...record.meeting,resultStatus:record.status,resultSource:record.source,resultUpdatedAt:record.sourceAt},source:record.source,provenance:[]});
+ if(kind!=='qualifying'){
+  const s=await seasonData(year),meeting=(kind==='race'?s.races:s.sprints).find(r=>r.round===round);
+  if(meeting)return{meeting,source:meeting.resultSource??s.source,provenance:s.provenance};
+  if(record)return stored();if(s.errors[kind])throw new ProviderError(s.errors[kind]);return{meeting:null,source:s.source,provenance:s.provenance};
+ }
+ if(record&&Date.now()-record.sourceAt<60000)return stored();
+ try{
+  const e=await getData('jolpica',`${year}/${round}/qualifying`,{limit:100},seasonTTL(year));
+  const meeting=normalizeResults(e.data.MRData.RaceTable?.Races??[],'qualifying')[0]??null;
+  if(record&&(!meeting||e.stale||record.status==='PUBLISHED'&&record.sourceAt>Date.parse(e.fetchedAt)))return stored();
+  return{meeting:meeting?{...meeting,resultStatus:'PUBLISHED',resultSource:'Jolpica',resultUpdatedAt:Date.parse(e.fetchedAt)}:null,source:'Jolpica',provenance:[provenance(e)]};
+ }catch(e){if(record)return stored();throw e;}
+}
 export async function replayAvailability(year){const s=await seasonData(year);const catalog=await sessionCatalog(year);const result=[];for(const m of s.schedule){const match=catalog.sessions.find(x=>x.session_name==='Race'&&x.access==='historical'&&m.start!==null&&Math.abs(Date.parse(x.date_start)-m.start)<2*86400000);if(!match){result.push({round:m.round,status:'UNAVAILABLE',sessionKey:null});continue;}const r=match.manifest;result.push({round:m.round,sessionKey:r.sessionKey,status:r.validation==='VALID'?'REPLAY AVAILABLE':'PARTIAL DATA',description:r.validation==='VALID'?'Imported historical session':r.missing.join(' · '),locationCount:r.locations});}return{meetings:result,source:catalog.source,stale:catalog.stale,fetchedAt:catalog.fetchedAt};}
 export async function raceFacts(year,round){
  const available=await replayAvailability(year),a=available.meetings.find(x=>x.round===round);const d=a?.sessionKey?await getReplay(a.sessionKey):null;

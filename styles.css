@@ -175,3 +175,5 @@ footer{font-size:12px;line-height:1.7;border-top:0;padding:32px 0 40px;color:var
 [data-theme="light"] .compound[data-compound="INTERMEDIATE"]{color:#16683b}
 [data-theme="light"] .compound[data-compound="WET"]{color:#2356a3}
 [data-theme="light"] :is(.telemetry-delayed,#raceNotice,.connection-indicator[data-status="STALE"],.connection-indicator[data-status="DELAYED"]){color:#785800}
+
+.result-publication{font-size:14px;line-height:1.6;color:var(--text-muted);margin:16px 0 24px}
