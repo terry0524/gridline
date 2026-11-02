@@ -20,7 +20,7 @@ try{
   if(name.split('/').includes('..'))throw Error('Invalid dependency path');
   await fs.cp(path.join(root,name),path.join(fn,name),{recursive:true});
  }
- for(const f of ['server.js','package.json','index.html','styles.css','app.js','replay.js','chart.js'])await fs.copyFile(path.join(root,f),path.join(fn,f));
+ for(const f of ['server.js','package.json','index.html','styles.css','theme.js','app.js','replay.js','chart.js'])await fs.copyFile(path.join(root,f),path.join(fn,f));
  await fs.copyFile(path.join(root,'deploy/vercel-handler.js'),path.join(fn,'handler.js'));
  const routes=[];
  for(const entry of assets.entries){
@@ -35,7 +35,7 @@ try{
    routes.push({src:`/api/replay/${match[1]}/data`,dest:'/'+file,headers:{'Cache-Control':'public, max-age=3600','Content-Type':'application/json; charset=utf-8'}});
   }
  }
- for(const f of ['index.html','styles.css','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js']){
+ for(const f of ['index.html','styles.css','theme.js','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js']){
   const dest=path.join(staticDir,f);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.copyFile(path.join(root,f),dest);
  }
  await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'handler.js',launcherType:'Nodejs',maxDuration:300,regions:['iad1'],supportsResponseStreaming:true},null,2));

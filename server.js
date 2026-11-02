@@ -16,7 +16,7 @@ import {ingestVerification,verificationStatus} from './src/live/verification-sto
 import {sessionCatalog,startReplay,replayStatus,getReplay,replayManifest} from './src/replay-loader.js';
 const root=path.dirname(fileURLToPath(import.meta.url));const port=Number(process.env.PORT||3000);
 const hosting=deploymentSettings(process.env,port);
-const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','app.js','replay.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','chart.js'].map(f=>['/'+f,f])]);
+const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','theme.js','app.js','replay.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','chart.js'].map(f=>['/'+f,f])]);
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8'};
 const openEndpoints=new Set(['meetings','sessions','drivers','position','location','intervals','laps','stints','pit','weather','race_control','team_radio','car_data','session_result']);
 const limits=new Map();
@@ -42,7 +42,7 @@ export async function handleRequest(req,res){
    const match=u.pathname.match(/^\/api\/replay\/(\d+)\/(load|status|data)$/);
    if(match){const key=Number(match[1]),action=match[2];if(!Number.isSafeInteger(key)||key<=0)throw new ProviderError('Invalid session key',400);if(action==='load'){if(!debug&&!await getReplay(key))throw new ProviderError('Replay unavailable',404);if(req.method!=='POST')throw new ProviderError('POST required',405);return send(req,res,202,await startReplay(key));}if(action==='status')return send(req,res,200,await replayStatus(key));const d=await getReplay(key);if(!d)return send(req,res,404,{error:'Session has not been imported'});return send(req,res,200,d);}
    const seasonRoute=u.pathname.match(/^\/api\/season\/(\d{4})(?:\/(replays|\d{1,2})\/(?:(race|sprint|qualifying|facts))?)?$/);
-   if(seasonRoute){const year=Number(seasonRoute[1]),part=seasonRoute[2],kind=seasonRoute[3];if(part==='replays')return send(req,res,200,await replayAvailability(year));if(part)return send(req,res,200,kind==='facts'?await raceFacts(year,Number(part)):await weekendResults(year,Number(part),kind));return send(req,res,200,await seasonData(year));}
+   if(seasonRoute){const year=Number(seasonRoute[1]),part=seasonRoute[2],kind=seasonRoute[3];if(part==='replays')return send(req,res,200,await replayAvailability(year));if(part)return send(req,res,200,kind==='facts'?await raceFacts(year,Number(part)):await weekendResults(year,Number(part),kind));return send(req,res,200,await seasonData(year,{waitForFresh:u.searchParams.get('refresh')==='1'}));}
    if(u.pathname==='/api/system')return send(req,res,200,{app:'f1-live-companion',version});
    if(!debug&&(u.pathname.startsWith('/api/capture')||u.pathname==='/api/live/settings'||u.pathname==='/api/live/control'))throw new ProviderError('Developer tools are disabled',403);
    if(u.pathname==='/api/captures')return send(req,res,200,{captures:await listCaptures()});
