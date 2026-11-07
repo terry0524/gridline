@@ -13,6 +13,8 @@ const positionBuffers=new Map();
 const modeLabel=m=>m==='simulated-live'?'SIMULATED LIVE':m==='capture-replay'?'CAPTURE REPLAY':m==='live'?'LIVE':'REPLAY';
 const streamControls=()=>['simulated-live','capture-replay'].includes(mode);
 let nextSession=null;
+let lastTrackTime = null;
+const markerExitTimes = new Map();
 const markers=new Map(),towerRows=new Map();let battleA=null,battleB=null,battleActive=false;
 let telemetrySeq=0,telemetry=null,telemetryKey=null; let renderedWeather=null,renderedControl=null,renderedFastest=undefined,renderedRadio=null;const telemetryCache=new Map();
 function message(text,error=false){setText('#liveMessage',text);$('#liveMessage').classList.toggle('error',error);$('#retryReplay').classList.toggle('hidden',!error||mode!=='replay');}
@@ -30,7 +32,7 @@ $('#reconnectTest').addEventListener('click',()=>streamControl('interrupt'));
 $('#replayYear').addEventListener('change',loadCatalog);
 $('#replayGrandPrix').addEventListener('change',updateSessionOptions);
 function updateSessionOptions(key=null){const matches=catalog.filter(s=>s.manifest.slug===$('#replayGrandPrix').value).sort((a,b)=>(a.session_name==='Race'?0:1)-(b.session_name==='Race'?0:1));$('#replaySession').innerHTML=matches.map(s=>`<option value="${s.session_key}">${esc(s.session_name)} · ${s.manifest.validation==='VALID'?'AVAILABLE':'PARTIAL DATA'}</option>`).join('')||'<option value="">Unavailable</option>';if(key&&matches.some(s=>s.session_key===key))$('#replaySession').value=String(key);}
-function showStage(name,ready=false){const stages=['Session','Drivers','Track','Timing','Strategy','Race Control','Ready'];$('#replayStages').classList.remove('hidden');$('#replayStages').innerHTML=stages.map(x=>`<li data-state="${ready?'complete':x===name?'active':'waiting'}">${x===name&&!ready?'● ':ready?'✓ ':''}${x}</li>`).join('');}
+
 
 for(const b of document.querySelectorAll('[data-race-view]'))b.addEventListener('click',()=>{for(const x of document.querySelectorAll('[data-race-view]'))x.setAttribute('aria-pressed',String(x===b));$('.race-layout').dataset.mobileView=b.dataset.raceView;});
 for(const [id,key]of [['#battleA','a'],['#battleB','b']])$(id).addEventListener('change',e=>{if(key==='a')battleA=Number(e.target.value);else battleB=Number(e.target.value);battleActive=true;renderState(true);});
@@ -39,24 +41,29 @@ async function loadCatalog(){
  try{const d=await api(`/api/replay/sessions?year=${$('#replayYear').value}`);if(id!==loadId)return;catalog=d.sessions.filter(s=>s.access==='historical').sort((a,b)=>Date.parse(a.date_start)-Date.parse(b.date_start));
   $('#replayGrandPrix').innerHTML=[...new Map(catalog.map(s=>[s.manifest.slug,s])).values()].map(s=>`<option value="${esc(s.manifest.slug)}">${esc(s.manifest.grandPrix)} · ${esc(s.location)}</option>`).join('')||'<option value="">Imported replay unavailable</option>';updateSessionOptions();
   const independent=['live','capture-replay'].includes($('#raceMode').value);$('#replayYear').disabled=independent;$('#replaySession').disabled=independent;$('#replayGrandPrix').disabled=independent;$('#loadReplay').disabled=!independent&&!catalog.length;
-  message(`imported Replay ${catalog.length}개 · 세션 시간은 사용자 시간대 기준${d.stale?' · 캐시된 목록':''}`);
+  message(dataset ? '' : '세션을 선택하세요.');
  }catch(e){if(id!==loadId)return;message(`세션 목록을 불러오지 못했습니다: ${e.message} · 시즌을 다시 선택해 재시도하세요.`,true);catalog=[];$('#replaySession').innerHTML='<option value="">Data unavailable</option>';$('#loadReplay').disabled=!['live','capture-replay'].includes($('#raceMode').value);}
 }
 async function loadReplay({preserveURL=false}={}){
  if(loading)return;events?.close();events=null;if(mode!=='replay'&&state){state.connection='OFFLINE';setText('#dataHealth','OFFLINE · LAST DATA');}positionBuffers.clear();$('#reconnectTest').classList.add('hidden');const key=Number($('#replaySession').value);if(!key)return message('먼저 종료된 세션을 선택하세요.',true);
  const loadStarted=performance.now();const id=++loadId;loading=true;$('#raceMode').disabled=true;if(mode==='replay')pause();else playing=false;$('#loadReplay').disabled=true;$('#replayYear').disabled=true;$('#replaySession').disabled=true;$('#replayGrandPrix').disabled=true;
- message('LOADING REPLAY · 검증된 로컬 캐시를 읽는 중');showStage('Session');
+ message('리플레이 불러오는 중…');
  try{
   const d=await api(`/api/replay/${key}/data`);if(id!==loadId)return;
-  if(![3,4].includes(d.version)||!d.drivers.length)throw Error('지원하지 않는 Replay 데이터');showStage('Drivers');
+  if(![3,4].includes(d.version)||!d.drivers.length)throw Error('지원하지 않는 Replay 데이터');
   mode='replay';dataset=d;selected=d.drivers[0].number;at=d.session.start;playing=false;previousFastest=null;telemetry=null;telemetryKey=null;telemetrySeq++;
   renderedWeather=null;renderedControl=null;renderedFastest=undefined;
   battleA=d.drivers[0].number;battleB=d.drivers[1]?.number??battleA;battleActive=false;
   for(const id of ['#battleA','#battleB']){$(id).innerHTML=d.drivers.map(x=>`<option value="${x.number}">${esc(x.abbreviation)}</option>`).join('');$(id).disabled=false;}$('#battleA').value=String(battleA);$('#battleB').value=String(battleB);
   for(const id of ['#timeline','#playButton','#mobileTimeline','#mobilePlay','#speed','#mobileSpeed'])$(id).disabled=false;$('#timeline').value=0;$('#mobileTimeline').value=0;
-  setText('#sessionBadge','HISTORICAL REPLAY');if($('#live').classList.contains('active'))setText('#breadcrumbs',`${d.session.year} REPLAY / RACE CENTER`);setText('#trackInfo',`${d.session.year} · ${d.session.circuit} · ${d.session.type}`);
-  message(`${d.session.year} ${d.session.name} · ${d.session.type} · ${d.drivers.length}명 · 실제 위치 ${d.quality.locationCount.toLocaleString()}개${d.validation?.status==='PARTIAL'?' · PARTIAL DATA: '+d.validation.warnings.map(w=>w.replace(/^stints:/,'Tires:')).join(' · '):''}${d.quality.unavailable.length?' · 일부 데이터 없음: '+d.quality.unavailable.map(x=>({location:'Position',car_data:'Telemetry',race_control:'Race Control',stints:'Tires'})[x]||'Session data').join(', '):''}`);
-  showStage('Track');buildTrack();showStage('Timing');buildTower();showStage('Strategy');renderState(true);showStage('Race Control');animateCars(at);showStage('Ready',true);if(!preserveURL)document.dispatchEvent(new CustomEvent('gridline-replay-loaded',{detail:{key:d.session.key,year:d.session.year,slug:d.session.slug}}));if(window.gridlineConfig?.debug)$('#trackSvg').dataset.loadMetrics=JSON.stringify({sessionKey:key,browserLoadMs:performance.now()-loadStarted,locationRecords:d.quality.locationCount});
+  setText('#sessionBadge', '리플레이');
+  setText('#raceCenterTitle', d.session.name);
+  setText('#trackInfo', d.session.circuit);
+  if ($('#live').classList.contains('active')) setText('#breadcrumbs', `${d.session.year} / 리플레이`);
+  const trackTab = $('[data-race-view="track"]');
+  trackTab.click();
+  message('');
+  buildTrack();buildTower();renderState(true);animateCars(at);if(!preserveURL)document.dispatchEvent(new CustomEvent('gridline-replay-loaded',{detail:{key:d.session.key,year:d.session.year,slug:d.session.slug}}));if(window.gridlineConfig?.debug)$('#trackSvg').dataset.loadMetrics=JSON.stringify({sessionKey:key,browserLoadMs:performance.now()-loadStarted,locationRecords:d.quality.locationCount});
  }catch(e){if(id!==loadId)return;message(`데이터 조회 실패: ${e.message}${dataset?' · 이전에 받은 세션을 유지합니다.':''}`,true);}
  finally{if(id===loadId){loading=false;$('#raceMode').disabled=false;$('#loadReplay').disabled=false;$('#replayYear').disabled=false;$('#replaySession').disabled=false;$('#replayGrandPrix').disabled=false;}}
 }
@@ -69,31 +76,147 @@ function buildTower(){
  b.addEventListener('click',()=>selectDriver(d.number));root.append(b);towerRows.set(d.number,b);
  }
 }
-function buildTrack(){
- const root=$('#trackSvg');root.replaceChildren();markers.clear();project=null;
- if(!dataset.track?.points?.length){const text=svg('text',{x:360,y:240,'text-anchor':'middle',fill:'#adb8c7','font-size':14});text.textContent='Track / Position data unavailable';root.append(text);setText('#trackSource','무료 Live 좌표 미확인 · 차량 위치를 임의로 생성하지 않습니다');setText('#markerCount','— CARS');return;}
- project=trackProjector(dataset.track);
- const line=dataset.track.points.map(([x,y])=>project(x,y).join(',')).join(' ');
- root.append(svg('polyline',{points:line,fill:'none',stroke:'#334152','stroke-width':20,'stroke-linejoin':'round','stroke-linecap':'round'}),svg('polyline',{points:line,fill:'none',stroke:'#8092a8','stroke-width':2,'stroke-linejoin':'round'}));
- const ref=dataset.track.points[0];const [sx,sy]=project(...ref);const finish=svg('g');finish.append(svg('rect',{x:sx-9,y:sy-6,width:18,height:12,fill:'#f0f4fa',stroke:'#121b26','stroke-width':2}));const label=svg('text',{x:sx+14,y:sy+5,fill:'#f3f5fb','font-size':11,'font-weight':700});label.textContent='S/F ≈';finish.append(label);root.append(finish);
- for(const [i,p]of [dataset.track.sector1,dataset.track.sector2].entries()){if(!p)continue;const[x,y]=project(p.x,p.y);root.append(svg('circle',{cx:x,cy:y,r:5,fill:'#96accb',stroke:'#0d141f','stroke-width':2}));const text=svg('text',{x:x+11,y:y-10,fill:'#b0c3de','font-size':10});text.textContent=`S${i+1} ≈`;root.append(text);}
- for(const c of dataset.track.corners){const[x,y]=project(c.x,c.y);const text=svg('text',{x:x+13,y:y-14,fill:'#b7c5d8','font-size':11,'font-weight':500});text.textContent=String(c.number);root.append(text);}
- for(const d of dataset.drivers){const g=svg('g',{role:'button',tabindex:0,'aria-label':`${d.name} 선택`,'aria-pressed':'false'});const halo=svg('circle',{r:17,fill:'none',stroke:d.color,'stroke-width':2});const dot=svg('circle',{r:7,fill:d.color,stroke:'#0b1018','stroke-width':2});const text=svg('text',{x:12,y:4,fill:'#f5f7fb','font-size':11,'font-weight':800,'paint-order':'stroke',stroke:'#0b1018','stroke-width':3});text.textContent=d.abbreviation;g.setAttribute('aria-describedby',`timing-description-${d.number}`);const title=svg('title');title.textContent='Position data';g.append(halo,dot,text,title);g.addEventListener('click',()=>selectDriver(d.number));g.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();selectDriver(d.number);}});root.append(g);markers.set(d.number,{g,halo});}
- if(['live','capture-replay'].includes(mode)){setText('#trackSource','MultiViewer 서킷 형상 · 무료 Live 좌표 미확인 · S/F ≈ 형상 시작점 · DRS / sectors unavailable');return;}
- setText('#trackSource',`OpenF1 · #${dataset.track.driver} Lap ${dataset.track.lap} 실제 궤적 · 코너: ${dataset.track.cornerSource||'Data unavailable'} · S/F·sector는 랩 시각 기반 근사 · DRS zone: Data unavailable`);
+function buildTrack() {
+ const root = $('#trackSvg');
+ root.replaceChildren();
+ markers.clear();
+ markerExitTimes.clear();
+ lastTrackTime = null;
+ project = null;
+ const track = dataset.track;
+ if (!track?.points?.length) {
+  const placeholder = svg('text', { x: 360, y: 240, 'text-anchor': 'middle', 'font-size': 16 });
+  placeholder.textContent = '트랙 기록이 없습니다';
+  root.append(placeholder);
+  setText('#trackSource', '이 세션에는 트랙 좌표가 없습니다.');
+  return;
+ }
+
+ project = trackProjector(track);
+ const points = track.points.map(([x, y]) => project(x, y));
+ const line = points.map(point => point.join(',')).join(' ');
+ const road = svg('g', { 'aria-hidden': 'true' });
+ for (const layer of ['road-shadow', 'road-verge', 'road-edge', 'road-asphalt', 'road-surface']) {
+  road.append(svg('polyline', {
+   points: line, class: layer, fill: 'none', 'stroke-linejoin': 'round', 'stroke-linecap': 'round'
+  }));
+ }
+
+ const [startX, startY] = points[0];
+ const [aheadX, aheadY] = points[Math.min(3, points.length - 1)];
+ const angle = Math.atan2(aheadY - startY, aheadX - startX) * 180 / Math.PI;
+ const start = svg('g', { transform: `translate(${startX} ${startY}) rotate(${angle})`, class: 'track-start' });
+ const title = svg('title');
+ title.textContent = '출발선 위치 근사';
+ start.append(title);
+ for (let row = 0; row < 6; row++) {
+  for (let column = 0; column < 2; column++) {
+   start.append(svg('rect', {
+    x: column * 3.5 - 3.5, y: row * 3.5 - 10.5, width: 3.5, height: 3.5,
+    fill: (row + column) % 2 ? '#242724' : '#f7f7ee'
+   }));
+  }
+ }
+ road.append(start);
+ root.append(road);
+
+ for (const corner of track.corners ?? []) {
+  const [x, y] = project(corner.x, corner.y);
+  const label = svg('text', { x: x + 12, y: y - 12, class: 'track-turn', 'aria-hidden': 'true' });
+  label.textContent = corner.number;
+  root.append(label);
+ }
+
+ for (const driver of dataset.drivers) {
+  const marker = svg('g', {
+   role: 'button', tabindex: 0, 'aria-label': `${driver.name} 선택`, 'aria-pressed': 'false',
+   class: 'track-car', 'aria-describedby': `timing-description-${driver.number}`
+  });
+  marker.style.setProperty('--car-color', driver.color);
+  const hitArea = svg('circle', { r: 14, fill: 'transparent' });
+  const halo = svg('circle', { r: 11, class: 'car-halo', fill: 'none' });
+  const dot = svg('circle', { r: 5.5, class: 'car-dot' });
+  const label = svg('text', { x: 10, y: 4, class: 'car-label' });
+  label.textContent = driver.abbreviation;
+  marker.append(hitArea, halo, dot, label);
+  marker.addEventListener('click', () => selectDriver(driver.number));
+  marker.addEventListener('keydown', event => {
+   if (!['Enter', ' '].includes(event.key)) return;
+   event.preventDefault();
+   selectDriver(driver.number);
+  });
+  root.append(marker);
+  markers.set(driver.number, marker);
+  if (mode === 'replay') markerExitTimes.set(driver.number, terminalParkingAt(driver.locations));
+ }
+
+ // Explicit Race Control retirement applies only after its timestamp, including after a seek.
+ if (mode === 'replay') {
+  for (const event of dataset.control) {
+   const match = /\bCAR\s+(\d+)\s*(?:\([A-Z]{3}\)\s*)?(?:HAS\s+)?(?:RETIRED|WITHDRAWN)\b/i.exec(event.message);
+   if (!match) continue;
+   const car = Number(match[1]);
+   markerExitTimes.set(car, Math.min(markerExitTimes.get(car) ?? Infinity, event.at));
+  }
+ }
+ const source = '주행 기록을 바탕으로 그린 지도입니다. 노면 폭, 가장자리, 출발선은 보기 쉽게 표현했습니다.';
+ const warning = dataset.validation?.status === 'PARTIAL' ? ' 일부 세션 기록이 없습니다.' : '';
+ setText('#trackSource', source + warning);
 }
-function animateCars(t){
- if(!dataset||!project)return;let visible=0;
- for(const d of dataset.drivers){const marker=markers.get(d.number);const loc=mode==='replay'?locationAt(d.locations,t):locationAt(positionBuffers.get(d.number)||[],t,2000,true);marker.g.style.display=loc?'':'none';if(!loc)continue;visible++;const [x,y]=project(loc.x,loc.y);const transform=`translate(${x.toFixed(2)} ${y.toFixed(2)})`;if(marker.g.getAttribute('transform')!==transform)marker.g.setAttribute('transform',transform);const quality=mode==='replay'?'exact':state?.drivers.find(x=>x.number===d.number)?.positionQuality??'unavailable';marker.g.dataset.quality=quality;marker.g.style.opacity=loc.stale?'.5':'1';const title=marker.g.querySelector('title');if(title)title.textContent=loc.stale?`Last known position · ${Math.max(0,(t-loc.at)/1000).toFixed(1)}s ago`:quality==='estimated'?'Estimated from timing data. Not GPS.':mode==='simulated-live'?'EXACT / SIMULATED · historical coordinates':'EXACT POSITION · source coordinates';marker.g.querySelector('circle:nth-child(2)')?.setAttribute('fill',quality==='estimated'?'transparent':d.color);marker.halo.style.display=d.number===selected||battleActive&&(d.number===battleA||d.number===battleB)?'':'none';marker.g.setAttribute('aria-pressed',String(d.number===selected));}
- setText('#markerCount',`${visible}/${dataset.drivers.length} CARS`);
+
+function terminalParkingAt(locations) {
+ const last = locations.at(-1);
+ if (!last) return Infinity;
+ const [end, x, y] = last;
+ // OpenF1 coordinates are in tenths of a metre. A terminal cluster excludes
+ // temporary stops followed by movement and tolerates small GPS jitter.
+ const parkedRadiusSquared = 50 ** 2;
+ let first = end;
+ for (let i = locations.length - 2; i >= 0; i--) {
+  const [time, px, py] = locations[i];
+  if ((px - x) ** 2 + (py - y) ** 2 > parkedRadiusSquared) break;
+  first = time;
+ }
+ return end - first >= 20000 ? first + 20000 : Infinity;
 }
+
+function animateCars(t) {
+ if (!dataset || !project || t === lastTrackTime) return;
+ lastTrackTime = t;
+ const replay = mode === 'replay';
+ const streamDrivers = replay ? null : new Map(state?.drivers.map(driver => [driver.number, driver]));
+ for (const driver of dataset.drivers) {
+  const marker = markers.get(driver.number);
+  if (!marker) continue;
+  const streamDriver = streamDrivers?.get(driver.number);
+  const out = replay ? t >= (markerExitTimes.get(driver.number) ?? Infinity) : streamDriver?.retired === true;
+  const location = out ? null : replay
+   ? locationAt(driver.locations, t)
+   : locationAt(positionBuffers.get(driver.number) ?? [], t, 2000, true);
+  const display = location ? '' : 'none';
+  if (marker.style.display !== display) marker.style.display = display;
+  if (!location) continue;
+
+  const [x, y] = project(location.x, location.y);
+  const transform = `translate(${x.toFixed(2)} ${y.toFixed(2)})`;
+  if (marker.getAttribute('transform') !== transform) marker.setAttribute('transform', transform);
+  marker.classList.toggle('label-left', x > 648);
+  const active = String(driver.number === selected);
+  if (marker.getAttribute('aria-pressed') !== active) marker.setAttribute('aria-pressed', active);
+  marker.classList.toggle('battle-car', battleActive && (driver.number === battleA || driver.number === battleB));
+  marker.classList.toggle('stale-car', Boolean(location.stale));
+  marker.classList.toggle('estimated-car', streamDriver?.positionQuality === 'estimated');
+ }
+}
+
 function renderState(suppressToast=false){
  if(!dataset)return;if(mode!=='replay'){if(state)paintState(suppressToast);return;}const t=currentTime();at=t;state=raceStateAt(dataset,t);paintState(suppressToast);
 }
 function paintState(suppressToast=false){
- if(!$('#live').classList.contains('active'))return;const t=state.timestamp;if(mode!=='replay')setText('#breadcrumbs',`${modeLabel(mode)} / RACE CENTER`);setText('#timingSource',['live','capture-replay'].includes(mode)?'F1 Timing':'OpenF1');renderDiagnostics();
+ if(!$('#live').classList.contains('active'))return;lastTrackTime=null;const t=state.timestamp;if(mode!=='replay')setText('#breadcrumbs',`${modeLabel(mode)} / RACE CENTER`);setText('#timingSource',['live','capture-replay'].includes(mode)?'F1 Timing':'OpenF1');renderDiagnostics();
  const playback=state.playback;const progressTime=playback?.cursor??t,startTime=playback?.start??dataset.session.start,endTime=playback?.end??dataset.session.end;const pct=Number.isFinite(progressTime)&&Number.isFinite(startTime)&&endTime>startTime?Math.max(0,Math.min(100,(progressTime-startTime)/(endTime-startTime)*100)):0;$('#timeline').value=pct;$('#mobileTimeline').value=pct;$('#mobileTimeline').setAttribute('aria-valuetext',`${clock(t)} · ${pct.toFixed(1)}%`);$('#timeline').setAttribute('aria-valuetext',`${clock(t)} · ${pct.toFixed(1)}%`);
- setText('#frameTime',clock(t));$('#frameTime').dateTime=t==null?'':new Date(t).toISOString();setText('#replayProgress',`${Math.floor((progressTime-startTime)/60000)}분 ${String(Math.floor((progressTime-startTime)/1000)%60).padStart(2,'0')}초 / ${Math.ceil((endTime-startTime)/60000)}분 · ${pct.toFixed(1)}%`);
+ setText('#frameTime',clock(t));$('#frameTime').dateTime=t==null?'':new Date(t).toISOString();const elapsed = Math.max(0, Math.floor((progressTime - startTime) / 1000));
+ setText('#replayProgress', `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, '0')}`);
  const leader=state.drivers.find(d=>d.position===1);setText('#raceLap',`LAP ${state.session.currentLap??leader?.currentLap??'—'} / ${state.session.totalLaps??(Math.max(0,...dataset.drivers.flatMap(d=>d.laps?.map(l=>l.lap)||[]))||'—')}`);setText('#raceFlag',state.status);setText('#dataHealth',mode==='replay'?(navigator.onLine?'REPLAY · CACHED':'OFFLINE · CACHED REPLAY'):`${mode==='simulated-live'?'SIMULATED · ':''}${state.connection}`);setText('#driverCount',`${state.drivers.length} DRIVERS`);
  const root=$('#timingRows');let previous=null;
  for(const d of state.drivers){const row=towerRows.get(d.number);if(!row)continue;const ref=previous?previous.nextSibling:root.firstChild;if(ref!==row)root.insertBefore(row,ref);previous=row;row.classList.toggle('selected',d.number===selected);row.setAttribute('aria-pressed',String(d.number===selected));
@@ -139,7 +262,7 @@ function streamMetadata(meta){
  battleA=meta.drivers.some(d=>d.number===battleA)?battleA:meta.drivers[0]?.number;
  battleB=meta.drivers.some(d=>d.number===battleB)?battleB:meta.drivers[1]?.number;
  for(const id of ['#battleA','#battleB']){$(id).innerHTML=meta.drivers.map(d=>`<option value="${d.number}">${esc(d.abbreviation)}</option>`).join('');$(id).disabled=!meta.drivers.length;}$('#battleA').value=String(battleA);$('#battleB').value=String(battleB);
- buildTrack();buildTower();setText('#trackInfo',`${meta.session.year??'—'} · ${meta.session.circuit} · ${meta.session.type}`);if($('#live').classList.contains('active'))setText('#breadcrumbs',`${mode.toUpperCase()} / RACE CENTER`);
+ buildTrack();buildTower();setText('#trackInfo', meta.session.circuit ?? '');if($('#live').classList.contains('active'))setText('#breadcrumbs',`${mode.toUpperCase()} / RACE CENTER`);
 }
 function streamFrame(frame){
  if(frame.state.mode!==mode||frame.generation!==streamGeneration)return;
@@ -150,7 +273,8 @@ function streamFrame(frame){
  dataset.session=state.session;playing=false;setText('#sessionBadge',mode==='live'?(state.health?.sessionAvailability==='LIVE SESSION AVAILABLE'?'LIVE':'LIVE · WAITING'):modeLabel(mode));
  for(const id of ['#playButton','#mobilePlay']){setText(id,streamPaused?'▶':'Ⅱ');$(id).setAttribute('aria-label',streamPaused?'재생':'일시정지');}
  if(state.simulation)for(const id of ['#speed','#mobileSpeed'])$(id).value=String(state.simulation.speed);
- message(mode==='capture-replay'?`${state.session.name} · CAPTURE REPLAY · 실제 수신 raw frame 재생 · ${state.drivers.length}명`:mode==='simulated-live'?`${state.session.year} ${state.session.name} · 개발용 실제 과거 데이터 SSE · ${state.drivers.length}명 · 모든 접속자가 같은 재생 시계를 공유합니다.`:`${state.session.year??'—'} ${state.session.name} · ${state.session.status??'Waiting'} · ${state.reason||'공개 Timing stream'} · 좌표/telemetry 무료 접근 미확인`);
+ setText('#raceCenterTitle', state.session.name || '레이스 센터');
+ message('');
  paintState(initial||reset);
  if(mode==='live')setText('#replayProgress',`Session timestamp ${clock(state.timestamp)} · ${state.active?'진행 중':'종료 snapshot / 다음 세션 대기'}`);
 }
@@ -169,10 +293,11 @@ async function loadStream(){
  }catch(e){if(id!==loadId)return;message(`연결 실패: ${e.message}`,true);}finally{if(id===loadId){loading=false;$('#raceMode').disabled=false;$('#loadReplay').disabled=false;}}
 }
 function renderDiagnostics(){
- $('#estimatePosition').disabled=mode==='replay'||mode==='simulated-live';const health=state.health;if(mode==='replay'){setText('#liveConnection','REPLAY · CACHED DATA');}
+ $('#live').classList.toggle('is-replay', mode === 'replay');
+ $('#estimatePosition').disabled=mode==='replay'||mode==='simulated-live';const health=state.health;if(mode==='replay'){setText('#liveConnection','');}
  else{setText('#liveConnection',`${mode==='live'?'LIVE TIMING':modeLabel(mode)} · ${health?.status??state.connection} · Timing ${health?.dataAgeMs==null?(state.capabilities?.timing?'age unavailable':'Unavailable'):(health.dataAgeMs/1000).toFixed(1)+'s ago'}${health?.channels?.WeatherData?' · Weather '+(health.channels.WeatherData.ageMs==null?'timestamp unavailable':Math.round(health.channels.WeatherData.ageMs/1000)+'s ago'):''}`);$('#liveConnection').dataset.status=health?.status??'OFFLINE';}
  const caps=state.capabilities;$('#runtimeCapabilities').innerHTML=caps?Object.entries({timing:'Timing',intervals:'Gap/Interval',tires:'Tires',weather:'Weather',raceControl:'Race Control',radioMetadata:'Radio metadata',position:'Exact position',telemetry:'Telemetry'}).map(([key,label])=>`<span data-available="${caps[key]===true}">${label}: ${caps[key]===true?'Available':'Unavailable'}</span>`).join(''):'';
- const quality=state.positionQuality??(state.drivers.some(d=>d.location)?'exact':'unavailable');setText('#positionQuality',mode==='simulated-live'&&quality==='exact'?'EXACT / SIMULATED':quality==='exact'?`EXACT POSITION${state.health?.channels?.Position?.state==='STALE'?' · STALE':''}`:quality==='estimated'?'ESTIMATED POSITION':'POSITION Unavailable');$('#positionQuality').title=quality==='estimated'?'Estimated from timing data. Not GPS.':'Actual source coordinate capability';
+ const quality=state.positionQuality??(state.drivers.some(d=>d.location)?'exact':'unavailable');setText('#positionQuality',mode==='simulated-live'&&quality==='exact'?'EXACT / SIMULATED':quality==='exact'?`EXACT POSITION${state.health?.channels?.Position?.state==='STALE'?' · STALE':''}`:quality==='estimated'?'ESTIMATED POSITION':'POSITION Unavailable');$('#positionQuality').dataset.quality=quality;$('#positionQuality').title=quality==='estimated'?'Estimated from timing data. Not GPS.':'Actual source coordinate capability';
  $('.telemetry-block .eyebrow').textContent=mode==='live'?'LIVE TELEMETRY':mode==='capture-replay'?'RECORDED TELEMETRY':'TELEMETRY';
  if(mode==='live'){setText('#sessionAvailability',health?.sessionAvailability??'SESSION UNCONFIRMED');$('#estimatePosition').checked=state.positionPolicy?.estimatedEnabled??false;}
 }
@@ -186,7 +311,7 @@ async function loadNextSession(){try{const info=await api('/api/live/next-sessio
 pollSession();loadNextSession();setInterval(pollSession,15000);setInterval(renderNextSession,30000);
 const requestedCapture=new URLSearchParams(location.search).get('capture');if(requestedCapture&&window.gridlineConfig?.debug){refreshCaptureList().then(()=>{$('#raceMode').value='capture-replay';$('#captureSelect').value=requestedCapture;$('#raceMode').dispatchEvent(new Event('change'));loadStream();});}
 const frameSamples=[];let previousFrame=null;
-function tick(now){if(window.gridlineConfig?.debug&&playing&&dataset&&$('#live').classList.contains('active')){if(previousFrame!==null)frameSamples.push(now-previousFrame);previousFrame=now;if(frameSamples.length>=180){const sorted=frameSamples.slice().sort((a,b)=>a-b);$('#trackSvg').dataset.frameMetrics=JSON.stringify({sessionKey:dataset.session.key,samples:frameSamples.length,medianMs:sorted[Math.floor(sorted.length*.5)],p95Ms:sorted[Math.floor(sorted.length*.95)]});frameSamples.length=0;}}else previousFrame=null;if(loading){requestAnimationFrame(tick);return;}if(mode!=='replay'){if(dataset&&state&&$('#live').classList.contains('active'))animateCars(streamPaused?streamAt:Math.min(streamAt+500,streamAt+(now-streamClock)*(state.simulation?.speed||1)-500));requestAnimationFrame(tick);return;}if(dataset&&$('#live').classList.contains('active')){const t=currentTime(now);animateCars(t);if(now-lastUpdate>=250){renderState();lastUpdate=now;}if(playing&&t>=dataset.session.end){pause();renderState(true);}}requestAnimationFrame(tick);}
+function tick(now){if(window.gridlineConfig?.debug&&playing&&dataset&&$('#live').classList.contains('active')){if(previousFrame!==null)frameSamples.push(now-previousFrame);previousFrame=now;if(frameSamples.length>=180){const sorted=frameSamples.slice().sort((a,b)=>a-b);$('#trackSvg').dataset.frameMetrics=JSON.stringify({sessionKey:dataset.session.key,samples:frameSamples.length,medianMs:sorted[Math.floor(sorted.length*.5)],p95Ms:sorted[Math.floor(sorted.length*.95)]});frameSamples.length=0;}}else previousFrame=null;if(loading){requestAnimationFrame(tick);return;}if(mode!=='replay'){if(dataset&&state&&$('#live').classList.contains('active'))animateCars(streamPaused?streamAt:Math.min(streamAt+500,streamAt+(now-streamClock)*(state.simulation?.speed||1)-500));requestAnimationFrame(tick);return;}if(dataset&&$('#live').classList.contains('active')){const t=currentTime(now);animateCars(t);if(playing&&now-lastUpdate>=250){renderState();lastUpdate=now;}if(playing&&t>=dataset.session.end){pause();renderState(true);}}requestAnimationFrame(tick);}
 window.addEventListener('offline',()=>{if(dataset)setText('#dataHealth',mode==='replay'?'OFFLINE · CACHED REPLAY':'OFFLINE · LAST DATA');});
 function refreshManifest(){return api('/api/replay/manifest').then(m=>{manifest=m.replays;const years=[...new Set(manifest.map(r=>r.season))].sort((a,b)=>b-a);$('#replayYear').innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('')||'<option value="">Unavailable</option>';if(!years.length){message('No imported Replay available');$('#loadReplay').disabled=true;return;}return loadCatalog();}).catch(e=>message('Replay list unavailable: '+e.message,true));}const catalogReady=refreshManifest();$('#retryReplay').addEventListener('click',()=>catalog.length&&$('#replaySession').value?loadReplay():refreshManifest());requestAnimationFrame(tick);
 export async function openHistorical(key,year,lap=null){await catalogReady;if(loading){loadId++;loading=false;for(const id of ['#raceMode','#loadReplay','#replayYear','#replaySession','#replayGrandPrix'])$(id).disabled=false;}$('#raceMode').value='replay';$('#raceMode').dispatchEvent(new Event('change'));if(Number($('#replayYear').value)!==year){$('#replayYear').value=String(year);await loadCatalog();}const choice=catalog.find(s=>s.session_key===key);if(!choice){message('Imported Replay unavailable',true);return;}$('#replayGrandPrix').value=choice.manifest.slug;updateSessionOptions(key);if(dataset?.session.key===key&&mode==='replay'){jumpLap(lap);return;}await loadReplay({preserveURL:true});jumpLap(lap);}
