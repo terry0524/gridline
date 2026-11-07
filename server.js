@@ -18,7 +18,7 @@ import {ingestVerification,verificationStatus} from './src/live/verification-sto
 import {sessionCatalog,startReplay,replayStatus,getReplay,replayManifest} from './src/replay-loader.js';
 const root=path.dirname(fileURLToPath(import.meta.url));const port=Number(process.env.PORT||3000);
 const hosting=deploymentSettings(process.env,port);
-const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','theme.js','app.js','replay.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','src/circuit-art.js','chart.js'].map(f=>['/'+f,f])]);
+const staticFiles=new Map([['/','index.html'],...['index.html','styles.css','theme.js','app.js','replay.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','src/circuit-art.js','src/driver-of-the-day.js','chart.js'].map(f=>['/'+f,f])]);
 const mime={'.svg':'image/svg+xml','.ttf':'font/ttf','.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8'};
 const openEndpoints=new Set(['meetings','sessions','drivers','position','location','intervals','laps','stints','pit','weather','race_control','team_radio','car_data','session_result']);
 const limits=new Map();

@@ -270,3 +270,15 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
  .calendar-current-label { flex: 0 0 100%; margin: 0; }
  .favorite-result { grid-template-columns: minmax(0, 1fr); gap: 3px; }
 }
+
+.race-award {
+ display: flex;
+ align-items: baseline;
+ flex-wrap: wrap;
+ gap: 4px 14px;
+ padding: 12px 0;
+ border-bottom: 1px solid var(--appearance-divider);
+}
+.race-award .eyebrow { color: var(--appearance-muted); }
+.race-award strong { font-size: 18px; }
+.race-award .text-btn { margin-left: auto; }

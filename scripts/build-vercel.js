@@ -37,7 +37,7 @@ try{
    routes.push({src:`/api/replay/${match[1]}/data`,dest:'/'+file,headers:{'Cache-Control':'public, max-age=3600','Content-Type':'application/json; charset=utf-8'}});
   }
  }
- for(const f of ['index.html','styles.css','theme.js','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','src/circuit-art.js']){
+ for(const f of ['index.html','styles.css','theme.js','app.js','replay.js','chart.js','src/race-model.js','src/brand.js','src/season-model.js','src/router.js','src/circuit-art.js','src/driver-of-the-day.js']){
   const dest=path.join(staticDir,f);await fs.mkdir(path.dirname(dest),{recursive:true});await fs.copyFile(path.join(root,f),dest);
  }
  await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'handler.js',launcherType:'Nodejs',maxDuration:300,regions:['iad1'],supportsResponseStreaming:true},null,2));
