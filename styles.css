@@ -272,13 +272,32 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 }
 
 .race-award {
+ padding: 16px 0 20px;
+ border-bottom: 1px solid var(--appearance-divider);
+}
+.race-award-heading {
  display: flex;
  align-items: baseline;
  flex-wrap: wrap;
  gap: 4px 14px;
- padding: 12px 0;
- border-bottom: 1px solid var(--appearance-divider);
 }
-.race-award .eyebrow { color: var(--appearance-muted); }
-.race-award strong { font-size: 18px; }
-.race-award .text-btn { margin-left: auto; }
+.race-award-heading h3 { font-size: clamp(18px, 2vw, 24px); }
+.race-award-heading .muted { font-size: 12px; }
+.race-award-votes { list-style: none; margin: 12px 0 0; padding: 0; max-width: 660px; }
+.race-award-votes li {
+ display: grid;
+ grid-template-columns: minmax(0, 1fr) minmax(54px, 1.5fr) 6ch;
+ align-items: center;
+ gap: 12px;
+ min-height: 34px;
+ font-size: 14px;
+}
+.race-award-votes strong { text-align: right; }
+.race-award-votes li:first-child { color: var(--accent); font-weight: 800; }
+.race-award-votes li:first-child strong { font-size: 18px; }
+.race-award-track { height: 5px; background: var(--appearance-divider); }
+.race-award-track > span { display: block; width: var(--vote-share); height: 100%; background: currentColor; }
+.race-award-votes li:not(:first-child) .race-award-track { color: var(--appearance-muted); }
+@media (max-width: 600px) {
+ .race-award-votes li { grid-template-columns: minmax(0, 1.35fr) minmax(40px, 1fr) 6ch; gap: 8px; }
+}

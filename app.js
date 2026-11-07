@@ -1,4 +1,4 @@
-import {driverOfTheDay} from './src/driver-of-the-day.js';
+import {driverOfTheDayVotes} from './src/driver-of-the-day.js';
 import {circuitArt} from './src/circuit-art.js';
 import {brand} from './src/brand.js';
 import {parseRoute} from './src/router.js';
@@ -118,7 +118,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 function resultTable(rows,kind){const q=kind==='qualifying';return`<div class="table-wrap"><table class="domain-table results-table"><caption class="sr-only">${kind} classification</caption><thead><tr>${(q?['POS','DRIVER / TEAM','Q1','Q2','Q3']:['POS','DRIVER / TEAM','TIME / GAP','GRID','POINTS']).map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(x=>`<tr><td data-label="POS">${q?fmt(x.position):['DNF','DNS','DSQ','DNQ'].includes(x.classification)?x.classification:fmt(x.position)}</td><th scope="row" style="--team:${x.team.color}">${driverLink(x.driver,'entity-link')}<small>${teamLink(x.team)}</small></th>${q?['q1','q2','q3'].map(k=>`<td data-label="${k.toUpperCase()}">${esc(x[k]??'—')}</td>`).join(''):`<td data-label="TIME / GAP">${esc(x.classification==='CLASSIFIED'&&x.laps!==null&&x.laps<(rows.find(r=>r.position===1)?.laps??0)?`+${(rows.find(r=>r.position===1)?.laps??0)-x.laps} Lap(s)`:x.time??'—')}</td><td data-label="GRID">${x.grid===0?'PIT':fmt(x.grid)}</td><td data-label="POINTS" class="points-value">${fmt(x.points)}</td>`}</tr>`).join('')}</tbody></table></div>`;}
 function renderRaceDetail(meeting, id) {
  const race = meeting.results ? meeting : visibleRaces().find(row => row.round === meeting.round);
- const award = race && driverOfTheDay(race);
+ const votes = race ? driverOfTheDayVotes(race) : [];
  const fastest = race?.results.find(row => row.fastest?.rank === 1);
  const pole = race?.results.find(row => row.grid === 1);
  const winner = race?.results.find(row => row.position === 1);
@@ -143,7 +143,12 @@ function renderRaceDetail(meeting, id) {
     <div><small>LAPS</small><strong>${fmt(winner?.laps)}</strong></div>
     <div><small>RACE TIME</small><strong>${esc(winner?.time ?? '—')}</strong></div>
    </div>
-   ${award ? `<div class="race-award"><span class="eyebrow">Driver of the Day</span><strong>${driverLink(award.driver)}</strong><a class="text-btn" href="${esc(award.source)}">공식 팬 투표 ↗</a></div>` : ''}
+   ${votes.length ? `<section class="race-award" aria-label="Driver of the Day">
+    <div class="race-award-heading"><h3>Driver of the Day</h3><span class="muted">팬 투표 상위 5명</span></div>
+    <ol class="race-award-votes" role="list">${votes.map(({driver,percent}) => `
+     <li><span class="race-award-driver">${driverLink(driver)}</span><span class="race-award-track" aria-hidden="true"><span style="--vote-share:${percent}%"></span></span><strong>${percent}%</strong></li>
+    `).join('')}</ol>
+   </section>` : ''}
    <details class="weekend race-weekend-sessions"><summary>경기 날씨</summary><p id="raceWeatherSummary" class="muted"></p></details>
   ` : ''}
  `;
