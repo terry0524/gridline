@@ -60,9 +60,22 @@ function renderHome(){
 }
 $('#homeLive').addEventListener('click',async()=>{await navigate('/race-center');$('#openLiveSession').click();});
 async function pollHomeLive(){try{const info=await api('/api/live/session?auto=1');const available=info.mode==='live'&&info.availability==='LIVE SESSION AVAILABLE';$('#homeLiveState').textContent=available?'LIVE SESSION':info.availability==='NO ACTIVE SESSION'?'NO ACTIVE SESSION':'SESSION UNCONFIRMED';$('#homeLive').disabled=!available;$('#homeLivePanel').classList.toggle('hidden',!available);}catch{$('#homeLiveState').textContent='SESSION UNCONFIRMED';$('#homeLive').disabled=true;$('#homeLivePanel').classList.add('hidden');}}
-const calendarDate = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric' });
+const calendarDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
+const countryCodes = new Map(Object.entries({
+ Australia: 'AU', China: 'CN', Japan: 'JP', Bahrain: 'BH', 'Saudi Arabia': 'SA',
+ USA: 'US', 'United States': 'US', Canada: 'CA', Monaco: 'MC', Spain: 'ES',
+ Austria: 'AT', UK: 'GB', 'United Kingdom': 'GB', Belgium: 'BE', Hungary: 'HU',
+ Netherlands: 'NL', Italy: 'IT', Azerbaijan: 'AZ', Malaysia: 'MY', Singapore: 'SG',
+ Mexico: 'MX', Brazil: 'BR', Qatar: 'QA', UAE: 'AE', 'United Arab Emirates': 'AE',
+}));
+const countryFlag = country => {
+ const code = countryCodes.get(country);
+ return code ? String.fromCodePoint(...Array.from(code, letter => letter.charCodeAt(0) + 127397)) : '';
+};
 
 function renderSchedule() {
+ $('#calendarYear').textContent = data.season;
+ $('#calendarZone').textContent = zone;
  if (data.errors.schedule) {
   $('#raceList').innerHTML = failure('일정을 불러오지 못했습니다.');
   return;
@@ -71,31 +84,26 @@ function renderSchedule() {
  const completed = new Set(visibleRaces().map(race => race.round));
  const featured = data.schedule.find(meeting => weekendStatus(meeting, now, completed.has(meeting.round)) === 'THIS WEEKEND')
   ?? data.schedule.find(meeting => meeting.start > now);
- $('#calendarZone').textContent = zone;
- const jump = $('#currentWeekend');
- jump.classList.toggle('hidden', !featured);
- if (featured) jump.href = '#round-' + featured.round;
  $('#raceList').innerHTML = data.schedule.map(meeting => {
   const active = meeting === featured;
   const status = weekendStatus(meeting, now, completed.has(meeting.round));
   const caption = active ? (status === 'THIS WEEKEND' ? '이번 주말' : '다음 경기') : '';
-  const title = meeting.name.replace(/ Grand Prix$/i, '');
-  const day = Number.isFinite(meeting.start) ? calendarDate.format(meeting.start) : '날짜 미정';
-  return `<a id="round-${meeting.round}" class="calendar-event${active ? ' calendar-event-current' : ''}" data-route href="${esc(raceURL(meeting))}" aria-label="${esc(meeting.name)} · ${esc(day)}${caption ? ' · ' + caption : ''}">
-    <span class="calendar-event-top"><span>R${String(meeting.round).padStart(2, '0')}</span>${caption ? `<span class="calendar-current-label">${caption}</span>` : ''}</span>
+  const title = meeting.name.replace(/ Grand Prix(?= in |$)/i, '');
+  const start = meeting.sessions.reduce((earliest, session) =>
+   Number.isFinite(session.start) ? Math.min(earliest, session.start) : earliest, meeting.start ?? Infinity);
+  const weekend = Number.isFinite(meeting.start)
+   ? calendarDate.formatRange(start, meeting.start)
+   : '날짜 미정';
+  const flag = countryFlag(meeting.country);
+  const id = meeting.circuit.id;
+  const art = Object.hasOwn(circuitArt, id);
+  return `<a class="calendar-event${active ? ' calendar-event-current' : ''}" data-route href="${esc(raceURL(meeting))}" aria-label="라운드 ${meeting.round} · ${esc(meeting.name)} · ${esc(weekend)}${caption ? ' · ' + caption : ''}">
+    <span class="calendar-event-top">${flag ? `<span class="calendar-flag" aria-hidden="true">${flag}</span>` : ''}<span>${esc(weekend)}</span>${active ? `<span class="calendar-current-dot" title="${caption}" aria-hidden="true"></span>` : ''}</span>
+    <span class="calendar-event-art" aria-hidden="true"><span class="calendar-round">${meeting.round}</span>${art ? `<span class="calendar-track"><span style="--track:url('/assets/circuits/${esc(id)}.svg')"></span></span>` : `<span class="calendar-circuit-name">${esc(meeting.circuit.name)}</span>`}</span>
     <strong>${esc(title)}</strong>
-    <time${Number.isFinite(meeting.start) ? ` datetime="${new Date(meeting.start).toISOString()}"` : ''}>${esc(day)}</time>
   </a>`;
  }).join('') || empty('시즌 일정이 없습니다.');
 }
-
-$('#currentWeekend').addEventListener('click', event => {
- event.preventDefault();
- const target = document.getElementById(event.currentTarget.hash.slice(1));
- if (!target) return;
- target.focus({ preventScroll: true });
- target.scrollIntoView({ block: 'nearest' });
-});
 
 const delta=r=>r.change===null?'—':r.change>0?`↑${r.change}`:r.change<0?`↓${Math.abs(r.change)}`:'—';
 function renderStandings(){const rows=data.standings[activeStanding];$('#standingsRound').textContent=`${route.year} · ROUND ${data.standings.round||'—'} 종료 · CHANGE는 직전 Round 종료 순위 대비`;document.querySelectorAll('[data-standing]').forEach(b=>{const on=b.dataset.standing===activeStanding;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});$('#fullStandings').innerHTML=data.errors[activeStanding]?failure('Standings 조회 실패'):rows.length?`<div class="table-wrap"><table class="domain-table"><caption class="sr-only">${route.year} ${activeStanding} standings</caption><thead><tr><th>POS</th><th>${activeStanding==='drivers'?'DRIVER / TEAM':'TEAM'}</th><th>POINTS</th><th>WINS</th><th>CHANGE</th></tr></thead><tbody>${rows.map(r=>`<tr><td data-label="POS">${fmt(r.position)}</td><th scope="row" style="--team:${r.team.color}">${link(activeStanding==='drivers'?driverURL(r.id):teamURL(r.id),activeStanding==='drivers'?r.driver.name:r.team.name,'entity-link')}${activeStanding==='drivers'?`<small>${link(teamURL(r.team.id),r.team.name)}</small>`:''}</th><td data-label="POINTS" class="points-value">${fmt(r.points)}</td><td data-label="WINS">${fmt(r.wins)}</td><td data-label="CHANGE" title="직전 라운드 대비 순위 변화">${delta(r)}</td></tr>`).join('')}</tbody></table></div>`:empty('No published standings available');renderChart('#championshipChart',activeStanding,rows.slice(0,4).map(r=>r.id));}

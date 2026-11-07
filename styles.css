@@ -49,58 +49,99 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 .contextbar:has(.data-status:empty), #liveMessage:empty, #liveConnection:empty, #detailReplay:empty {
  display: none;
 }
-#schedule { padding-top: clamp(20px, 3vw, 40px); }
+#schedule {
+ --calendar-paper: #f3f7fa;
+ --calendar-ink: #0a263f;
+ --calendar-strip: #81d9ea;
+ --calendar-circuit: #007d99;
+ padding-top: clamp(18px, 2.5vw, 36px);
+}
 .calendar-heading {
  display: flex;
- align-items: end;
- justify-content: space-between;
- gap: 12px;
- margin-bottom: 20px;
-}
-.calendar-heading > div {
- display: flex;
  align-items: baseline;
+ justify-content: space-between;
+ gap: 8px 16px;
  flex-wrap: wrap;
- gap: 4px 14px;
+ margin-bottom: clamp(12px, 2vw, 22px);
 }
-.calendar-heading h1 { font-size: clamp(26px, 4vw, 44px); line-height: 1.15; }
-.calendar-heading .results-btn { flex-shrink: 0; }
+.calendar-heading h1 { font-size: clamp(30px, 5vw, 62px); line-height: 1; }
+#calendarZone { color: var(--appearance-muted); font-size: 12px; }
+.calendar-defs { position: absolute; pointer-events: none; }
 .season-calendar {
  display: grid;
  grid-template-columns: repeat(6, minmax(0, 1fr));
- border-top: 1px solid var(--appearance-divider);
- border-left: 1px solid var(--appearance-divider);
+ gap: clamp(5px, .75vw, 12px);
 }
-.season-calendar > .empty { grid-column: 1 / -1; padding-inline: 16px; }
+.season-calendar > :is(.empty, .skeleton) { grid-column: 1 / -1; }
 .calendar-event {
  display: grid;
- align-content: start;
- gap: 6px;
- min-height: 96px;
- padding: 12px;
- border-right: 1px solid var(--appearance-divider);
- border-bottom: 1px solid var(--appearance-divider);
- color: var(--appearance-text);
- scroll-margin-block: 18px;
+ grid-template-rows: auto 1fr auto;
+ min-width: 0;
+ overflow: hidden;
+ border-radius: 3px;
+ background: var(--calendar-paper);
+ color: var(--calendar-ink);
+ text-align: center;
 }
 .calendar-event-top {
  display: flex;
  align-items: center;
- justify-content: space-between;
- gap: 8px;
- font-size: 11px;
- font-weight: 700;
- color: var(--appearance-muted);
+ gap: 6px;
+ min-height: 24px;
+ padding-right: 5px;
+ background: var(--calendar-strip);
+ color: var(--calendar-ink);
+ font: 700 clamp(11px, 1.2vw, 16px)/1.1 'Barlow Condensed', sans-serif;
+ text-transform: uppercase;
 }
-.calendar-event strong { font-size: clamp(14px, 1.35vw, 19px); line-height: 1.25; overflow-wrap: anywhere; }
-.calendar-event time { color: var(--appearance-muted); font-size: 12px; }
-.calendar-event:hover { background: var(--appearance-inset); }
-.calendar-event-current {
- background: var(--appearance-surface);
- box-shadow: inset 0 3px var(--accent);
+.calendar-flag {
+ display: grid;
+ place-items: center;
+ align-self: stretch;
+ width: 29px;
+ flex: none;
+ background: #c4eff5;
+ font: 14px/1 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
-.calendar-current-label { color: var(--accent); }
-.calendar-event:focus-visible { outline-offset: -4px; z-index: 1; }
+.calendar-event-top > span:not(.calendar-flag):first-child { margin-left: 6px; }
+.calendar-current-dot { width: 6px; height: 6px; flex: none; margin-left: auto; border-radius: 50%; background: currentColor; }
+.calendar-event-art {
+ display: grid;
+ grid-template-columns: auto minmax(0, 1fr);
+ align-items: center;
+ gap: 3px;
+ height: clamp(58px, 5.6vw, 81px);
+ padding-inline: clamp(5px, .75vw, 11px);
+}
+.calendar-round {
+ color: #9aafbf;
+ font: 700 clamp(32px, 4.6vw, 64px)/1 'Barlow Condensed', sans-serif;
+ font-variant-numeric: lining-nums tabular-nums;
+}
+.calendar-track {
+ align-self: stretch;
+ filter: url(#calendarTrackInk);
+}
+.calendar-track > span {
+ display: block;
+ height: 100%;
+ background: var(--calendar-circuit);
+ mask: var(--track) center / contain no-repeat;
+}
+.calendar-circuit-name { color: #435d71; font-size: 11px; line-height: 1.2; }
+.calendar-event strong {
+ display: grid;
+ place-items: center;
+ min-height: 29px;
+ padding: 0 4px 6px;
+ font: 700 clamp(15px, 1.45vw, 22px)/1.05 'Barlow Condensed', sans-serif;
+ text-transform: uppercase;
+ overflow-wrap: anywhere;
+}
+.calendar-event:hover { background: #e4f5fa; }
+.calendar-event-current .calendar-event-top { background: #00c1e4; }
+.calendar-event-current { box-shadow: 0 0 0 1px #00b4d4; }
+.calendar-event:focus-visible { outline: 2px solid var(--calendar-ink); outline-offset: -3px; z-index: 1; }
 .weekend-heading {
  display: flex;
  align-items: end;
@@ -173,8 +214,11 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 }
 @media (max-width: 600px) {
  .season-calendar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
- .calendar-event { min-height: 76px; gap: 4px; padding: 9px 11px; }
- .calendar-heading .results-btn { padding-inline: 10px; }
+ .calendar-event-art { height: 47px; }
+ .calendar-event-top { min-height: 20px; }
+ .calendar-event-top { gap: 4px; }
+ .calendar-flag { width: 21px; font-size: 12px; }
+ .calendar-event strong { min-height: 26px; }
  .race-center-actions .text-btn { font-size: 12px; }
  #trackSvg .track-turn { display: none; }
  #trackSvg .track-car .car-label { display: none; font-size: 24px; stroke-width: 4px; }
@@ -187,8 +231,6 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 #live .track-panel .panel-title { min-height: 0; padding-block: 0 10px; }
 @media (min-width: 375px) and (max-width: 600px) {
  .season-calendar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
- .calendar-event { min-height: 72px; padding: 7px 8px; }
- .calendar-current-label { font-size: 10px; }
 }
 @media (max-width: 600px) {
  #live .race-status { gap: 6px 10px; }

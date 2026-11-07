@@ -214,5 +214,23 @@
     "referenceDriver": 16,
     "referenceLap": 45,
     "points": 337
+  },
+  "madring": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11369,
+    "sha256": "d6b2d01dd84c1d51050e4df8741fe1412355c12b616a0d27b2e403cf2e6c0741",
+    "referenceDriver": 63,
+    "referenceLap": 49,
+    "points": 362
+  },
+  "sepang": {
+    "referenceYear": 2026,
+    "source": "OpenF1 historical replay",
+    "sessionKey": 11731,
+    "sha256": "25977c3c94026d77a86f37103cc789c8ada647263c347d37ef1d495bc33c3472",
+    "referenceDriver": 3,
+    "referenceLap": 55,
+    "points": 364
   }
 }
