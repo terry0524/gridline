@@ -14,7 +14,7 @@ const teamLink=t=>t.id?link(teamURL(t.id),t.name):esc(t.name);
 const visibleRaces=()=>{const rows=new Map((data?.earlyResults??[]).map(m=>[m.round,m]));for(const m of data?.races??[])rows.set(m.round,m);return [...rows.values()].sort((a,b)=>a.round-b.round);};
 const publication=m=>m?.resultStatus==='PROVISIONAL'?'잠정 결과':m?.resultStatus==='SOURCE_RESULT'?'OpenF1 게시 결과':'게시 결과';
 const link=(url,text,cls='')=>`<a href="${esc(url)}" data-route class="${cls}">${esc(text)}</a>`;
-async function api(url){const r=await fetch(url);const d=await r.json();if(!r.ok)throw Error(d.error??`HTTP ${r.status}`);return d;}
+async function api(url,options){const r=await fetch(url,options);const d=await r.json();if(!r.ok)throw Error(d.error??`HTTP ${r.status}`);return d;}
 function empty(message='No data available'){return`<div class="empty">${esc(message)}</div>`;}
 function failure(message){return`<div class="empty error-state"><strong>${esc(message)}</strong><p>데이터 공급원 또는 연결 상태를 확인한 후 다시 시도하세요.</p><button class="results-btn" data-retry>다시 시도</button></div>`;}
 function busy(id,label){$(id).innerHTML=`<div class="skeleton" role="status">${esc(label)} 불러오는 중…</div>`;}
@@ -30,7 +30,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-route]');i
 window.addEventListener('popstate',()=>{route=parseRoute(location.href);updateNav();renderRoute();});window.addEventListener('hashchange',()=>{if(location.pathname==='/'&&/^#(?:dashboard|calendar|standings|results|live|home|schedule|race-center)$/.test(location.hash)){route=parseRoute(location.href);updateNav();renderRoute();}});
 document.addEventListener('gridline-replay-loaded',e=>{if(!['race-center','replay'].includes(route.view))return;const {key,year,slug}=e.detail;const url=`/replay/${year}/${slug}?session=${key}`;if(location.pathname+location.search!==url)history.pushState({},'',url);route=parseRoute(location.href);updateNav();$('#breadcrumbs').textContent=`${year} REPLAY / RACE CENTER`;});
 $('#seasonSelect').addEventListener('change',()=>{const y=Number($('#seasonSelect').value);navigate(route.view==='results'?`/results?season=${y}`:['drivers','teams','replay','race-center'].includes(route.view)?`/standings?season=${y}`:href(route.view==='home'?'':route.view,y));});
-async function loadSeason(force=false,{waitForFresh=force}={}){const id=++sequence,year=route.year;if(!force&&seasonCache.has(year)&&Date.now()-(seasonLoadedAt.get(year)??0)<300000){data=seasonCache.get(year);availabilityPromise=null;return renderSeasonRoute();}const retaining=force&&data?.season===year,previousAt=data?.fetchedAt,previousRevision=data?.resultRevision;if(!retaining)data=null;if(!retaining)$('#apiStatus').textContent='불러오는 중…';if(!retaining)for(const target of ['#nextRace','#topDrivers','#topTeams','#recentResult','#raceList','#fullStandings','#resultsContent','#raceDetail','#entityContent','#championshipChart'])busy(target,'시즌 데이터');if(!retaining){$('#resultMeeting').disabled=true;$('#standingsRound').textContent=year+' 시즌 standings 불러오는 중…';}try{const d=await api(`/api/season/${year}${waitForFresh?'?refresh=1':''}`);if(!d.errors.schedule){seasonCache.set(year,d);seasonLoadedAt.set(year,Date.now());}if(d.refreshing)setTimeout(()=>{if(id===sequence&&route.year===year&&!['race-center','replay'].includes(route.view))loadSeason(true);},5000);if(id!==sequence||route.year!==year)return;if(retaining&&d.errors.schedule&&data.schedule.length){updateSeasonStatus(d);return;}data=d;availabilityPromise=null;updateSeasonStatus(d);if(retaining&&previousAt===d.fetchedAt&&previousRevision===d.resultRevision){if(route.view==='home')renderNext();else if(route.view==='results')renderResults();}else renderSeasonRoute();}catch(e){if(id!==sequence)return;$('#apiStatus').textContent='시즌 데이터 연결 실패';for(const target of ['#nextRace','#topDrivers','#topTeams','#recentResult','#raceList','#fullStandings','#resultsContent','#raceDetail','#entityContent','#championshipChart'])$(target).innerHTML=failure('시즌 데이터를 가져오지 못했습니다. '+e.message);}}
+async function loadSeason(force=false,{waitForFresh=force}={}){const id=++sequence,year=route.year;if(!force&&seasonCache.has(year)&&Date.now()-(seasonLoadedAt.get(year)??0)<300000){data=seasonCache.get(year);availabilityPromise=null;return renderSeasonRoute();}const retaining=force&&data?.season===year,previousAt=data?.fetchedAt,previousRevision=data?.resultRevision;if(!retaining)data=null;if(!retaining)$('#apiStatus').textContent='불러오는 중…';if(!retaining)for(const target of ['#nextRace','#topDrivers','#topTeams','#recentResult','#raceList','#fullStandings','#resultsContent','#raceDetail','#entityContent','#championshipChart'])busy(target,'시즌 데이터');if(!retaining){$('#resultMeeting').disabled=true;$('#standingsRound').textContent=year+' 시즌 standings 불러오는 중…';}try{const d=await api(`/api/season/${year}${waitForFresh?'?refresh=1':''}`);if(!d.errors.schedule){seasonCache.set(year,d);seasonLoadedAt.set(year,Date.now());}if(d.refreshing)setTimeout(()=>{if(id===sequence&&route.year===year&&!['race-center','replay'].includes(route.view))loadSeason(true);},5000);if(id!==sequence||route.year!==year)return;if(retaining&&d.errors.schedule&&data.schedule.length){updateSeasonStatus(d);return;}data=d;availabilityPromise=null;updateSeasonStatus(d);if(retaining&&previousAt===d.fetchedAt&&previousRevision===d.resultRevision){if(route.view==='home')renderNext();else if(route.view==='schedule')renderSchedule();else if(route.view==='results')renderResults();}else renderSeasonRoute();}catch(e){if(id!==sequence)return;$('#apiStatus').textContent='시즌 데이터 연결 실패';for(const target of ['#nextRace','#topDrivers','#topTeams','#recentResult','#raceList','#fullStandings','#resultsContent','#raceDetail','#entityContent','#championshipChart'])$(target).innerHTML=failure('시즌 데이터를 가져오지 못했습니다. '+e.message);}}
 function updateSeasonStatus(season) {
  const status = $('#apiStatus');
  status.textContent = Object.keys(season.errors).length ? '일부 데이터 연결 오류' : season.stale && season.season === currentYear ? '캐시된 데이터' : '';
@@ -38,7 +38,7 @@ function updateSeasonStatus(season) {
 }
 async function ensureReplay(){if(availabilityPromise)return availabilityPromise;const year=route.year;availabilityPromise=api(`/api/season/${year}/replays/`).catch(()=>{availabilityPromise=null;return null;});return availabilityPromise;}
 async function renderRoute(){if(['race-center','replay'].includes(route.view)){$('#apiStatus').textContent='';try{await ensureRaceCenter();}catch(e){$('#liveMessage').textContent='Race Center 데이터를 가져오지 못했습니다: '+e.message;}return;}if(!data||data.season!==route.year)await loadSeason();else if(Date.now()-(seasonLoadedAt.get(route.year)??0)>=300000)await loadSeason(true);else renderSeasonRoute();}
-function renderSeasonRoute(){if(!data)return;$('#resultMeeting').disabled=false;updateSeasonStatus(data);if(route.view==='home')renderHome();if(route.view==='schedule')renderSchedule();if(route.view==='standings')renderStandings();if(route.view==='results')renderResults();if(['drivers','teams'].includes(route.view))renderEntity();}
+function renderSeasonRoute(){if(!data)return;if(favoritesDialog.open&&$('#favoriteDriver').options.length<2)fillFavoritesDialog();$('#resultMeeting').disabled=false;updateSeasonStatus(data);if(route.view==='home')renderHome();if(route.view==='schedule')renderSchedule();if(route.view==='standings')renderStandings();if(route.view==='results')renderResults();if(['drivers','teams'].includes(route.view))renderEntity();}
 function sessionsHTML(m){const next=m.sessions.find(s=>s.start!==null&&s.start>Date.now());return m.sessions.map(s=>`<div class="weekend-session ${s===next?'next-session':''}"><strong>${esc(s.name)}</strong><time datetime="${s.start?new Date(s.start).toISOString():''}">${date(s.start)}</time><small>${s===next?'NEXT SESSION':s.start&&s.start<Date.now()?'Completed':'Upcoming'}</small></div>`).join('');}
 function renderNext(){
  const next=data.schedule.find(m=>m.start!==null&&m.start>Date.now()),m=next??data.schedule.at(-1);
@@ -53,7 +53,7 @@ function renderNext(){
 function mini(rows,kind){return rows.slice(0,3).map(r=>`<div class="mini-row"><span class="pos">${fmt(r.position)}</span><i class="team-bar" style="--team:${r.team.color}"></i>${link(kind==='drivers'?driverURL(r.id):teamURL(r.id),kind==='drivers'?r.driver.name:r.team.name,'driver-name')}<span class="pts">${fmt(r.points)}<small>PTS</small></span></div>`).join('')||empty('아직 공개된 Championship 순위가 없습니다.');}
 function podium(m){return`<div class="podium">${m.results.filter(x=>x.position>=1&&x.position<=3&&x.classification!=='DSQ').map(x=>`<div style="--team:${x.team.color}"><span>P${x.position}</span><div>${x.driver.id?link(driverURL(x.driver.id),x.driver.abbreviation??x.driver.name):esc(x.driver.abbreviation??x.driver.name)}<small>${esc(x.driver.name)} · ${esc(x.team.name)}</small></div><strong>${fmt(x.points)}<small>PTS</small></strong></div>`).join('')}</div>`;}
 function renderHome(){
- renderNext();$('#topDrivers').innerHTML=data.errors.drivers?failure('Driver standings 조회 실패'):mini(data.standings.drivers,'drivers');$('#topTeams').innerHTML=data.errors.constructors?failure('Constructor standings 조회 실패'):mini(data.standings.constructors,'constructors');
+ renderNext();renderFavoriteSummary();$('#topDrivers').innerHTML=data.errors.drivers?failure('Driver standings 조회 실패'):mini(data.standings.drivers,'drivers');$('#topTeams').innerHTML=data.errors.constructors?failure('Constructor standings 조회 실패'):mini(data.standings.constructors,'constructors');
  const recent=visibleRaces().at(-1);
  $('#recentResult').innerHTML=data.errors.race&&!recent?failure('최근 Race 결과 조회 실패'):recent?`<div class="recent-heading"><h3>${esc(recent.name)}</h3>${link(raceURL(recent),'Full results ↗','text-btn')}</div>${recent.resultStatus&&recent.resultStatus!=='PUBLISHED'?`<p class="result-publication">${esc(publication(recent))}</p>`:''}<div class="home-podium">${recent.results.filter(x=>x.position>=1&&x.position<=3&&x.classification!=='DSQ').map(x=>`<div style="--team:${x.team.color}"><span class="podium-position">${x.position}</span>${x.driver.id?link(driverURL(x.driver.id),x.driver.name,'podium-name'):esc(x.driver.name)}</div>`).join('')}</div>`:empty('아직 Race 결과가 없습니다.');
  pollHomeLive();
@@ -98,7 +98,7 @@ function renderSchedule() {
   const id = meeting.circuit.id;
   const art = Object.hasOwn(circuitArt, id);
   return `<a class="calendar-event${active ? ' calendar-event-current' : ''}" data-route href="${esc(raceURL(meeting))}" aria-label="라운드 ${meeting.round} · ${esc(meeting.name)} · ${esc(weekend)}${caption ? ' · ' + caption : ''}">
-    <span class="calendar-event-top">${flag ? `<span class="calendar-flag" aria-hidden="true">${flag}</span>` : ''}<span>${esc(weekend)}</span>${active ? `<span class="calendar-current-dot" title="${caption}" aria-hidden="true"></span>` : ''}</span>
+    <span class="calendar-event-top">${flag ? `<span class="calendar-flag" aria-hidden="true">${flag}</span>` : ''}<span>${esc(weekend)}</span>${active ? `<span class="calendar-current-label" aria-hidden="true">${caption}</span>` : ''}</span>
     <span class="calendar-event-art" aria-hidden="true"><span class="calendar-round">${meeting.round}</span>${art ? `<span class="calendar-track"><span style="--track:url('/assets/circuits/${esc(id)}.svg')"></span></span>` : `<span class="calendar-circuit-name">${esc(meeting.circuit.name)}</span>`}</span>
     <strong>${esc(title)}</strong>
   </a>`;
@@ -106,12 +106,12 @@ function renderSchedule() {
 }
 
 const delta=r=>r.change===null?'—':r.change>0?`↑${r.change}`:r.change<0?`↓${Math.abs(r.change)}`:'—';
-function renderStandings(){const rows=data.standings[activeStanding];$('#standingsRound').textContent=`${route.year} · ROUND ${data.standings.round||'—'} 종료 · CHANGE는 직전 Round 종료 순위 대비`;document.querySelectorAll('[data-standing]').forEach(b=>{const on=b.dataset.standing===activeStanding;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});$('#fullStandings').innerHTML=data.errors[activeStanding]?failure('Standings 조회 실패'):rows.length?`<div class="table-wrap"><table class="domain-table"><caption class="sr-only">${route.year} ${activeStanding} standings</caption><thead><tr><th>POS</th><th>${activeStanding==='drivers'?'DRIVER / TEAM':'TEAM'}</th><th>POINTS</th><th>WINS</th><th>CHANGE</th></tr></thead><tbody>${rows.map(r=>`<tr><td data-label="POS">${fmt(r.position)}</td><th scope="row" style="--team:${r.team.color}">${link(activeStanding==='drivers'?driverURL(r.id):teamURL(r.id),activeStanding==='drivers'?r.driver.name:r.team.name,'entity-link')}${activeStanding==='drivers'?`<small>${link(teamURL(r.team.id),r.team.name)}</small>`:''}</th><td data-label="POINTS" class="points-value">${fmt(r.points)}</td><td data-label="WINS">${fmt(r.wins)}</td><td data-label="CHANGE" title="직전 라운드 대비 순위 변화">${delta(r)}</td></tr>`).join('')}</tbody></table></div>`:empty('No published standings available');renderChart('#championshipChart',activeStanding,rows.slice(0,4).map(r=>r.id));}
+function renderStandings(){const rows=data.standings[activeStanding];$('#standingsRound').textContent=`${route.year} · ROUND ${data.standings.round||'—'} 종료 · CHANGE는 직전 Round 종료 순위 대비`;document.querySelectorAll('[data-standing]').forEach(b=>{const on=b.dataset.standing===activeStanding;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);});$('#fullStandings').innerHTML=data.errors[activeStanding]?failure('Standings 조회 실패'):rows.length?`<div class="table-wrap"><table class="domain-table"><caption class="sr-only">${route.year} ${activeStanding} standings</caption><thead><tr><th>POS</th><th>${activeStanding==='drivers'?'DRIVER / TEAM':'TEAM'}</th><th>POINTS</th><th>WINS</th><th>CHANGE</th></tr></thead><tbody>${rows.map(r=>`<tr${r.id===favorites[activeStanding==='drivers'?'driver':'team']?' class="favorite-standing"':''}><td data-label="POS">${fmt(r.position)}</td><th scope="row" style="--team:${r.team.color}">${link(activeStanding==='drivers'?driverURL(r.id):teamURL(r.id),activeStanding==='drivers'?r.driver.name:r.team.name,'entity-link')}${r.id===favorites[activeStanding==='drivers'?'driver':'team']?'<span class="favorite-mark" aria-label="즐겨찾기">★</span>':''}${activeStanding==='drivers'?`<small>${link(teamURL(r.team.id),r.team.name)}</small>`:''}</th><td data-label="POINTS" class="points-value">${fmt(r.points)}</td><td data-label="WINS">${fmt(r.wins)}</td><td data-label="CHANGE" title="직전 라운드 대비 순위 변화">${delta(r)}</td></tr>`).join('')}</tbody></table></div>`:empty('No published standings available');renderChart('#championshipChart',activeStanding,rows.slice(0,4).map(r=>r.id));}
 for(const b of document.querySelectorAll('[data-standing]'))b.addEventListener('click',()=>{activeStanding=b.dataset.standing;if(data)renderStandings();});
 async function renderChart(target,kind,ids){const year=route.year,holder=$(target);if(!holder)return;if(data.errors.race||data.errors.sprint){holder.innerHTML=failure('차트의 Race / Sprint 결과를 가져오지 못했습니다.');return;}holder.innerHTML='<div class="skeleton">실제 라운드 점수 차트 불러오는 중…</div>';chartModule??=import('./chart.js');const chart=await chartModule;if(year!==route.year||!document.contains(holder)||!data)return;const selectionKey=year+'/'+kind+'/'+target+(target==='#entityChart'?route.slug:'');chart.mountPointsChart(holder,data.progression,kind,chartSelection.get(selectionKey)??ids,{onSelectionChange:selected=>chartSelection.set(selectionKey,selected)});}
 $('#resultMeeting').addEventListener('change',()=>{const m=data?.schedule.find(m=>m.round===Number($('#resultMeeting').value));if(m)navigate(raceURL(m));});for(const b of document.querySelectorAll('[data-result]'))b.addEventListener('click',()=>{resultKind=b.dataset.result;const m=selectedMeeting();if(m)navigate(`${raceURL(m)}?tab=${resultKind}`);});
 function selectedMeeting(){if(route.slug)return data?.schedule.find(m=>m.slug===route.slug);const recent=data?.schedule.filter(m=>visibleRaces().some(r=>r.round===m.round)||m.start!==null&&Date.now()>=m.start+4*3600000).at(-1);return recent??data?.schedule.find(m=>m.round===data.races.at(-1)?.round)??data?.schedule[0];}
-async function renderResults(){const m=selectedMeeting();if(!m){$('#resultMeeting').innerHTML='<option value="">No Grand Prix available</option>';$('#raceDetail').innerHTML=empty('No calendar data available');$('#resultsContent').innerHTML=empty();return;}resultKind=['race','sprint','qualifying'].includes(route.kind)?route.kind:'race';$('#resultMeeting').innerHTML=data.schedule.map(m=>`<option value="${m.round}">R${String(m.round).padStart(2,'0')} · ${esc(m.name)}${visibleRaces().some(r=>r.round===m.round)?' · 결과 있음':m.start!==null&&Date.now()>=m.start+4*3600000?' · 결과 대기':''}</option>`).join('');$('#resultMeeting').value=m.round;const id=++detailSequence;busy('#raceDetail','경기 정보');document.querySelectorAll('[data-result]').forEach(b=>{const active=b.dataset.result===resultKind;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active);});busy('#resultsContent',resultKind.toUpperCase());try{const d=await api(`/api/season/${route.year}/${m.round}/${resultKind}`);if(id!==detailSequence||route.view!=='results')return;renderRaceDetail(resultKind==='race'&&d.meeting?d.meeting:m,id);$('#resultsContent').innerHTML=d.meeting?.results.length?`<p class="result-publication" role="status">${esc(publication(d.meeting))}${d.meeting.resultUpdatedAt?' · '+date(d.meeting.resultUpdatedAt):''}</p>`+resultTable(d.meeting.results,resultKind):empty(resultKind==='sprint'?'Sprint 결과 없음 · Sprint가 없는 주말이거나 아직 게시되지 않았습니다.':resultKind==='race'&&m.start!==null&&Date.now()>=m.start+4*3600000?'경기 결과 게시를 기다리는 중입니다.':'아직 게시된 세션 결과가 없습니다.');}catch(e){if(id===detailSequence){renderRaceDetail(m,id);$('#resultsContent').innerHTML=failure(`${resultKind.toUpperCase()} 결과 조회 실패: ${e.message}`);}}}
+async function renderResults(){const m=selectedMeeting();if(!m){$('#resultMeeting').innerHTML='<option value="">No Grand Prix available</option>';$('#raceDetail').innerHTML=empty('No calendar data available');$('#resultsContent').innerHTML=empty();return;}resultKind=['race','sprint','qualifying'].includes(route.kind)?route.kind:'race';$('#resultMeeting').innerHTML=data.schedule.map(m=>`<option value="${m.round}">R${String(m.round).padStart(2,'0')} · ${esc(m.name)}</option>`).join('');$('#resultMeeting').value=m.round;const id=++detailSequence;busy('#raceDetail','경기 정보');document.querySelectorAll('[data-result]').forEach(b=>{const active=b.dataset.result===resultKind;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active);});busy('#resultsContent',resultKind.toUpperCase());try{const d=await api(`/api/season/${route.year}/${m.round}/${resultKind}`);if(id!==detailSequence||route.view!=='results')return;renderRaceDetail(resultKind==='race'&&d.meeting?d.meeting:m,id);$('#resultsContent').innerHTML=d.meeting?.results.length?`<p class="result-publication" role="status">${esc(publication(d.meeting))}${d.meeting.resultUpdatedAt?' · '+date(d.meeting.resultUpdatedAt):''}</p>`+resultTable(d.meeting.results,resultKind):empty(resultKind==='sprint'?'Sprint 결과 없음 · Sprint가 없는 주말이거나 아직 게시되지 않았습니다.':resultKind==='race'&&m.start!==null&&Date.now()>=m.start+4*3600000?'경기 결과 게시를 기다리는 중입니다.':'아직 게시된 세션 결과가 없습니다.');}catch(e){if(id===detailSequence){renderRaceDetail(m,id);$('#resultsContent').innerHTML=failure(`${resultKind.toUpperCase()} 결과 조회 실패: ${e.message}`);}}}
 $('#refreshResults').addEventListener('click',async()=>{const button=$('#refreshResults');button.disabled=true;button.textContent='결과 확인 중…';try{await loadSeason(true);}finally{button.disabled=false;button.textContent='결과 새로고침';}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&data&&!['race-center','replay'].includes(route.view)&&Date.now()-(seasonLoadedAt.get(route.year)??0)>=300000)loadSeason(true);});
 function resultTable(rows,kind){const q=kind==='qualifying';return`<div class="table-wrap"><table class="domain-table results-table"><caption class="sr-only">${kind} classification</caption><thead><tr>${(q?['POS','DRIVER / TEAM','Q1','Q2','Q3']:['POS','DRIVER / TEAM','TIME / GAP','GRID','POINTS']).map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(x=>`<tr><td data-label="POS">${q?fmt(x.position):['DNF','DNS','DSQ','DNQ'].includes(x.classification)?x.classification:fmt(x.position)}</td><th scope="row" style="--team:${x.team.color}">${driverLink(x.driver,'entity-link')}<small>${teamLink(x.team)}</small></th>${q?['q1','q2','q3'].map(k=>`<td data-label="${k.toUpperCase()}">${esc(x[k]??'—')}</td>`).join(''):`<td data-label="TIME / GAP">${esc(x.classification==='CLASSIFIED'&&x.laps!==null&&x.laps<(rows.find(r=>r.position===1)?.laps??0)?`+${(rows.find(r=>r.position===1)?.laps??0)-x.laps} Lap(s)`:x.time??'—')}</td><td data-label="GRID">${x.grid===0?'PIT':fmt(x.grid)}</td><td data-label="POINTS" class="points-value">${fmt(x.points)}</td>`}</tr>`).join('')}</tbody></table></div>`;}
@@ -165,7 +165,25 @@ function renderRaceDetail(meeting, id) {
   weather.textContent = '불러오는 중…';
   try {
    const result = await api(`/api/season/${year}/${round}/facts`);
-   weather.textContent = result.weather ? `기온 ${fmt(result.weather.air)}°C · 노면 ${fmt(result.weather.track)}°C` : '날씨 기록이 없습니다.';
+   const measured = result.weather;
+   const metrics = measured ? [
+    ['기온', measured.air, '°C'], ['노면', measured.track, '°C'],
+    ['습도', measured.humidity, '%'], ['풍속', measured.windSpeed, ' m/s'],
+   ].filter(([,value]) => Number.isFinite(value)).map(([name,value,unit]) => `${name} ${fmt(value)}${unit}`) : [];
+   if (measured) metrics.unshift(measured.rained === true ? '경기 중 비 관측' : measured.rained === false ? '비 관측 없음' : '강수 기록 없음');
+   weather.textContent = metrics.join(' · ') || '서킷 날씨 기록이 없습니다.';
+   if (result.cloud) {
+    const {cover} = result.cloud;
+    const sky = cover >= 80 ? '흐림' : cover >= 25 ? '구름 있음' : '대체로 맑음';
+    const note = document.createElement('span');
+    note.className = 'race-cloud-note';
+    note.textContent = `시작 무렵 ${sky} · 구름 ${fmt(cover)}% · 주변 지역 추정 `;
+    const source = document.createElement('a');
+    source.href = 'https://open-meteo.com/en/docs/historical-weather-api';
+    source.textContent = 'Open-Meteo';
+    note.append(source);
+    weather.append(note);
+   }
   } catch {
    weather.textContent = '날씨 기록을 불러오지 못했습니다.';
   }
@@ -179,7 +197,107 @@ function configureDev(){const select=$('#raceMode');if(window.gridlineConfig?.de
 $('#devModes').addEventListener('change',configureDev);
 $('#searchOpen').addEventListener('click',()=>{$('#quickJump').showModal();$('#searchInput').focus();search();});$('#searchClose').addEventListener('click',()=>$('#quickJump').close());document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#searchOpen').click();}});$('#searchInput').addEventListener('input',search);let searchSeq=0;
 async function search(){const seq=++searchSeq,q=$('#searchInput').value.trim().toLowerCase(),yearMatch=q.match(/\b(202[3-9])\b/),year=yearMatch?Number(yearMatch[1]):route.year;let d=data;if(year!==d?.season){$('#searchResults').innerHTML=empty('검색 시즌 데이터를 불러오는 중…');try{d=seasonCache.get(year)??await api(`/api/season/${year}`);seasonCache.set(year,d);seasonLoadedAt.set(year,Date.now());}catch{$('#searchResults').innerHTML=failure('검색 시즌 데이터를 가져오지 못했습니다.');return;}}if(seq!==searchSeq)return;const query=q.replace(/\b202[3-9]\b/,'').trim();const choices=[...d.schedule.map(m=>({name:`${m.name} · ${m.circuit.name}`,kind:`Grand Prix · ${year}`,url:raceURL(m)})),...d.standings.drivers.map(r=>({name:r.driver.name+' '+(r.driver.abbreviation??''),kind:`Driver · ${year}`,url:`/drivers/${year}/${r.id}`})),...d.standings.constructors.map(r=>({name:r.team.name,kind:`Team · ${year}`,url:`/teams/${year}/${r.id}`}))].filter(x=>!query||x.name.toLowerCase().includes(query)).slice(0,12);$('#searchResults').innerHTML=choices.map(x=>`<a data-route href="${x.url}"><strong>${esc(x.name)}</strong><small>${esc(x.kind)}</small></a>`).join('')||empty('검색 결과 없음');}
-window.gridlineConfig=await api('/api/config').catch(()=>({debug:false}));$('.advanced-options').classList.toggle('hidden',!window.gridlineConfig.debug);updateNav();renderRoute();setInterval(()=>{$('#kst').textContent=zone+' '+new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());},1000);setInterval(()=>{if(route.view==='home'&&data){renderNext();pollHomeLive();}},30000);setInterval(()=>{if(!['race-center','replay'].includes(route.view)&&!refreshing){refreshing=true;loadSeason(true).finally(()=>refreshing=false);}},300000);
+const noFavorites = {driver:'',team:''};
+let guestFavorites = noFavorites;
+try { guestFavorites = {...noFavorites, ...JSON.parse(localStorage.getItem('gridline-favorites'))}; } catch {}
+let favorites = guestFavorites;
+let account = {enabled:false,signedIn:false};
+const favoritesDialog = $('#favoritesDialog');
+const favoriteForm = $('#favoriteForm');
+
+function renderFavoriteSummary() {
+ const holder = $('#favoriteSummary');
+ if (!favorites.driver && !favorites.team) {
+  holder.innerHTML = '<p class="muted">응원하는 드라이버와 팀을 선택하세요.</p>';
+  return;
+ }
+ const races = visibleRaces();
+ const groups = [
+  {id:favorites.driver, field:'driver', name:'드라이버'},
+  {id:favorites.team, field:'team', name:'팀'},
+ ];
+ holder.innerHTML = groups.filter(group => group.id).map(({id,field,name}) => {
+  const meeting = races.findLast(race => race.results.some(row => row[field].id === id));
+  const rows = meeting?.results.filter(row => row[field].id === id) ?? [];
+  const standing = data.standings[field === 'driver' ? 'drivers' : 'constructors'].find(row => row.id === id);
+  const entity = standing?.[field] ?? rows[0]?.[field];
+  const finish = row => row.classification === 'CLASSIFIED' ? `P${fmt(row.position)}` : esc(row.classification ?? '—');
+  return `<div class="favorite-result"><strong>${esc(entity?.name ?? name)}</strong>${meeting
+   ? `<span>${link(raceURL(meeting),meeting.name,'favorite-race-link')}</span><span>${rows.map(row => field==='driver' ? finish(row) : esc(row.driver.abbreviation ?? row.driver.name) + ' ' + finish(row)).join(' · ')} · ${fmt(rows.reduce((sum,row)=>sum+(row.points??0),0))} pts</span>`
+   : '<span class="muted">이 시즌의 경기 기록이 없습니다.</span>'}</div>`;
+ }).join('');
+}
+function fillFavoritesDialog() {
+ for (const [field, list, select] of [
+  ['driver', 'drivers', $('#favoriteDriver')], ['team', 'constructors', $('#favoriteTeam')],
+ ]) {
+  const choices = new Map();
+  for (const row of data?.standings[list] ?? []) choices.set(row.id,row[field].name);
+  for (const row of data?.progression[list] ?? []) if (!choices.has(row.id)) choices.set(row.id,row.name);
+  if (favorites[field] && !choices.has(favorites[field])) choices.set(favorites[field], '다른 시즌에서 선택한 즐겨찾기');
+  select.replaceChildren(new Option('선택 안 함',''), ...[...choices].map(([id,name])=>new Option(name,id)));
+  select.value = favorites[field] ?? '';
+ }
+ $('#favoriteLogin').classList.toggle('hidden',!account.enabled||account.signedIn);
+ $('#favoriteLogout').classList.toggle('hidden',!account.signedIn);
+ $('#favoriteStorage').textContent = account.signedIn ? 'Google 계정에 저장됩니다.' : '이 브라우저에 저장됩니다.';
+}
+function refreshFavoriteViews() {
+ if (route.view === 'home' && data) renderFavoriteSummary();
+ if (route.view === 'standings' && data) renderStandings();
+}
+document.querySelectorAll('[data-open-favorites]').forEach(button => button.addEventListener('click', () => {
+ fillFavoritesDialog();
+ $('#favoriteFeedback').textContent = '';
+ favoritesDialog.showModal();
+}));
+$('#favoritesClose').addEventListener('click',()=>favoritesDialog.close());
+favoriteForm.addEventListener('submit', async event => {
+ event.preventDefault();
+ const form = new FormData(favoriteForm);
+ const chosen = {driver:form.get('driver'),team:form.get('team')};
+ const button = favoriteForm.querySelector('[type=submit]');
+ button.disabled = true;
+ try {
+  if (account.signedIn) {
+   const result = await api('/api/account/favorites',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(chosen)});
+   favorites = result.favorites;
+  } else {
+   localStorage.setItem('gridline-favorites',JSON.stringify(chosen));
+   favorites = guestFavorites = chosen;
+  }
+  refreshFavoriteViews();
+  favoritesDialog.close();
+ } catch { $('#favoriteFeedback').textContent = '즐겨찾기를 저장하지 못했습니다. 다시 시도해 주세요.'; }
+ finally { button.disabled = false; }
+});
+$('#favoriteLogout').addEventListener('click', async () => {
+ try {
+  await api('/api/account/logout',{method:'POST'});
+  account.signedIn = false;
+  favorites = guestFavorites;
+  fillFavoritesDialog();
+  refreshFavoriteViews();
+ } catch { $('#favoriteFeedback').textContent = '로그아웃하지 못했습니다. 다시 시도해 주세요.'; }
+});
+async function loadAccount() {
+ try {
+  account = await api('/api/account/session');
+  if (account.signedIn) {
+   favorites = account.favorites;
+   refreshFavoriteViews();
+  }
+ } catch {}
+ const status = new URLSearchParams(location.search).get('account');
+ if (status === 'connected' || status === 'failed') {
+  history.replaceState(null,'','/');
+  fillFavoritesDialog();
+  $('#favoriteFeedback').textContent = status === 'failed' || !account.signedIn ? '로그인을 완료하지 못했습니다. 다시 시도해 주세요.' : '';
+  if (!favoritesDialog.open) favoritesDialog.showModal();
+ } else if (favoritesDialog.open) fillFavoritesDialog();
+}
+
+window.gridlineConfig=await api('/api/config').catch(()=>({debug:false}));$('.advanced-options').classList.toggle('hidden',!window.gridlineConfig.debug);updateNav();renderRoute();loadAccount();setInterval(()=>{$('#kst').textContent=zone+' '+new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());},1000);setInterval(()=>{if(route.view==='home'&&data){renderNext();pollHomeLive();}},30000);setInterval(()=>{if(!['race-center','replay'].includes(route.view)&&!refreshing){refreshing=true;loadSeason(true).finally(()=>refreshing=false);}},300000);
 
 let resultPollTimer=null,resultPolling=false;
 async function pollPublishedResults(){

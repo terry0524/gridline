@@ -1,3 +1,4 @@
+import {handleAccount} from './src/account.js';
 import {environment,debug,version} from './src/config.js';
 import {deploymentSettings} from './src/deployment-config.js';
 import http from 'node:http';
@@ -37,6 +38,7 @@ export async function handleRequest(req,res){
    const ip=req.socket.remoteAddress;const now=Date.now();let bucket=limits.get(ip);if(!bucket||now-bucket.at>60000){bucket={at:now,count:0};limits.set(ip,bucket);}if(++bucket.count>180)return send(req,res,429,{error:'Local request limit exceeded'},{'retry-after':'60'});
    if(!['GET','POST'].includes(req.method))return send(req,res,405,{error:'Method not allowed'});
    if(req.method==='POST'&&req.headers.origin&&!hosting.allowedOrigins.has(req.headers.origin))return send(req,res,403,{error:'Origin not allowed'});
+   if(u.pathname.startsWith('/api/account/'))return await handleAccount(req,res,u,send,readBody);
    if(u.pathname==='/api/config')return send(req,res,200,{environment,debug,version});
    const resultRoute=u.pathname.match(/^\/api\/results\/(\d{4})(?:\/(revision))?$/);
    if(resultRoute){if(req.method!=='GET')throw new ProviderError('GET required',405);const year=resultYear(Number(resultRoute[1]));return send(req,res,200,resultRoute[2]?await resultRevision(year):await readResults(year)??{version:1,season:year,revision:null,items:[],standings:null});}

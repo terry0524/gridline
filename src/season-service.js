@@ -5,6 +5,8 @@ import {normalizeMeeting,normalizeResults,normalizeStandings,buildProgression} f
 import {readResults} from './result-store.js';
 import {overlaySeasonResults,resultKey} from './result-model.js';
 import {sessionCatalog,getReplay,resolveHistorical} from './replay-loader.js';
+import {raceCloud} from './race-cloud.js';
+import {offline} from './config.js';
 const memory=new Map(),pending=new Map();
 const seasonTTL=year=>year<new Date().getFullYear()?86400000:300000;
 const provenance=e=>({source:e.source,url:e.url,fetchedAt:e.fetchedAt,stale:e.stale,sha256:e.sha256});
@@ -47,7 +49,26 @@ export async function raceFacts(year,round){
  const available=await replayAvailability(year),a=available.meetings.find(x=>x.round===round);const d=a?.sessionKey?await getReplay(a.sessionKey):null;
  let rows=d?.weather??[],fetchedAt=d?.fetchedAt??null,source=d?'OpenF1 historical session':null,provenance=d?.provenance.filter(p=>p.endpoint==='weather')??[],weatherError=null,stale=false;
  // The catalog only supplies ended historical Race sessions. Never request paid Live weather.
- if(!rows.length){try{const key=a?.sessionKey??(await resolveHistorical({year,round})).session.session_key;const env=await getData('openf1','weather',{session_key:key},historicalTTL);rows=env.data.filter(x=>Number.isFinite(Date.parse(x.date))).map(x=>({at:Date.parse(x.date),air:typeof x.air_temperature==='number'?x.air_temperature:null,track:typeof x.track_temperature==='number'?x.track_temperature:null,humidity:typeof x.humidity==='number'?x.humidity:null}));fetchedAt=env.fetchedAt;source='OpenF1 historical session';stale=env.stale;provenance=[{...env,data:undefined}];}catch(e){weatherError=e.message;}}
- const avg=k=>{const values=rows.map(x=>x[k]).filter(Number.isFinite);return values.length?values.reduce((a,b)=>a+b,0)/values.length:null;};const air=avg('air'),track=avg('track'),humidity=avg('humidity');
- return{weather:rows.length&&[air,track,humidity].some(Number.isFinite)?{air,track,humidity,source,samples:rows.length,firstAt:rows[0].at,lastAt:rows.at(-1).at}:null,replay:a??null,source,fetchedAt,stale,provenance,weatherError};
+ if(!rows.length){try{const key=a?.sessionKey??(await resolveHistorical({year,round})).session.session_key;const env=await getData('openf1','weather',{session_key:key},historicalTTL);rows=env.data.filter(x=>Number.isFinite(Date.parse(x.date))).map(x=>({at:Date.parse(x.date),air:typeof x.air_temperature==='number'?x.air_temperature:null,track:typeof x.track_temperature==='number'?x.track_temperature:null,humidity:typeof x.humidity==='number'?x.humidity:null,rainfall:x.rainfall,windSpeed:x.wind_speed}));fetchedAt=env.fetchedAt;source='OpenF1 historical session';stale=env.stale;provenance=[{...env,data:undefined}];}catch(e){weatherError=e.message;}}
+ const raceRows = d ? rows.filter(row => row.at >= d.session.start && row.at <= d.session.end) : rows;
+ const samples = raceRows.length ? raceRows : rows;
+ const avg = field => {
+  const values = samples.map(row => row[field]).filter(Number.isFinite);
+  return values.length ? values.reduce((a,b) => a+b,0) / values.length : null;
+ };
+ const air = avg('air'), track = avg('track'), humidity = avg('humidity'), windSpeed = avg('windSpeed');
+ const rain = samples.map(row => row.rainfall).filter(value => [0, 1, false, true, '0', '1'].includes(value));
+ const rained = rain.length ? rain.some(value => value === true || Number(value) === 1) : null;
+ const weather = [air, track, humidity, windSpeed].some(Number.isFinite) || rained !== null
+  ? {air,track,humidity,windSpeed,rained,source,samples:samples.length,firstAt:samples[0].at,lastAt:samples.at(-1).at}
+  : null;
+ let cloud = null;
+ if (!offline) {
+  try {
+   const env = await getData('jolpica', String(year), {limit:100}, historicalTTL);
+   const meeting = env.data.MRData.RaceTable?.Races?.find(row => Number(row.round) === round);
+   if (meeting) cloud = await raceCloud(meeting.Circuit?.Location, d?.session.start ?? normalizeMeeting(meeting).start);
+  } catch {}
+ }
+ return {weather,cloud,replay:a??null,source,fetchedAt,stale,provenance,weatherError};
 }

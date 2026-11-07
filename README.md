@@ -100,3 +100,15 @@ Unofficial fan project. Not affiliated with Formula 1. 공식 로고를 복제�
 ## 경기 결과 자동 업데이트
 
 기존 상시 수집 서버가 종료 전후의 해당 Race/Sprint/Qualifying 결과를 확인합니다. AI 모델이나 Codex 예약을 호출하지 않으므로 자동 확인 자체에는 AI 토큰이 들지 않습니다. API 요청/호스팅 사용량은 발생합니다. 잠정 Live 결과 → OpenF1 게시 결과 → Jolpica 게시 결과 순서로 대조하고, 지급 포인트/챔피언십은 Jolpica 결과로 갱신합니다. 이전 결과 유지, 사후 정정, 집중 확인/완화 주기, 저장 한계는 [결과 갱신 운영 문서](docs/RESULT_UPDATES.md)를 참고하세요.
+
+### 선택 사항 — Google 로그인
+
+즐겨찾기는 브라우저에 저장할 수 있습니다. 계정으로 동기화하려면 [Supabase의 Google 로그인 설정](https://supabase.com/docs/guides/auth/social-sign-in/auth-google)을 따라 Google 제공자를 켭니다. Supabase Auth의 Redirect URLs에 `https://gridline-indol.vercel.app/api/account/callback`을 등록한 후 Vercel Production 환경에 다음 값을 설정하고 다시 배포합니다.
+
+- `GRIDLINE_ACCOUNT_ORIGIN` = `https://gridline-indol.vercel.app`
+- `GRIDLINE_SUPABASE_URL` = Supabase 프로젝트 HTTPS URL
+- `GRIDLINE_SUPABASE_PUBLISHABLE_KEY` = 해당 프로젝트의 publishable key
+
+Google OAuth 비밀키는 Supabase 제공자 설정에 저장합니다. GRIDLINE은 로그인 토큰을 HttpOnly 쿠키에 보관하고, 계정에 선택한 드라이버와 팀 ID를 저장합니다.
+
+경기 날씨의 강수와 온도는 OpenF1 기록입니다. 구름 상태를 표시할 수 있을 때는 경기 시작 시각에 가장 가까운 시간의 [Open-Meteo 과거 날씨](https://open-meteo.com/en/docs/historical-weather-api) 추정치를 별도로 표시합니다.

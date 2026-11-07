@@ -5,6 +5,7 @@
 <div id="nextRace" class="next-race"><div class="skeleton">다음 Grand Prix 불러오는 중…</div></div>
 <div id="weekendSchedule" class="home-next-session"></div>
 <div class="home-center hidden" id="homeLivePanel"><strong id="homeLiveState">SESSION UNCONFIRMED</strong><button id="homeLive" class="primary" disabled>WATCH LIVE</button></div>
+<section id="favoriteOverview" class="favorite-overview"><div class="section-head"><h2>내 즐겨찾기</h2><button class="text-btn" data-open-favorites>설정</button></div><div id="favoriteSummary"></div></section>
 <div class="home-secondary"><section class="championship-overview"><div class="section-head"><div><h2>Championship</h2></div><a class="text-btn" href="/standings" data-route>Standings <span aria-hidden="true">↗</span></a></div><div class="summary-grid"><section><h3>Drivers <small>TOP 3</small></h3><div id="topDrivers"></div></section><section><h3>Constructors <small>TOP 3</small></h3><div id="topTeams"></div></section></div></section><section class="latest-overview"><div class="section-head"><div><h2>Recent race</h2></div></div><div id="recentResult"></div></section></div>
 </section>
 <section id="schedule" class="view">
@@ -12,7 +13,7 @@
 <svg class="calendar-defs" aria-hidden="true" width="0" height="0"><defs><filter id="calendarTrackInk"><feGaussianBlur in="SourceAlpha" stdDeviation=".65"/><feComponentTransfer result="outline"><feFuncA type="linear" slope="4"/></feComponentTransfer><feFlood/><feComposite in2="outline" operator="in"/></filter></defs></svg>
 <div id="raceList" class="season-calendar" aria-label="그랑프리 일정"></div>
 </section>
-<section id="standings" class="view"><div class="page-intro"><div><h1>The championship<span class="sr-only"> · 챔피언십</span></h1><p id="standingsRound">확정 점수 · 직전 라운드 종료 대비 순위 변화</p></div></div><div class="tabbar" role="group" aria-label="챔피언십 종류"><button class="tab active" data-standing="drivers" aria-pressed="true">Drivers</button><button class="tab" data-standing="constructors" aria-pressed="false">Constructors</button></div><div id="fullStandings" class="season-panel"></div><div class="section-head progression-heading"><div><span class="section-index">ROUND BY ROUND</span><h2>Points progression</h2></div></div><div id="championshipChart" class="season-panel points-panel"></div></section>
+<section id="standings" class="view"><div class="page-intro"><div><h1>The championship<span class="sr-only"> · 챔피언십</span></h1><p id="standingsRound">확정 점수 · 직전 라운드 종료 대비 순위 변화</p></div><button class="results-btn" data-open-favorites>즐겨찾기</button></div><div class="tabbar" role="group" aria-label="챔피언십 종류"><button class="tab active" data-standing="drivers" aria-pressed="true">Drivers</button><button class="tab" data-standing="constructors" aria-pressed="false">Constructors</button></div><div id="fullStandings" class="season-panel"></div><div class="section-head progression-heading"><div><span class="section-index">ROUND BY ROUND</span><h2>Points progression</h2></div></div><div id="championshipChart" class="season-panel points-panel"></div></section>
 <section id="results" class="view"><div class="page-intro"><div><h1>Race results<span class="sr-only"> · 경기 결과</span></h1></div><button id="refreshResults" class="results-btn">결과 새로고침</button></div><label class="result-selector" for="resultMeeting">GRAND PRIX <select id="resultMeeting"></select></label><div id="raceDetail"></div><div class="tabbar" role="group" aria-label="결과 세션"><button class="tab" data-result="qualifying">QUALIFYING</button><button class="tab" data-result="sprint">SPRINT</button><button class="tab active" data-result="race">RACE</button></div><div id="resultsContent" class="season-panel"></div></section>
 <section id="entity" class="view"><div id="entityContent"></div></section>
 <section id="live" class="view" tabindex="-1">
@@ -34,4 +35,14 @@
 </details><details class="disclosure legal-details"><summary>데이터 안내 및 이용 범위</summary><div class="disclaimer">독립 팬 프로젝트 · OpenF1 측정 기록은 공식 판정 또는 공식 중계를 대체하지 않습니다. 무료 Live Timing은 비공개 규격의 공개 연결을 사용하며 좌표/telemetry는 미확인입니다. 캐시를 받은 세션은 연결이 끊겨도 재생할 수 있습니다.</div></details></section>
 
 <footer><strong id="footerBrand"></strong> · <span id="brandDisclaimer"></span><br>DATA: <a href="https://github.com/jolpica/jolpica-f1/blob/main/TERMS.md" target="_blank" rel="noopener noreferrer">JOLPICA</a> · <a href="https://openf1.org/docs/" target="_blank" rel="noopener noreferrer">OPENF1 HISTORICAL</a> · F1 TIMING · LOCAL TIMEZONE</footer></main></div>
+<dialog id="favoritesDialog" aria-labelledby="favoritesTitle">
+ <div class="search-heading"><h2 id="favoritesTitle">즐겨찾기</h2><button type="button" id="favoritesClose" aria-label="즐겨찾기 닫기">×</button></div>
+ <p id="favoriteStorage" class="muted"></p>
+ <form id="favoriteForm">
+  <label>드라이버<select name="driver" id="favoriteDriver"></select></label>
+  <label>팀<select name="team" id="favoriteTeam"></select></label>
+  <div class="favorite-actions"><button class="primary" type="submit">저장</button><a href="/api/account/login" class="results-btn hidden" id="favoriteLogin">Google로 로그인</a><button class="results-btn hidden" type="button" id="favoriteLogout">로그아웃</button></div>
+  <p id="favoriteFeedback" role="status"></p>
+ </form>
+</dialog>
 <dialog id="quickJump" aria-labelledby="searchTitle"><div class="search-heading"><h2 id="searchTitle">Quick jump</h2><button id="searchClose" aria-label="검색 닫기">×</button></div><label for="searchInput">Driver · Team · Grand Prix · Circuit</label><input id="searchInput" type="search" autocomplete="off" placeholder="Verstappen, Singapore, Monaco 2024…"><div id="searchResults"></div></dialog><script type="module" src="/app.js"></script></body></html>

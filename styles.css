@@ -97,7 +97,6 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
  flex: none;
  font: 14px/1 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
 }
-.calendar-current-dot { width: 6px; height: 6px; flex: none; margin-left: auto; border-radius: 50%; background: var(--accent); }
 .calendar-event-art {
  display: grid;
  grid-template-columns: auto minmax(0, 1fr);
@@ -233,3 +232,41 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 }
 
 #trackSvg .label-left .car-label { transform: translateX(-20px); text-anchor: end; }
+
+.calendar-current-label {
+ margin-left: auto;
+ padding: 2px 5px;
+ background: var(--accent);
+ color: var(--accent-ink);
+ font-size: 10px;
+ white-space: nowrap;
+}
+.calendar-event-current .calendar-round { color: var(--accent); }
+.favorite-overview { margin: clamp(24px, 4vw, 56px) 0; }
+.favorite-overview .section-head { margin-bottom: 10px; }
+.favorite-overview h2 { font-size: clamp(22px, 3vw, 34px); }
+.favorite-overview .text-btn { min-height: 44px; background: transparent; }
+.favorite-result {
+ display: grid;
+ grid-template-columns: minmax(130px, 1fr) minmax(145px, 1fr) minmax(0, 1fr);
+ align-items: baseline;
+ gap: 8px 18px;
+ padding: 12px 0;
+ border-bottom: 1px solid var(--appearance-divider);
+}
+.favorite-race-link { color: var(--appearance-muted); text-decoration: underline; text-underline-offset: 3px; }
+.favorite-standing { background: var(--appearance-inset); }
+.favorite-standing > :first-child { box-shadow: inset 3px 0 var(--accent); }
+.favorite-mark { display: inline-block; margin-left: 8px; color: var(--accent); }
+#favoriteForm { display: grid; gap: 12px; margin-top: 16px; }
+#favoriteForm label { display: grid; gap: 6px; color: var(--appearance-muted); }
+#favoriteForm select { width: 100%; min-height: 44px; }
+.favorite-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+#favoriteFeedback:empty { display: none; }
+.race-cloud-note { display: block; margin-top: 6px; }
+.race-cloud-note a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 600px) {
+ .calendar-event-current .calendar-event-top { flex-wrap: wrap; }
+ .calendar-current-label { flex: 0 0 100%; margin: 0; }
+ .favorite-result { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+}
