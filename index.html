@@ -9,7 +9,7 @@
 </section>
 <section id="schedule" class="view">
 <header class="calendar-heading"><h1><span id="calendarYear"></span> 시즌 캘린더</h1><span id="calendarZone"></span></header>
-<svg class="calendar-defs" aria-hidden="true" width="0" height="0"><defs><filter id="calendarTrackInk"><feComponentTransfer in="SourceAlpha"><feFuncA type="linear" slope="2"/></feComponentTransfer><feMorphology operator="dilate" radius="1" result="outline"/><feFlood flood-color="#007d99"/><feComposite in2="outline" operator="in"/></filter></defs></svg>
+<svg class="calendar-defs" aria-hidden="true" width="0" height="0"><defs><filter id="calendarTrackInk"><feGaussianBlur in="SourceAlpha" stdDeviation=".65"/><feComponentTransfer result="outline"><feFuncA type="linear" slope="4"/></feComponentTransfer><feFlood/><feComposite in2="outline" operator="in"/></filter></defs></svg>
 <div id="raceList" class="season-calendar" aria-label="그랑프리 일정"></div>
 </section>
 <section id="standings" class="view"><div class="page-intro"><div><h1>The championship<span class="sr-only"> · 챔피언십</span></h1><p id="standingsRound">확정 점수 · 직전 라운드 종료 대비 순위 변화</p></div></div><div class="tabbar" role="group" aria-label="챔피언십 종류"><button class="tab active" data-standing="drivers" aria-pressed="true">Drivers</button><button class="tab" data-standing="constructors" aria-pressed="false">Constructors</button></div><div id="fullStandings" class="season-panel"></div><div class="section-head progression-heading"><div><span class="section-index">ROUND BY ROUND</span><h2>Points progression</h2></div></div><div id="championshipChart" class="season-panel points-panel"></div></section>
