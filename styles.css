@@ -301,3 +301,15 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 @media (max-width: 600px) {
  .race-award-votes li { grid-template-columns: minmax(0, 1.35fr) minmax(40px, 1fr) 6ch; gap: 8px; }
 }
+
+.result-highlight {
+ display: flex;
+ align-items: baseline;
+ flex-wrap: wrap;
+ gap: 4px 14px;
+ padding: 12px 0;
+ border-bottom: 1px solid var(--appearance-divider);
+}
+.result-highlight .eyebrow { color: var(--appearance-muted); }
+.result-highlight strong { font-size: 18px; }
+.result-highlight .muted { font-size: 12px; }
