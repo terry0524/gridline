@@ -5,8 +5,8 @@ export const resultKinds={Race:'race',Sprint:'sprint',Qualifying:'qualifying'};
 export const resultKey=(round,kind)=>`${round}:${kind}`;
 export const resultDigest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const lapTime=s=>finite(s)?`${Math.floor(s/60)}:${(s%60).toFixed(3).padStart(6,'0')}`:null;
-export function matchResultSession(schedule,session){
- const kind=resultKinds[session?.type];if(!kind||!finite(session.start))return null;
+export function matchResultSession(schedule,session,kind=resultKinds[session?.type]){
+ if(!kind||!finite(session.start))return null;
  const matches=schedule.filter(m=>m.season===session.year&&m.sessions.some(s=>s.name===session.type&&finite(s.start)&&Math.abs(s.start-session.start)<3*3600000));
  return matches.length===1?{meeting:matches[0],kind}:null;
 }
@@ -39,12 +39,15 @@ export class ResultFinishTracker{
  }
 }
 export function openF1Result(rows,session,season,now=Date.now()){
- const match=matchResultSession(season.schedule,{...session,key:session.session_key,type:session.session_name,start:Date.parse(session.date_start)});
+ const type = session.session_name;
+ const kind = type === 'Sprint Qualifying' ? 'sprint-qualifying' : resultKinds[type];
+ const match=matchResultSession(season.schedule,{...session,key:session.session_key,type,start:Date.parse(session.date_start)},kind);
  if(!match||!Array.isArray(rows)||!rows.length||rows.some(r=>r.session_key!==session.session_key))return null;
- const {meeting,kind}=match;
+ const {meeting}=match;
+ const qualifying = kind === 'qualifying' || kind === 'sprint-qualifying';
  const results=rows.filter(r=>Number.isInteger(r.driver_number)).map(r=>{
   const known=identity(r.driver_number,null,season),duration=Array.isArray(r.duration)?r.duration:[],gap=r.gap_to_leader;
-  return {position:Number.isInteger(r.position)?r.position:null,positionText:r.position===null?null:String(r.position),number:r.driver_number,driver:known?.driver??{id:null,name:`Driver ${r.driver_number}`,abbreviation:String(r.driver_number),number:r.driver_number},team:known?.team??{id:null,name:'—',color:'#91a3b8'},grid:null,laps:finite(r.number_of_laps)?r.number_of_laps:null,points:finite(r.points)?r.points:null,time:kind==='qualifying'?null:r.position===1&&finite(r.duration)?new Date(r.duration*1000).toISOString().slice(11,23):finite(gap)?`+${gap.toFixed(3)}`:typeof gap==='string'?gap:null,timeMillis:r.position===1&&finite(r.duration)?r.duration*1000:null,status:null,classification:r.dsq===true?'DSQ':r.dns===true?'DNS':r.dnf===true?'DNF':kind==='qualifying'?'QUALIFIED':r.dnf===false&&r.dns===false&&r.dsq===false?'CLASSIFIED':'—',q1:lapTime(duration[0]),q2:lapTime(duration[1]),q3:lapTime(duration[2]),fastest:null};
+  return {position:Number.isInteger(r.position)?r.position:null,positionText:r.position===null?null:String(r.position),number:r.driver_number,driver:known?.driver??{id:null,name:`Driver ${r.driver_number}`,abbreviation:String(r.driver_number),number:r.driver_number},team:known?.team??{id:null,name:'—',color:'#91a3b8'},grid:null,laps:finite(r.number_of_laps)?r.number_of_laps:null,points:finite(r.points)?r.points:null,time:qualifying?null:r.position===1&&finite(r.duration)?new Date(r.duration*1000).toISOString().slice(11,23):finite(gap)?`+${gap.toFixed(3)}`:typeof gap==='string'?gap:null,timeMillis:r.position===1&&finite(r.duration)?r.duration*1000:null,status:null,classification:r.dsq===true?'DSQ':r.dns===true?'DNS':r.dnf===true?'DNF':qualifying?'QUALIFIED':r.dnf===false&&r.dns===false&&r.dsq===false?'CLASSIFIED':'—',q1:lapTime(duration[0]),q2:lapTime(duration[1]),q3:lapTime(duration[2]),fastest:null};
  }).sort((a,b)=>(a.position??999)-(b.position??999));
  if(!results.length||new Set(results.map(r=>r.number)).size!==results.length)return null;
  return{meeting:{...meeting,kind,results},status:'SOURCE_RESULT',source:'OpenF1 historical',sourceAt:now,checkedAt:now,sessionKey:session.session_key};

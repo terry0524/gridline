@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {getData,ProviderError,cacheDir,historicalTTL} from './provider.js';
+import {getData,ProviderError,cacheDir,historicalTTL,isHistorical} from './provider.js';
 import {normalizeMeeting,normalizeResults,normalizeStandings,buildProgression} from './season-model.js';
 import {readResults} from './result-store.js';
-import {overlaySeasonResults,resultKey} from './result-model.js';
+import {overlaySeasonResults,resultKey,openF1Result} from './result-model.js';
 import {sessionCatalog,getReplay,resolveHistorical} from './replay-loader.js';
 import {raceCloud} from './race-cloud.js';
 import {offline} from './config.js';
@@ -28,7 +28,8 @@ async function loadSeason(year){const errors={},sources=[];const names=['schedul
  const standings={round,drivers:data.drivers?normalizeStandings(standingList(data.drivers,'drivers'),'drivers',prevD):[],constructors:data.constructors?normalizeStandings(standingList(data.constructors,'constructors'),'constructors',prevT):[]};const races=normalizeResults(data.race?.races??[],'race'),sprints=normalizeResults(data.sprint?.races??[],'sprint');for(const standing of standings.drivers){const latest=[...races,...sprints].sort((a,b)=>b.round-a.round||(a.kind==='race'?-1:1)).flatMap(m=>m.results).find(x=>x.driver.id===standing.id);if(latest){standing.driver.number=latest.number??standing.driver.number;standing.team=latest.team;}}const progression=buildProgression(races,sprints,standings);if(errors.race||errors.sprint){progression.complete=false;progression.reconciliation.matches=false;}
  return{normalizationVersion:1,season:year,schedule:(data.schedule?.data.MRData.RaceTable?.Races??[]).map(normalizeMeeting),standings,races,sprints,progression,errors,source:'Jolpica',fetchedAt:sources.map(p=>p.fetchedAt).filter(Boolean).sort().at(-1)??null,normalizedAt:new Date().toISOString(),stale:sources.some(s=>s.stale),provenance:sources};}
 export async function weekendResults(year,round,kind){
- if(!['qualifying','sprint','race'].includes(kind)||!Number.isInteger(round)||round<1||round>30)throw new ProviderError('Invalid weekend',400);
+ if(!['qualifying','sprint-qualifying','sprint','race'].includes(kind)||!Number.isInteger(round)||round<1||round>30)throw new ProviderError('Invalid weekend',400);
+ if(kind==='sprint-qualifying')return sprintQualifyingResults(year,round);
  const snapshot=await readResults(year),record=snapshot?.items.find(r=>resultKey(r.meeting.round,r.meeting.kind)===resultKey(round,kind));
  const stored=()=>({meeting:{...record.meeting,resultStatus:record.status,resultSource:record.source,resultUpdatedAt:record.sourceAt},source:record.source,provenance:[]});
  if(kind!=='qualifying'){
@@ -43,6 +44,60 @@ export async function weekendResults(year,round,kind){
   if(record&&(!meeting||e.stale||record.status==='PUBLISHED'&&record.sourceAt>Date.parse(e.fetchedAt)))return stored();
   return{meeting:meeting?{...meeting,resultStatus:'PUBLISHED',resultSource:'Jolpica',resultUpdatedAt:Date.parse(e.fetchedAt)}:null,source:'Jolpica',provenance:[provenance(e)]};
  }catch(e){if(record)return stored();throw e;}
+}
+async function sprintQualifyingResults(year, round) {
+ const season = await seasonData(year);
+ let meeting = season.schedule.find(row => row.round === round);
+ const unavailable = {meeting:null,source:'OpenF1 historical',provenance:[]};
+ if (!meeting?.sessions.some(session => session.name === 'Sprint')) return unavailable;
+ const name = 'Sprint Qualifying';
+ // Older normalized schedules did not carry the 2023 SprintShootout field.
+ if (!meeting.sessions.some(session => session.name === name)) {
+  const race = await getData('jolpica', `${year}/${round}`, {limit:100}, seasonTTL(year));
+  const raw = race.data.MRData.RaceTable?.Races?.[0];
+  if (raw) meeting = normalizeMeeting(raw);
+ }
+ const start = meeting.sessions.find(session => session.name === name)?.start;
+ if (!Number.isFinite(start) || start >= Date.now()) return unavailable;
+ const calendar = await getData('openf1','sessions',{year,session_name:name},seasonTTL(year));
+ const matches = calendar.data.filter(session => session.session_name === name &&
+  session.year === year && session.is_cancelled !== true &&
+  Math.abs(Date.parse(session.date_start) - start) < 3 * 3600000);
+ if (matches.length !== 1 || !isHistorical(matches[0])) return unavailable;
+ const session = matches[0];
+ const results = await getData('openf1','session_result',{session_key:session.session_key},seasonTTL(year));
+ // Weekend entries are more reliable than season standings for drivers who changed teams.
+ const weekend = { ...season, schedule:[meeting],
+  standings:{drivers:[]}, races:season.races.filter(race => race.round === round),
+  sprints:season.sprints.filter(sprint => sprint.round === round),
+ };
+ const record = openF1Result(results.data,session,weekend,Date.parse(results.fetchedAt));
+ const sources = [provenance(calendar),provenance(results)];
+ if (record?.meeting.results.some(row => !row.driver.id)) {
+  try {
+   const entryList = await getData('openf1','drivers',{session_key:session.session_key},historicalTTL);
+   const entries = new Map(entryList.data.map(driver => [driver.driver_number,driver]));
+   for (const row of record.meeting.results) {
+    const entry = entries.get(row.number);
+    if (row.driver.id || !entry?.name_acronym) continue;
+    const known = season.standings.drivers.find(standing => standing.driver.abbreviation === entry.name_acronym);
+    row.driver = {
+     id:known?.id ?? null, name:entry.full_name || entry.name_acronym,
+     abbreviation:entry.name_acronym, number:row.number,
+    };
+    row.team = {
+     id:null, name:entry.team_name || '—',
+     color:/^[a-f\d]{6}$/i.test(entry.team_colour) ? '#'+entry.team_colour : row.team.color,
+    };
+   }
+   sources.push(provenance(entryList));
+  } catch { /* Keep official classification even when entry metadata is unavailable. */ }
+ }
+ return {
+  ...unavailable,
+  meeting:record ? {...record.meeting,resultStatus:record.status,resultUpdatedAt:record.sourceAt} : null,
+  provenance:sources,
+ };
 }
 export async function replayAvailability(year){const s=await seasonData(year);const catalog=await sessionCatalog(year);const result=[];for(const m of s.schedule){const match=catalog.sessions.find(x=>x.session_name==='Race'&&x.access==='historical'&&m.start!==null&&Math.abs(Date.parse(x.date_start)-m.start)<2*86400000);if(!match){result.push({round:m.round,status:'UNAVAILABLE',sessionKey:null});continue;}const r=match.manifest;result.push({round:m.round,sessionKey:r.sessionKey,status:r.validation==='VALID'?'REPLAY AVAILABLE':'PARTIAL DATA',description:r.validation==='VALID'?'Imported historical session':r.missing.join(' · '),locationCount:r.locations});}return{meetings:result,source:catalog.source,stale:catalog.stale,fetchedAt:catalog.fetchedAt};}
 export async function raceFacts(year,round){

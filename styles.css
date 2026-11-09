@@ -313,3 +313,8 @@ dialog{background:var(--appearance-page);color:var(--appearance-text);border:1px
 .result-highlight .eyebrow { color: var(--appearance-muted); }
 .result-highlight strong { font-size: 18px; }
 .result-highlight .muted { font-size: 12px; }
+.result-highlight.fact-fastest .eyebrow { color: var(--purple); }
+@media (max-width: 600px) {
+ #resultTabs { gap: clamp(8px, 2.5vw, 16px); }
+ #resultTabs .tab { font-size: 11px; }
+}
